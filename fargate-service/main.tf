@@ -82,7 +82,7 @@ resource "aws_security_group" "service" {
 
 resource "aws_ecs_service" "app" {
   name            = var.service_name
-  cluster         = var.create_new_cluster ? aws_ecs_cluster.cluster.arn : data.aws_ecs_cluster.cluster.arn
+  cluster         = var.create_new_cluster ? aws_ecs_cluster.cluster[0].arn : data.aws_ecs_cluster.cluster.arn
   task_definition = module.image.task_definition_arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
