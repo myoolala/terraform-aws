@@ -1,3 +1,3 @@
 output "cname_target" {
-    value = aws_lb.ingress.dns_name
+  value = aws_lb.ingress.dns_name
 }

@@ -82,16 +82,16 @@ module "frontend_and_cache" {
   # If you are not using an existing ACM cert, you will need to do multiple deploys
   # The first to target only the cert to create it and validate it
   # only then can you deploy everything else
-  acm_arn     = var.acm_arn
-  cname       = var.cname
-  s3_prefix   = var.s3_prefix
+  acm_arn   = var.acm_arn
+  cname     = var.cname
+  s3_prefix = var.s3_prefix
   apigateway_origins = [
     for stage in module.backend :
     {
-      id           = stage.stage_name
-      domain_name  = trimprefix(aws_apigatewayv2_api.gateway.api_endpoint, "https://")
+      id          = stage.stage_name
+      domain_name = trimprefix(aws_apigatewayv2_api.gateway.api_endpoint, "https://")
       // @TODO this following line might be complete crap and the suffix doesn't matter
-      path_pattern = length([for v in stage.routes: v if v != "$default"]) < 2 ? "${stage.path_prefix}" : "${stage.path_prefix}/*"
+      path_pattern = length([for v in stage.routes : v if v != "$default"]) < 2 ? "${stage.path_prefix}" : "${stage.path_prefix}/*"
       stage_name   = "/${stage.stage_name}"
     }
   ]
