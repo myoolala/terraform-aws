@@ -1,17 +1,3 @@
-resource "aws_acm_certificate" "cname_cert" {
-  count             = var.acm_arn == null ? 1 : 0
-  domain_name       = var.cname
-  validation_method = "DNS"
-
-  tags = merge(var.tags, {
-
-  })
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
 resource "aws_s3_bucket" "host_bucket" {
   count  = var.create_s3_bucket ? 1 : 0
   bucket = var.host_s3_bucket

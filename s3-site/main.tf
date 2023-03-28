@@ -161,14 +161,10 @@ resource "aws_cloudfront_distribution" "distro" {
   })
 
   viewer_certificate {
-    acm_certificate_arn      = var.acm_arn == null ? aws_acm_certificate.cname_cert[0].arn : var.acm_arn
+    acm_certificate_arn      = var.acm_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
-
-  depends_on = [
-    aws_acm_certificate.cname_cert
-  ]
 }
 
 data "aws_iam_policy_document" "s3_policy" {
