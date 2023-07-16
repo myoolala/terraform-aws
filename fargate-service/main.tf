@@ -8,14 +8,14 @@ module "secrets" {
 }
 
 resource "aws_ecs_cluster" "cluster" {
-  count = var.create_new_cluster ? 1 : 0
-  name  = var.cluster_name
+  count = var.cluster.create ? 1 : 0
+  name  = var.cluster.name
 
   # @TODO: Add support for logging
 }
 
 data "aws_ecs_cluster" "cluster" {
-  cluster_name = var.cluster_name
+  cluster_name = var.cluster.name
 
   depends_on = [
     aws_ecs_cluster.cluster
@@ -23,11 +23,11 @@ data "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_ecr_repository" "service_repo" {
-  count                = var.create_ecr_repo ? 1 : 0
+  count                = var.ecr.create ? 1 : 0
   name                 = var.service_name
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
-    scan_on_push = var.scan_on_push
+    scan_on_push = var.ecr.scan_on_push
   }
 }
 
@@ -47,12 +47,10 @@ module "image" {
   env_vars     = var.env_vars
   secrets      = module.secrets.fargate_secrets
   secrets_keys = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
-  port_mappings = [
-    {
-      containerPort = var.container_port
-      hostPort      = var.container_port
-    }
-  ]
+  port_mappings = [for i in var.lb.port_mappings : {
+    containerPort = i.forward_port
+    hostPort      = i.forward_port
+  }]
 
   depends_on = [
     module.secrets
@@ -61,34 +59,38 @@ module "image" {
 
 resource "aws_security_group" "service" {
   name   = "${var.service_name}-fargate"
-  vpc_id = var.vpc_id
+  vpc_id = var.network.vpc_id
+}
 
-  ingress {
-    from_port       = var.container_port
-    to_port         = var.container_port
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lb.id]
-    # cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "ingress" {
+  count = length(var.lb.port_mappings)
 
-  // Required in order to pull down the image
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  type                     = "ingress"
+  from_port                = var.lb.port_mappings[count.index].listen_port
+  to_port                  = var.lb.port_mappings[count.index].listen_port
+  protocol                 = var.lb.port_mappings[count.index].sg_protocol
+  source_security_group_id = module.lb.sg_id
+  security_group_id        = aws_security_group.service.id
+}
+
+resource "aws_security_group_rule" "egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.service.id
 }
 
 resource "aws_ecs_service" "app" {
   name            = var.service_name
-  cluster         = var.create_new_cluster ? aws_ecs_cluster.cluster[0].arn : data.aws_ecs_cluster.cluster.arn
+  cluster         = var.cluster.create ? aws_ecs_cluster.cluster[0].arn : data.aws_ecs_cluster.cluster.arn
   task_definition = module.image.task_definition_arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets = var.service_subnets
+    subnets = var.network.subnets
     security_groups = [
       aws_security_group.service.id
     ]
@@ -102,10 +104,14 @@ resource "aws_ecs_service" "app" {
   #     field = "cpu"
   #   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.forwarder.arn
-    container_name   = var.service_name
-    container_port   = var.container_port
+  dynamic "load_balancer" {
+    for_each = var.lb.port_mappings
+
+    content {
+      target_group_arn = module.lb.tg_arns[load_balancer.key]
+      container_name   = var.service_name
+      container_port   = load_balancer.value.forward_port
+    }
   }
 
   #   placement_constraints {
@@ -122,6 +128,22 @@ resource "aws_ecs_service" "app" {
 
   depends_on = [
     module.image,
-    aws_lb_target_group.forwarder
+    module.lb
   ]
+}
+
+module "lb" {
+  source = "../load-balancer"
+
+  vpc_id        = var.lb.vpc_id != null ? var.lb.vpc_id : var.network.vpc_id
+  subnets       = var.lb.subnets != null ? var.lb.subnets : var.network.subnets
+  ingress_cidrs = var.lb.ingress_cidrs
+  # ingress_groups 
+  egress_cidrs = ["0.0.0.0/0"]
+  # egress_groups
+  name                = var.service_name
+  type                = var.lb.type
+  internal            = var.lb.internal
+  deletion_protection = var.lb.deletion_protection
+  port_mappings       = var.lb.port_mappings
 }

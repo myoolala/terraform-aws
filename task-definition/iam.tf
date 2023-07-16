@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "container-assume-role-policy" {
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "task_role" {
-  name = "test_role"
+  name = "${var.service_name}-task"
 
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
@@ -50,7 +50,7 @@ resource "aws_iam_role" "task_role" {
 
 
 resource "aws_iam_role" "task_execution_role" {
-  name = "test-exec-role"
+  name = "${var.service_name}-task-exec"
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"

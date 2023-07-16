@@ -3,58 +3,33 @@ variable "service_name" {
   description = "Name to apply to the Fargate service"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "VPC to run the service in"
+variable "network" {
+  type = object({
+    vpc_id  = string
+    subnets = optional(list(string), null)
+  })
+  description = "Network config to attach to the service containers"
 }
 
-variable "scan_on_push" {
-  type        = bool
-  description = "Have ECR scan images on push"
-  default     = false
+variable "cluster" {
+  type = object({
+    create = optional(bool, false)
+    name   = optional(string, null)
+    arn    = optional(string, null)
+  })
+  description = "Cluster information for the service"
 }
 
-variable "create_new_cluster" {
-  type        = bool
-  description = "Create a new cluster with the specified cluster name"
-  default     = true
-}
-
-variable "create_ecr_repo" {
-  type        = bool
-  description = "Create a new ecr repo or not"
-  default     = true
-}
-
-variable "lb_protocol" {
-  type    = string
-  default = "HTTPS"
-}
-
-variable "service_protocol" {
-  type    = string
-  default = "HTTPS"
-}
-
-variable "certificate_arn" {
-  type        = string
-  description = "ARN of a cert to attached to attach ot the load balancer"
-  default     = null
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "Name of the cluster to attached the service to"
-}
-
-variable "container_port" {
-  type    = number
-  default = 3000
-}
-
-variable "lb_port" {
-  type    = number
-  default = 443
+variable "ecr" {
+  type = object({
+    create       = optional(bool, true)
+    scan_on_push = optional(bool, true)
+  })
+  description = "ECR configuration for the service"
+  default = {
+    create       = true
+    scan_on_push = true
+  }
 }
 
 variable "desired_count" {
@@ -69,16 +44,6 @@ variable "image_tag" {
   default     = null
 }
 
-variable "service_subnets" {
-  type        = list(string)
-  description = "Subnets to run the service in"
-}
-
-variable "loadbalancer_subnets" {
-  type        = list(string)
-  description = "Subnets to run the load balancer in (public/private)"
-}
-
 variable "region" {
   type        = string
   description = "Region to deploy the service to"
@@ -88,11 +53,6 @@ variable "tags" {
   type        = map(any)
   description = "Tags to apply to all resources. Ie: environment, cost tracking, etc..."
   default     = {}
-}
-
-variable "lb_ingress_cidr" {
-  type    = string
-  default = "0.0.0.0/0"
 }
 
 variable "log_retention" {
@@ -107,32 +67,40 @@ variable "env_vars" {
   description = "Environment variables to pass to the container in {<key> = <value>, <key> = <value>} form"
 }
 
-variable "health_check_interval" {
-  type        = number
-  default     = 30
-  description = "Time in seconds between health checks"
-}
-
-variable "lb_healthy_threshold" {
-  type        = number
-  default     = 2
-  description = "Number of passing consecutive health checks for the instance to be considered healthy enough to accept traffic"
-}
-
-variable "lb_unhealthy_threshold" {
-  type        = number
-  default     = 10
-  description = "Number of failing consecutive health checks for the instance to terminated"
-}
-
-variable "health_check_path" {
-  type        = string
-  default     = "/api/healthcheck"
-  description = "Path to the healthcheck endpoint"
-}
-
 variable "secrets" {
   type        = list(map(string))
   default     = []
   description = "List of secrets to attach to the service"
+}
+
+variable "lb" {
+  type = object({
+    vpc_id        = optional(string, null)
+    subnets       = optional(list(string), null)
+    ingress_cidrs = optional(list(string), ["0.0.0.0/0"])
+    # ingress_groups 
+    egress_cidrs = optional(list(string), ["0.0.0.0/0"])
+    # egress_groups
+    type                = optional(string, "application")
+    internal            = optional(bool, false)
+    deletion_protection = optional(bool, false)
+    port_mappings = list(object({
+      listen_port  = number
+      sg_protocol  = optional(string, "tcp")
+      lb_protocol  = optional(string, "HTTPS")
+      forward_port = number
+      tg_protocol  = optional(string, "HTTPS")
+      cert         = optional(string, null)
+      target_type  = optional(string, "ip")
+      health_check = optional(object({
+        enabled             = optional(bool, true)
+        matcher             = optional(string, "200-499")
+        interval            = optional(number, 30)
+        healthy_threshold   = optional(number, 2)
+        unhealthy_threshold = optional(number, 4)
+        service_protocol    = optional(string, "HTTPS")
+        path                = optional(string, "/")
+      }), {})
+    }))
+  })
 }
