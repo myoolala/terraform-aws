@@ -1,5 +1,5 @@
 resource "aws_iam_role" "server_role" {
-  name = var.group_name
+  name = var.name
 
   managed_policy_arns = var.managed_policies
 
@@ -16,12 +16,7 @@ resource "aws_iam_role" "server_role" {
         Principal = {
           Service = "ec2.amazonaws.com"
         }
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = "${data.aws_caller_identity.current.account_id}"
-          }
-        }
-      },
+      }
     ]
   })
 
@@ -30,13 +25,15 @@ resource "aws_iam_role" "server_role" {
 }
 
 resource "aws_iam_role_policy" "app_permissions" {
+  count = var.permissions != null ? 1 : 0
+
   name = "app_permissions"
   role = aws_iam_role.server_role.id
 
   policy = var.permissions
 }
 
-resource "aws_iam_instance_profile" "test_profile" {
-  name = var.group_name
+resource "aws_iam_instance_profile" "server_role" {
+  name = var.name
   role = aws_iam_role.server_role.name
 }

@@ -9,3 +9,7 @@ output "tg_arns" {
 output "dns_name" {
   value = aws_lb.ingress.dns_name
 }
+
+output "lb_arn" {
+  value = aws_lb.ingress.arn
+}
