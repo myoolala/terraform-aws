@@ -3,6 +3,17 @@ resource "aws_security_group" "service" {
   vpc_id = var.network.vpc
 }
 
+resource "aws_security_group_rule" "ingresses" {
+  count = length(var.network.ingresses)
+
+  type                     = "ingress"
+  from_port                = var.network.ingresses[count.index].from_port
+  to_port                  = var.network.ingresses[count.index].to_port
+  protocol                 = var.network.ingresses[count.index].protocol
+  source_security_group_id = var.network.ingresses[count.index].source_sg
+  cidr_blocks              = var.network.ingresses[count.index].cidr_blocks
+  security_group_id        = aws_security_group.service.id
+}
 
 resource "aws_security_group_rule" "ingress" {
   count = length(var.lb.port_mappings)

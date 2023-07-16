@@ -23,6 +23,13 @@ variable "network" {
     vpc            = string
     subnets        = list(string)
     additional_sgs = optional(list(string), [])
+    ingresses = optional(list(object({
+      from_port   = number
+      to_port     = number
+      protocol    = string
+      source_sg   = optional(string, null)
+      cidr_blocks = optional(list(string), null)
+    })), [])
   })
   description = "Network config for the ASG"
 }
