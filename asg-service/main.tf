@@ -1,3 +1,13 @@
+module "secrets" {
+  count  = var.secrets != null ? 1 : 0
+  source = "../secrets"
+
+  secrets         = var.secrets.secrets
+  region          = var.secrets.region
+  create_new_key  = true
+  recovery_window = 0
+}
+
 resource "aws_security_group" "service" {
   name   = "${var.name}-asg"
   vpc_id = var.network.vpc
@@ -115,11 +125,15 @@ resource "aws_launch_template" "image" {
     }
   }
 
-  # user_data = filebase64("${path.module}/example.sh")
+  user_data = base64encode(join("\n", [
+    "#!/bin/bash",
+    join("\n", [for k, v in var.env_vars : "${k}=\"${v}\""]),
+    var.user_data
+    ]
+  ))
 }
 
 resource "aws_autoscaling_group" "cluster" {
-  #   availability_zones = ["us-east-1a"]
   desired_capacity          = var.capacity.initial
   max_size                  = var.capacity.max
   min_size                  = var.capacity.min

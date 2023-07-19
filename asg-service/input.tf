@@ -61,6 +61,15 @@ variable "metadata" {
   default     = {}
 }
 
+variable "secrets" {
+  type = object({
+    secrets = list(map(string))
+    region  = string
+  })
+  default     = null
+  description = "List of secrets to attach to the service"
+}
+
 variable "ebs_optimized" {
   type        = bool
   description = "To enable the ASG to be ebs optimized"
@@ -127,6 +136,18 @@ variable "config" {
   })
   description = "Main ASG config"
   default     = {}
+}
+
+variable "env_vars" {
+  type        = map(string)
+  default     = {}
+  description = "Environment variables to pass to the container in {<key> = <value>, <key> = <value>} form"
+}
+
+variable "user_data" {
+  type        = string
+  description = "User data needed to run the script"
+  default     = ""
 }
 
 variable "lb" {
