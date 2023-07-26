@@ -145,9 +145,12 @@ variable "env_vars" {
 }
 
 variable "user_data" {
-  type        = string
+  type = object({
+    pre_env  = optional(string, "")
+    post_env = optional(string, "")
+  })
   description = "User data needed to run the script"
-  default     = ""
+  default     = {}
 }
 
 variable "lb" {

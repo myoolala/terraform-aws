@@ -127,8 +127,9 @@ resource "aws_launch_template" "image" {
 
   user_data = base64encode(join("\n", [
     "#!/bin/bash",
-    join("\n", [for k, v in var.env_vars : "${k}=\"${v}\""]),
-    var.user_data
+    var.user_data.pre_env,
+    join("\n", [for k, v in var.env_vars : "export ${k}=${v}"]),
+    var.user_data.post_env
     ]
   ))
 }
