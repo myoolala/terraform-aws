@@ -115,6 +115,12 @@ variable "permissions" {
   description = "Json encoded string of permissions to attach to the container"
 }
 
+variable "log_retention" {
+  type        = number
+  default     = 7
+  description = "Number of days to store the service logs for"
+}
+
 variable "capacity" {
   type = object({
     initial               = optional(number, 1)

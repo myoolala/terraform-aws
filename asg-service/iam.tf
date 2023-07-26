@@ -33,6 +33,37 @@ resource "aws_iam_role_policy" "app_permissions" {
   policy = var.permissions
 }
 
+resource "aws_iam_role_policy" "min_app_permissions" {
+  name = "minimum_permissions"
+  role = aws_iam_role.server_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ],
+        Resource = [
+          "${aws_cloudwatch_log_group.logs.arn}*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:DescribeLogStreams"
+        ],
+        Resource = [
+          "*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_instance_profile" "server_role" {
   name = var.name
   role = aws_iam_role.server_role.name

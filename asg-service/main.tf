@@ -8,6 +8,12 @@ module "secrets" {
   recovery_window = 0
 }
 
+resource "aws_cloudwatch_log_group" "logs" {
+  name = var.name
+
+  retention_in_days = var.log_retention
+}
+
 resource "aws_security_group" "service" {
   name   = "${var.name}-asg"
   vpc_id = var.network.vpc
