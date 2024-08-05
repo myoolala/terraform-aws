@@ -1,3 +1,8 @@
+# @TODOs
+# * support transit gateways
+# * support overriding route tables
+# * Add nacl options? decide that
+
 locals {
   other_subnets = flatten([for name, subnet_group in var.other_subnets : [
     for i, subnet in subnet_group :
@@ -14,9 +19,13 @@ locals {
   }
   # Mapping of compute subnets to their azs then mapped to the matching ingress subnet id joined by az if possible
   # If no match is found, default is random pick
-  compute_subnet_route_mapping = [ for i, v in var.compute_subnets: 
+  # NOW
+  # If there are no nats, aka we want a publicly reachable system but keep the private subnets totally private, 
+  # we default to the only route table for internal traffic
+  compute_subnet_route_mapping = length(local.nat_subnet_map) < 1 ? [for i, v in var.compute_subnets: 0] : [ for i, v in var.compute_subnets: 
     index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
   ]
+  # @TODO integrate this
   other_subnet_route_mapping = [ for i, v in local.other_subnets: 
     index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
   ]
@@ -25,7 +34,8 @@ locals {
 
 resource "aws_vpc" "main" {
   cidr_block       = var.ipv4_cidr
-  # ipv6_cidr_block  = var.ipv6_cidr
+  ipv6_cidr_block_network_border_group = var.ipv6_conf != null ? var.ipv6_conf.border_group : null
+  assign_generated_ipv6_cidr_block = var.ipv6_conf != null
   instance_tenancy = var.instance_tenancy
   enable_dns_support = var.enable_dns_support
   enable_dns_hostnames = var.enable_dns_hostnames
@@ -58,12 +68,15 @@ resource "aws_subnet" "ingress" {
 
   vpc_id = aws_vpc.main.id
   cidr_block = var.ingress_subnets[count.index].ipv4_cidr
-  ipv6_cidr_block = var.ingress_subnets[count.index].ipv6_cidr
+  enable_resource_name_dns_a_record_on_launch = var.ingress_subnets[count.index].a_record_on_launch
+  ipv6_cidr_block = var.ingress_subnets[count.index].ipv6_block != null ? cidrsubnet(aws_vpc.main.ipv6_cidr_block, var.ingress_subnets[count.index].ipv6_block_size, var.ingress_subnets[count.index].ipv6_block) : null
   ipv6_native = var.ingress_subnets[count.index].ipv6_native
+  enable_dns64 = var.ingress_subnets[count.index].enable_dns64
+  enable_resource_name_dns_aaaa_record_on_launch = var.ingress_subnets[count.index].aaaa_record_on_launch
   availability_zone = var.ingress_subnets[count.index].az
   map_public_ip_on_launch = var.public
   # enable_resource_name_dns_aaaa_record_on_launch = var.public && var.ingress_subnets[count.index].ipv6_cidr != null
-  assign_ipv6_address_on_creation = var.public && var.ingress_subnets[count.index].ipv6_cidr != null
+  assign_ipv6_address_on_creation = var.public && var.ingress_subnets[count.index].ipv6_block != null
 
   tags = {
     Name = "${var.name}-Ingress-${count.index + 1}"
@@ -75,8 +88,11 @@ resource "aws_subnet" "compute" {
 
   vpc_id = aws_vpc.main.id
   cidr_block = var.compute_subnets[count.index].ipv4_cidr
-  ipv6_cidr_block = var.compute_subnets[count.index].ipv6_cidr
+  enable_resource_name_dns_a_record_on_launch = var.compute_subnets[count.index].a_record_on_launch
+  ipv6_cidr_block = var.compute_subnets[count.index].ipv6_block != null ? cidrsubnet(aws_vpc.main.ipv6_cidr_block, var.compute_subnets[count.index].ipv6_block_size, var.compute_subnets[count.index].ipv6_block) : null
   ipv6_native = var.compute_subnets[count.index].ipv6_native
+  enable_dns64 = var.compute_subnets[count.index].enable_dns64
+  enable_resource_name_dns_aaaa_record_on_launch = var.compute_subnets[count.index].aaaa_record_on_launch
   availability_zone = var.compute_subnets[count.index].az
 
   tags = {
@@ -89,8 +105,11 @@ resource "aws_subnet" "other_subnets" {
 
   vpc_id = aws_vpc.main.id
   cidr_block = local.other_subnets[count.index].ipv4_cidr
-  ipv6_cidr_block = local.other_subnets[count.index].ipv6_cidr
+  enable_resource_name_dns_a_record_on_launch = local.other_subnets[count.index].a_record_on_launch
+  ipv6_cidr_block = local.other_subnets[count.index].ipv6_block != null ? cidrsubnet(aws_vpc.main.ipv6_cidr_block, local.other_subnets[count.index].ipv6_block_size, local.other_subnets[count.index].ipv6_block) : null
   ipv6_native = local.other_subnets[count.index].ipv6_native
+  enable_dns64 = local.other_subnets[count.index].enable_dns64
+  enable_resource_name_dns_aaaa_record_on_launch = local.other_subnets[count.index].aaaa_record_on_launch
   availability_zone = local.other_subnets[count.index].az
 
   tags = {
@@ -125,15 +144,19 @@ resource "aws_route" "public_routes_ipv4" {
 }
 
 resource "aws_route" "public_routes_ipv6" {
-  count = var.public && var.ipv6_cidr != null ? 1 : 0
+  count = var.public && var.ipv6_conf != null ? 1 : 0
 
   route_table_id            = aws_default_route_table.primary.id
   destination_ipv6_cidr_block    = "::/0"
   gateway_id = aws_internet_gateway.gw[0].id
+
+  depends_on = [
+    aws_vpc.main
+  ]
 }
 
 resource "aws_route_table" "internal" {
-  count = local.create_internal_rt ? length(local.nat_subnet_map) : 0
+  count = local.create_internal_rt ? max(length(local.nat_subnet_map), 1) : 0
   
   vpc_id = aws_vpc.main.id
 
@@ -202,7 +225,7 @@ resource "aws_route" "nat_gateways_ipv4" {
 }
 
 resource "aws_route" "nat_gateways_ipv6" {
-  count = local.create_internal_rt && var.ipv6_cidr != null ? length(local.nat_subnet_map) : 0
+  count = local.create_internal_rt && var.ipv6_conf != null ? length(local.nat_subnet_map) : 0
 
   route_table_id            = aws_route_table.internal[count.index].id
   destination_ipv6_cidr_block    = "::/0"

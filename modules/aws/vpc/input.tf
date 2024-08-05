@@ -11,14 +11,15 @@ variable "name" {
 ###########################################################################
 variable "ipv4_cidr" {
   type        = string
-  default     = null
   description = "IPV4 CIDR for the VPC"
 }
 
-variable "ipv6_cidr" {
-  type = string
+variable "ipv6_conf" {
+  type = object({
+    border_group = string
+  })
+  description = "Netmask length for a public ipv6 config. 44 to 60 in increments of 4"
   default = null
-  description = "IPV6 CIDR for the VPC"
 }
 
 variable "secondary_ipv4_cidrs" {
@@ -42,8 +43,12 @@ variable "instance_tenancy" {
 variable "ingress_subnets" {
   type = list(object({
     ipv4_cidr = optional(string, null)
-    ipv6_cidr = optional(string, null)
+    a_record_on_launch = optional(bool, false)
+    ipv6_block_size = optional(number, null)
+    ipv6_block = optional(number, null)
     ipv6_native = optional(bool, false)
+    aaaa_record_on_launch = optional(bool, false)
+    enable_dns64 = optional(bool, false)
     az = string
     nat = optional(bool, false)
   }))
@@ -54,8 +59,12 @@ variable "ingress_subnets" {
 variable "compute_subnets" {
   type = list(object({
     ipv4_cidr = optional(string, null)
-    ipv6_cidr = optional(string, null)
+    a_record_on_launch = optional(bool, false)
+    ipv6_block_size = optional(number, null)
+    ipv6_block = optional(number, null)
     ipv6_native = optional(bool, false)
+    aaaa_record_on_launch = optional(bool, false)
+    enable_dns64 = optional(bool, false)
     az = string
   }))
   description = "List of compute subnets to create for the vpc"
@@ -65,8 +74,12 @@ variable "compute_subnets" {
 variable "other_subnets" {
   type = map(list(object({
       ipv4_cidr = optional(string, null)
-      ipv6_cidr = optional(string, null)
+      a_record_on_launch = optional(bool, false)
+      ipv6_block_size = optional(number, null)
+      ipv6_block = optional(number, null)
       ipv6_native = optional(bool, false)
+    aaaa_record_on_launch = optional(bool, false)
+      enable_dns64 = optional(bool, false)
       az = string
     })))
   description = "List of other subnets to create for the vpc, like db subnets or endpoint subnets"
