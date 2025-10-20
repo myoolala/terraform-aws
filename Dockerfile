@@ -18,6 +18,6 @@ RUN echo "Updating base container" && \
 
 RUN tfenv install 1.7.5 && \
     tfenv use 1.7.5 && \
-    tgenv install 0.56.3 
+    tgenv install 0.81.1 
 
 WORKDIR /root/repo
