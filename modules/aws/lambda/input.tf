@@ -9,14 +9,22 @@ variable "function_name" {
   description = "Name for the new lambda function"
 }
 
+variable "file_path" {
+  type        = string
+  description = "Path to the zip file to deploy if one is available"
+  default     = null
+}
+
 variable "bucket" {
   type        = string
   description = "Name of the bucket to pull the code from"
+  default     = null
 }
 
 variable "key" {
   type        = string
   description = "S3 Key of the source zip file"
+  default     = null
 }
 
 variable "runtime" {
@@ -59,4 +67,13 @@ variable "permissions" {
   type        = map(any)
   description = "Additional permissions the lambda will need"
   default     = null
+}
+
+variable "vpc_config" {
+  type = object({
+    subnet_ids = list(string)
+    security_group_ids = list(string)
+  })
+  description = "VPC config for the lambda"
+  default = null
 }

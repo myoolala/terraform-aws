@@ -19,93 +19,93 @@ variable "ipv6_conf" {
     border_group = string
   })
   description = "Netmask length for a public ipv6 config. 44 to 60 in increments of 4"
-  default = null
+  default     = null
 }
 
 variable "secondary_ipv4_cidrs" {
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "Additional IPV4 CIDR's to add to the vpc"
 }
 
 variable "secondary_ipv6_cidrs" {
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "Additional IPV6 CIDR's to add to the vpc"
 }
 
 variable "instance_tenancy" {
-  type = string
+  type        = string
   description = "Desired Tenancy for the vpc"
-  default = "default"
+  default     = "default"
 }
 
 variable "ingress_subnets" {
   type = list(object({
-    ipv4_cidr = optional(string, null)
-    a_record_on_launch = optional(bool, false)
-    ipv6_block_size = optional(number, null)
-    ipv6_block = optional(number, null)
-    ipv6_native = optional(bool, false)
+    ipv4_cidr             = optional(string, null)
+    a_record_on_launch    = optional(bool, false)
+    ipv6_block_size       = optional(number, null)
+    ipv6_block            = optional(number, null)
+    ipv6_native           = optional(bool, false)
     aaaa_record_on_launch = optional(bool, false)
-    enable_dns64 = optional(bool, false)
-    az = string
-    nat = optional(bool, false)
+    enable_dns64          = optional(bool, false)
+    az                    = string
+    nat                   = optional(bool, false)
   }))
   description = "List of ingress subnets to create for the vpc. These CIDRs should be small"
-  default = []
+  default     = []
 }
 
 variable "compute_subnets" {
   type = list(object({
-    ipv4_cidr = optional(string, null)
-    a_record_on_launch = optional(bool, false)
-    ipv6_block_size = optional(number, null)
-    ipv6_block = optional(number, null)
-    ipv6_native = optional(bool, false)
+    ipv4_cidr             = optional(string, null)
+    a_record_on_launch    = optional(bool, false)
+    ipv6_block_size       = optional(number, null)
+    ipv6_block            = optional(number, null)
+    ipv6_native           = optional(bool, false)
     aaaa_record_on_launch = optional(bool, false)
-    enable_dns64 = optional(bool, false)
-    az = string
+    enable_dns64          = optional(bool, false)
+    az                    = string
   }))
   description = "List of compute subnets to create for the vpc"
-  default = []
+  default     = []
 }
 
 variable "other_subnets" {
   type = map(list(object({
-      ipv4_cidr = optional(string, null)
-      a_record_on_launch = optional(bool, false)
-      ipv6_block_size = optional(number, null)
-      ipv6_block = optional(number, null)
-      ipv6_native = optional(bool, false)
+    ipv4_cidr             = optional(string, null)
+    a_record_on_launch    = optional(bool, false)
+    ipv6_block_size       = optional(number, null)
+    ipv6_block            = optional(number, null)
+    ipv6_native           = optional(bool, false)
     aaaa_record_on_launch = optional(bool, false)
-      enable_dns64 = optional(bool, false)
-      az = string
-    })))
+    enable_dns64          = optional(bool, false)
+    az                    = string
+  })))
   description = "List of other subnets to create for the vpc, like db subnets or endpoint subnets"
-  default = {}
+  default     = {}
 }
 
 variable "public" {
-  type = bool
+  type        = bool
   description = "Make the vpc accessible from the internet"
-  default = false
+  default     = false
 }
 
 variable "nat_azs" {
-  type = list(string)
+  type        = list(string)
   description = "List of AZ's to deploy nat gateways to if the vpc is public and has compute subnets"
-  default = []
+  default     = []
 }
 
 variable "enable_dns_support" {
-  type = bool
+  type        = bool
   description = "Enabled DNS support in the vpc"
-  default = true
+  default     = true
 }
 
 variable "enable_dns_hostnames" {
-  type = bool
+  type        = bool
   description = "Enabled DNS hostnames in the vpc"
-  default = true
+  default     = true
 }

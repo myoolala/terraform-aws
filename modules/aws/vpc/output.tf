@@ -37,3 +37,7 @@ output "nat_az_map" {
 output "ingress_subnet_ids" {
   value = aws_subnet.ingress[*].id
 }
+
+output "compute_subnet_ids" {
+  value = aws_subnet.compute[*].id
+}

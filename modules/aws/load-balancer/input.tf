@@ -81,7 +81,7 @@ variable "port_mappings" {
     }), {})
   }))
   description = "Port listener mappings with associated the load balancer"
-  default = []
+  default     = []
 }
 
 variable "tags" {

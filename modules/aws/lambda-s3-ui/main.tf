@@ -1,31 +1,39 @@
-locals {
-    yes = "no"
+########################################################################
+############                   zip bundle                   ############
+########################################################################
+
+# Archive a single file.
+
+resource "archive_file" "source" {
+  type        = "zip"
+  source_file = "${path.module}/lambda-function/index.js"
+  output_path = "${path.module}/output/lambda.zip"
 }
 
-resource "aws_s3_bucket" "code_bucket" {
-  count = var.make_new_bucket ? 1 : 0
+########################################################################
+############                  Main lambda                   ############
+########################################################################
 
-  bucket = var.bucket_name
+module "sg" {
+  source = "../security-group"
+  count = var.sg_config.create ? 1 : 0
+
+  name = "${var.lambda_name}-lambda-access"
+  vpc_id = var.sg_config.vpc_id
 }
 
-resource "aws_s3_bucket_acl" "code_bucket" {
-  count  = var.make_new_bucket ? 1 : 0
-  bucket = aws_s3_bucket.code_bucket[0].id
-
-  acl = "private"
-}
+########################################################################
+############                  Main lambda                   ############
+########################################################################
 
 module "lambda" {
   source = "../lambda"
 
-  environment_vars = var.environment_vars
-  secrets          = var.secrets
-  permissions      = var.permissions
-  bucket           = var.bucket_name
-  key              = var.bucket_key
-  function_name    = var.lambda_name
+  function_name = var.lambda_name
+  file_path     = archive_file.source.output_path
 
-  depends_on = [
-    aws_s3_bucket.code_bucket
-  ]
+  vpc_config = {
+    subnet_ids                  = var.vpc_config.subnets
+    security_group_ids          = concat(var.vpc_config.sg_ids, module.sg[*].id)
+  }
 }

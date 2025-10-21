@@ -1,9 +1,3 @@
-variable "make_new_bucket" {
-  type        = bool
-  description = "Is a new bucket to store the code desired"
-  default     = false
-}
-
 variable "environment_vars" {
   type        = map(string)
   default     = null
@@ -13,11 +7,13 @@ variable "environment_vars" {
 variable "bucket_name" {
   type        = string
   description = "Name of the bucket the code will be stored in"
+  default     = null
 }
 
 variable "bucket_key" {
   type        = string
   description = "S3 URI for the lambda zip file"
+  default     = null
 }
 
 variable "lambda_name" {
@@ -25,52 +21,30 @@ variable "lambda_name" {
   description = "Name for the lambda function"
 }
 
-variable "secrets" {
+variable "sg_config" {
   type = object({
-    arns     = list(string)
-    kms_keys = list(string)
+    create = bool
+    vpc_id = string
+    ingress_cidrs = optional(list(string), [])
+    ingress_sgs = optional(list(string), [])
+    egress_cidrs = optional(list(string), [])
+    egress_sgs = optional(list(string), [])
   })
-  description = "List of secrets and associated kms keys the lambda will need access to"
+  description = "Existing security group to use if there is one"
   default = {
-    arns     = []
-    kms_keys = []
+    create = false
+    vpc_id = null
   }
 }
 
-variable "permissions" {
-  type        = map(any)
-  description = "Additional permissions the lambda will need"
-  default     = null
-}
-
-variable "path_prefix" {
-  type        = string
-  description = "Common path shared between all endpoints"
-}
-
-variable "protocol" {
-  type        = string
-  description = "Protocol for the lambda api"
-  default     = "HTTP"
-}
-
-variable "lb" {
+variable "vpc_config" {
   type = object({
-    vpc_id        = optional(string, null)
-    subnets       = optional(list(string), null)
-    # ingress_groups 
-    ingress_cidrs = optional(list(string), ["0.0.0.0/0"])
-    # egress_groups
-    egress_cidrs = optional(list(string), ["0.0.0.0/0"])
-    internal            = optional(bool, false)
-    deletion_protection = optional(bool, false)
-    port_mappings = list(object({
-      listen_port  = number
-      sg_protocol  = optional(string, "tcp")
-      lb_protocol  = optional(string, "HTTPS")
-      forward_port = number
-      tg_protocol  = optional(string, "HTTPS")
-      cert         = optional(string, null)
-    }))
+    subnets = list(string)
+    sg_ids = optional(list(string), [])
   })
+  description = "VPC config to use"
+  default = {
+    subnets = null
+    sg_ids = null
+  }
 }
