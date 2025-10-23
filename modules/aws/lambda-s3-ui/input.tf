@@ -21,6 +21,20 @@ variable "lambda_name" {
   description = "Name for the lambda function"
 }
 
+variable "config" {
+  type = object({
+    bucket = string,
+    prefix = string,
+    log_level = optional(string, "INFO"),
+    gz_assets = optional(bool, false)
+    cache_mapping = optional(map(any), null)
+    server_cache_ms = optional(number, 5 * 60 * 1000)
+    enable_spa = optional(bool, false)
+    default_file_path = optional(string, "index.html")
+    default_response_headers = optional(map(any), null)
+  })
+}
+
 variable "sg_config" {
   type = object({
     create = bool
@@ -47,4 +61,9 @@ variable "vpc_config" {
     subnets = null
     sg_ids = null
   }
+}
+
+variable "alb_tg_arn" {
+  type = string
+  description = "ARN of the ALB Target group that forward requests to the lambda"
 }

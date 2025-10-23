@@ -7,6 +7,7 @@ resource "aws_lambda_function" "function" {
 
   runtime = var.runtime
   handler = var.handler
+  timeout = var.timeout
 
   role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
 
@@ -56,6 +57,28 @@ resource "aws_iam_role" "lambda_exec" {
         }
       ]
     })
+  }
+
+  dynamic "inline_policy" {
+    for_each = var.vpc_config != null ? [1] : []
+
+    content {
+      name = "VpcAccess"
+      policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Action   = [
+              "ec2:CreateNetworkInterface",
+              "ec2:DescribeNetworkInterfaces",
+              "ec2:DeleteNetworkInterface"
+            ]
+            Effect   = "Allow"
+            Resource = "*"
+          }
+        ]
+      })
+    }
   }
 
   dynamic "inline_policy" {

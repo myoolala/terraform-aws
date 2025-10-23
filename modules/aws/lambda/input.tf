@@ -30,7 +30,7 @@ variable "key" {
 variable "runtime" {
   type        = string
   description = "Runtime to use for the lambda"
-  default     = "nodejs16.x"
+  default     = "nodejs20.x"
 }
 
 variable "handler" {
@@ -76,4 +76,10 @@ variable "vpc_config" {
   })
   description = "VPC config for the lambda"
   default = null
+}
+
+variable "timeout" {
+  type = number
+  description = "Lambda timeout allowed"
+  default = 3
 }
