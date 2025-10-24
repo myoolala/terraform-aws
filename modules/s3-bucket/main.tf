@@ -15,9 +15,24 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "main" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      kms_master_key_id = var.encryption.key
+      sse_algorithm     = var.encryption.algorithm
     }
+    bucket_key_enabled = var.encryption.bucket_key_enabled
   }
+}
+
+###########################################################################
+##########                     Encryption                        ##########
+###########################################################################
+
+resource "aws_s3_bucket_public_access_block" "main" {
+    bucket = aws_s3_bucket.main.id
+
+    block_public_acls       = var.public_access_block.block_public_acls
+    block_public_policy     = var.public_access_block.block_public_policy
+    ignore_public_acls      = var.public_access_block.ignore_public_acls
+    restrict_public_buckets = var.public_access_block.restrict_public_buckets
 }
 
 ###########################################################################

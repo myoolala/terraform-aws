@@ -1,5 +1,5 @@
 module "vpc" {
-    source = "../../../modules/aws/vpc"
+    source = "../../../modules/vpc"
 
     name ="public-vpc-test"
     public = true
@@ -19,7 +19,7 @@ module "vpc" {
 }
 
 module "load_balancer" {
-    source = "../../../modules/aws/load-balancer"
+    source = "../../../modules/load-balancer"
 
     name = "load-balancer-ipv4"
     vpc_id = module.vpc.vpc_id

@@ -1,10 +1,10 @@
 terraform {
-  source = "${get_terragrunt_dir()}/../../..//modules/power-tools"
+  source = "${get_terragrunt_dir()}/../../..//tests/code-pipeline/base-pipeline-no-config/terraform"
 }
 
 locals {
     region = "us-east-1"
-    environment = "tf-dev"
+    environment = "tf-integration-test"
 }
 
 # Indicate the input values to use for the variables of the module.
