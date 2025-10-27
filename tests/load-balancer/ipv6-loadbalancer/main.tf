@@ -1,9 +1,9 @@
 module "vpc" {
-    source = "../../../modules/vpc"
+  source = "../../../modules/vpc"
 
-    
-  name ="public-only-vpc-test"
-  public = true
+
+  name      = "public-only-vpc-test"
+  public    = true
   ipv4_cidr = "172.31.0.0/16"
   ipv6_conf = {
     border_group = "us-east-1"
@@ -15,30 +15,30 @@ module "vpc" {
   # So either 0, 0 to 15, or 0 to 255
   # Bear in mind, you can mix these guys up, see the public-ingress-only-ipv6-with-varying-ipv6-size for an example
   ingress_subnets = [{
-    ipv4_cidr = "172.31.0.0/27"
-    az = "us-east-1a"
-    ipv6_only = true
+    ipv4_cidr       = "172.31.0.0/27"
+    az              = "us-east-1a"
+    ipv6_only       = true
     ipv6_block_size = 8
-    ipv6_block = 0
-  },
-  {
-    ipv4_cidr = "172.31.0.32/27"
-    az = "us-east-1b"
-    ipv6_only = true
-    ipv6_block_size = 8
-    ipv6_block = 1
+    ipv6_block      = 0
+    },
+    {
+      ipv4_cidr       = "172.31.0.32/27"
+      az              = "us-east-1b"
+      ipv6_only       = true
+      ipv6_block_size = 8
+      ipv6_block      = 1
   }]
 }
 
 module "load_balancer" {
-    source = "../../../modules/load-balancer"
+  source = "../../../modules/load-balancer"
 
-    name = "load-balancer-ipv4"
-    vpc_id = module.vpc.vpc_id
-    subnets = module.vpc.ingress_subnet_ids
+  name    = "load-balancer-ipv4"
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.ingress_subnet_ids
 }
 
 
 provider "aws" {
-  region              = "us-east-1"
+  region = "us-east-1"
 }

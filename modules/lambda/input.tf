@@ -71,15 +71,15 @@ variable "permissions" {
 
 variable "vpc_config" {
   type = object({
-    subnet_ids = list(string)
+    subnet_ids         = list(string)
     security_group_ids = list(string)
   })
   description = "VPC config for the lambda"
-  default = null
+  default     = null
 }
 
 variable "timeout" {
-  type = number
+  type        = number
   description = "Lambda timeout allowed"
-  default = 3
+  default     = 3
 }

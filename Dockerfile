@@ -39,6 +39,7 @@ RUN <<EOF
     echo 'alias tgp="terragrunt plan"' >> ~/.bashrc
     echo 'alias tga="terragrunt apply"' >> ~/.bashrc
     echo 'alias tgd="terragrunt destroy"' >> ~/.bashrc
+    echo 'alias ll="ls -alh"' >> ~/.bashrc
 EOF
 
 WORKDIR /root/repo

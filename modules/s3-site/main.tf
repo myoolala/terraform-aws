@@ -103,7 +103,7 @@ resource "aws_cloudfront_distribution" "distro" {
       cached_methods   = ["GET", "HEAD", "OPTIONS"]
       target_origin_id = ordered_cache_behavior.value.id
 
-      forwarded_values { 
+      forwarded_values {
         query_string = true
         # Define explicit headers, since API Gateway doesn't work otherwise
         # Aka host mismatch leads to 403's

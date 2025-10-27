@@ -21,7 +21,7 @@ resource "aws_lambda_function" "function" {
   dynamic "vpc_config" {
     for_each = var.vpc_config != null ? [1] : []
     content {
-      subnet_ids = var.vpc_config.subnet_ids
+      subnet_ids         = var.vpc_config.subnet_ids
       security_group_ids = var.vpc_config.security_group_ids
     }
   }
@@ -68,7 +68,7 @@ resource "aws_iam_role" "lambda_exec" {
         Version = "2012-10-17"
         Statement = [
           {
-            Action   = [
+            Action = [
               "ec2:CreateNetworkInterface",
               "ec2:DescribeNetworkInterfaces",
               "ec2:DeleteNetworkInterface"
