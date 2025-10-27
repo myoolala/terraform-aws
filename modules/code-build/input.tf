@@ -14,13 +14,19 @@ variable "build_timeout" {
   default     = 5
 }
 
+variable "buildspec_path" {
+  type        = string
+  description = "Path in the file system to the buildspec file"
+  default     = null
+}
+
 variable "environment" {
   type = object({
     compute_type                = optional(string, "BUILD_GENERAL1_SMALL")
     image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:4.0")
     type                        = optional(string, "LINUX_CONTAINER")
     image_pull_credentials_type = optional(string, "CODEBUILD")
-    environment_variables       = map(string)
+    environment_variables       = optional(map(string), {})
   })
   description = "Environment config for the project"
   default     = {}

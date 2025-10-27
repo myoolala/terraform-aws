@@ -13,6 +13,26 @@ variable "stages" {
     output_artifacts = optional(list(string), [])
     version          = string
     configuration    = map(any)
+    codebuild_project = optional(object({
+      create         = bool
+      name           = optional(string, null)
+      description    = optional(string, null)
+      buildspec_path = optional(string, null)
+      environment = optional(object({
+        compute_type                = optional(string, "BUILD_GENERAL1_SMALL")
+        image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:4.0")
+        type                        = optional(string, "LINUX_CONTAINER")
+        image_pull_credentials_type = optional(string, "CODEBUILD")
+        environment_variables       = optional(map(string), {})
+      }), {})
+      vpc_config = optional(object({
+        vpc_id     = string
+        subnet_ids = list(string)
+        sg_ids     = list(string)
+      }), null)
+      }), {
+      create = false
+    })
   }))
   description = "List of stages to build and use"
 }

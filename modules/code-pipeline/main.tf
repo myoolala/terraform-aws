@@ -115,6 +115,25 @@ locals {
 }
 
 ####################################################################################################
+####################                             The Builds                     ####################
+####################################################################################################
+
+locals {
+  builds_to_build = [for i, v in var.stages : v.codebuild_project if v.codebuild_project.create == true]
+}
+
+module "build_projects" {
+  count  = length(local.builds_to_build)
+  source = "../code-build"
+
+  name           = local.builds_to_build[count.index].name
+  description    = local.builds_to_build[count.index].description
+  buildspec_path = local.builds_to_build[count.index].buildspec_path
+  environment    = local.builds_to_build[count.index].environment
+  vpc_config     = local.builds_to_build[count.index].vpc_config
+}
+
+####################################################################################################
 ####################                            The Pipeline                    ####################
 ####################################################################################################
 
@@ -155,6 +174,7 @@ resource "aws_codepipeline" "this" {
 
   depends_on = [
     module.artifacts,
-    aws_iam_role.codepipeline_role
+    aws_iam_role.codepipeline_role,
+    module.build_projects
   ]
 }

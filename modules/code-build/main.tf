@@ -150,17 +150,22 @@ resource "aws_codebuild_project" "main" {
     # }
   }
 
+  # source {
+  #   type            = "GITHUB"
+  #   location        = "https://github.com/mitchellh/packer.git"
+  #   git_clone_depth = 1
+
+  #   git_submodules_config {
+  #     fetch_submodules = true
+  #   }
+  # }
+
+  # source_version = "master"
+
   source {
-    type            = "GITHUB"
-    location        = "https://github.com/mitchellh/packer.git"
-    git_clone_depth = 1
-
-    git_submodules_config {
-      fetch_submodules = true
-    }
+    type      = "NO_SOURCE"
+    buildspec = var.buildspec_path
   }
-
-  source_version = "master"
 
   dynamic "vpc_config" {
     for_each = var.vpc_config != null ? [1] : []
