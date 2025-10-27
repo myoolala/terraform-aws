@@ -126,58 +126,56 @@ resource "aws_codebuild_project" "main" {
   build_timeout = var.build_timeout
   service_role  = aws_iam_role.main.arn
 
+  # @TODO? idk if this is something I care about yet
   artifacts {
     type = "NO_ARTIFACTS"
   }
 
-  #   cache {
-  #     type     = "S3"
-  #     location = aws_s3_bucket.main.bucket
-  #   }
+  cache {
+    type     = var.cache.type
+    location = var.cache.location
+    modes    = var.cache.modes
+  }
 
   environment {
     compute_type                = var.environment.compute_type
     image                       = var.environment.image
     type                        = var.environment.type
     image_pull_credentials_type = var.environment.image_pull_credentials_type
+    privileged_mode             = var.environment.privileged_mode
 
     dynamic "environment_variable" {
       for_each = var.environment.environment_variables
 
       content {
-        name  = environment_variable.key
-        value = environment_variable.value
+        name  = environment_variable.value.name
+        value = environment_variable.value.value
+        type  = environment_variable.value.type
       }
     }
   }
 
   logs_config {
-    cloudwatch_logs {
-      group_name = var.name
-      #   stream_name = "log-stream"
+    dynamic "cloudwatch_logs" {
+      for_each = var.cw_log_config != null ? [1] : []
+
+      content {
+        group_name  = var.cw_log_config.group_name != null ? var.cw_log_config.group_name : "codebuild-${var.name}"
+        stream_name = var.cw_log_config.stream_name
+      }
     }
 
-    # s3_logs {
-    #   status   = "ENABLED"
-    #   location = "${aws_s3_bucket.main.id}/build-log"
-    # }
+    s3_logs {
+      status              = var.s3_log_config.status
+      location            = var.s3_log_config.location
+      encryption_disabled = !var.s3_log_config.encrypted
+      bucket_owner_access = var.s3_log_config.bucket_owner_access
+    }
   }
 
-  # source {
-  #   type            = "GITHUB"
-  #   location        = "https://github.com/mitchellh/packer.git"
-  #   git_clone_depth = 1
-
-  #   git_submodules_config {
-  #     fetch_submodules = true
-  #   }
-  # }
-
-  # source_version = "master"
-
   source {
-    type      = "NO_SOURCE"
-    buildspec = var.buildspec_path
+    type      = var.source_config.type
+    buildspec = var.source_config.buildspec
   }
 
   dynamic "vpc_config" {

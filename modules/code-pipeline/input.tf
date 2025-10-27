@@ -23,7 +23,12 @@ variable "stages" {
         image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:4.0")
         type                        = optional(string, "LINUX_CONTAINER")
         image_pull_credentials_type = optional(string, "CODEBUILD")
-        environment_variables       = optional(map(string), {})
+        privileged_mode             = optional(bool, false)
+        environment_variables = optional(list(object({
+          name  = string
+          value = string
+          type  = optional(string, null)
+        })), [])
       }), {})
       vpc_config = optional(object({
         vpc_id      = string
@@ -32,6 +37,13 @@ variable "stages" {
         sg_ids      = optional(list(string), [])
         create_sg   = optional(bool, false)
       }), null)
+      cache = optional(object({
+        type     = string
+        location = optional(string, null)
+        modes    = optional(list(string), null)
+        }), {
+        type = "NO_CACHE"
+      })
       }), {
       create = false
     })

@@ -126,11 +126,15 @@ module "build_projects" {
   count  = length(local.builds_to_build)
   source = "../code-build"
 
-  name           = local.builds_to_build[count.index].name
-  description    = local.builds_to_build[count.index].description
-  buildspec_path = local.builds_to_build[count.index].buildspec_path
-  environment    = local.builds_to_build[count.index].environment
-  vpc_config     = local.builds_to_build[count.index].vpc_config
+  name        = local.builds_to_build[count.index].name
+  description = local.builds_to_build[count.index].description
+  cache       = local.builds_to_build[count.index].cache
+  source_config = {
+    type      = "NO_SOURCE"
+    buildspec = local.builds_to_build[count.index].buildspec_path
+  }
+  environment = local.builds_to_build[count.index].environment
+  vpc_config  = local.builds_to_build[count.index].vpc_config
 }
 
 ####################################################################################################

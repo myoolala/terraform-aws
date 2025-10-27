@@ -37,9 +37,10 @@ module "base_pipeline" {
       name           = "test2"
       description    = "Example build project"
       buildspec_path = file("${path.module}/buildspecs/buildspec.yml")
-      environment_variables = {
-        fu = "bar"
-      }
+      environment_variables = [{
+        name  = "fu"
+        value = "bar"
+      }]
       vpc_config = null
     }
 

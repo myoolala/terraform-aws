@@ -14,10 +14,12 @@ variable "build_timeout" {
   default     = 5
 }
 
-variable "buildspec_path" {
-  type        = string
-  description = "Path in the file system to the buildspec file"
-  default     = null
+variable "source_config" {
+  type = object({
+    type      = string
+    buildspec = optional(string, null)
+  })
+  description = "Source config as per the AWS provider documentation"
 }
 
 variable "environment" {
@@ -26,7 +28,12 @@ variable "environment" {
     image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:4.0")
     type                        = optional(string, "LINUX_CONTAINER")
     image_pull_credentials_type = optional(string, "CODEBUILD")
-    environment_variables       = optional(map(string), {})
+    privileged_mode             = optional(bool, false)
+    environment_variables = optional(list(object({
+      name  = string
+      value = string
+      type  = optional(string, null)
+    })), [])
   })
   description = "Environment config for the project"
   default     = {}
@@ -48,5 +55,40 @@ variable "default_tags" {
   type        = map(string)
   description = "Default tags to apply to resources"
   default = {
+  }
+}
+
+variable "cw_log_config" {
+  type = object({
+    group_name  = optional(string, null)
+    stream_name = optional(string, null)
+  })
+  description = "CloudWatch logging config"
+  default = {
+  }
+}
+
+variable "s3_log_config" {
+  type = object({
+    status              = string
+    location            = optional(string, null)
+    encrypted           = optional(bool, true)
+    bucket_owner_access = optional(string, null)
+  })
+  description = "S3 logging config"
+  default = {
+    status = "DISABLED"
+  }
+}
+
+variable "cache" {
+  type = object({
+    type     = string
+    location = optional(string, null)
+    modes    = optional(list(string), null)
+  })
+  description = "Cache field for the codebuild project"
+  default = {
+    type = "NO_CACHE"
   }
 }
