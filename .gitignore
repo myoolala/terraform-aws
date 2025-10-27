@@ -10,3 +10,5 @@ devops/terragrunt-test
 devops/scripts-test
 
 devops/terragrunt/
+
+output
