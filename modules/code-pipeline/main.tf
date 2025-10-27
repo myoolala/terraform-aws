@@ -79,11 +79,15 @@ data "aws_iam_policy_document" "codepipeline_policy" {
         }
     }
 
-#   statement {
-#     effect    = "Allow"
-#     actions   = ["codestar-connections:UseConnection"]
-#     resources = [aws_codestarconnections_connection.example.arn]
-#   }
+    dynamic "statement" {
+        for_each = length(var.stages) > 0 && var.stages[0].provider == "CodeStarSourceConnection" ? [1] : []
+
+        content {
+            effect    = "Allow"
+            actions   = ["codestar-connections:UseConnection"]
+            resources = [var.stages[0].configuration.ConnectionArn]
+        }
+    }
 
     # Change this? namely set this after the pipeline is made?
   statement {
