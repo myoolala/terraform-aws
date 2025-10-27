@@ -34,9 +34,11 @@ variable "environment" {
 
 variable "vpc_config" {
   type = object({
-    vpc_id     = string
-    subnet_ids = list(string)
-    sg_ids     = list(string)
+    vpc_id      = string
+    subnet_ids  = list(string)
+    subnet_arns = list(string)
+    sg_ids      = optional(list(string), [])
+    create_sg   = optional(bool, false)
   })
   description = "VPC config to host the system in if there is one"
   default     = null

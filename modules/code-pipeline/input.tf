@@ -26,9 +26,11 @@ variable "stages" {
         environment_variables       = optional(map(string), {})
       }), {})
       vpc_config = optional(object({
-        vpc_id     = string
-        subnet_ids = list(string)
-        sg_ids     = list(string)
+        vpc_id      = string
+        subnet_ids  = list(string)
+        subnet_arns = list(string)
+        sg_ids      = optional(list(string), [])
+        create_sg   = optional(bool, false)
       }), null)
       }), {
       create = false

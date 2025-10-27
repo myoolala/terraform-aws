@@ -1,4 +1,20 @@
 ####################################################################################################
+####################                            Networks                       ####################
+####################################################################################################
+
+module "sg" {
+  count  = var.vpc_config.create_sg ? 1 : 0
+  source = "../security-group"
+
+  name   = "${var.name}-access"
+  vpc_id = var.vpc_config.vpc_id
+}
+
+locals {
+  sg_ids = concat(var.vpc_config.sg_ids, module.sg[*].id)
+}
+
+####################################################################################################
 ####################                           Permissions                      ####################
 ####################################################################################################
 
@@ -16,7 +32,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "main" {
-  name               = "main"
+  name               = "codebuild-${var.name}"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -65,10 +81,7 @@ data "aws_iam_policy_document" "main" {
         test     = "StringEquals"
         variable = "ec2:Subnet"
 
-        values = [
-          aws_subnet.main1.arn,
-          aws_subnet.main2.arn,
-        ]
+        values = var.vpc_config.subnet_arns
       }
 
       condition {
@@ -173,7 +186,7 @@ resource "aws_codebuild_project" "main" {
     content {
       vpc_id             = var.vpc_config.vpc_id
       subnets            = var.vpc_config.subnet_ids
-      security_group_ids = var.vpc_config.sg_ids
+      security_group_ids = local.sg_ids
     }
   }
 

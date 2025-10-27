@@ -38,6 +38,14 @@ output "ingress_subnet_ids" {
   value = aws_subnet.ingress[*].id
 }
 
+output "ingress_subnet_arns" {
+  value = aws_subnet.ingress[*].arn
+}
+
 output "compute_subnet_ids" {
   value = aws_subnet.compute[*].id
+}
+
+output "compute_subnet_arns" {
+  value = aws_subnet.compute[*].arn
 }

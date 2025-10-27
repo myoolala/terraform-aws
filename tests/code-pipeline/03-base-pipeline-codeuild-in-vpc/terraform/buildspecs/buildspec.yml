@@ -1,0 +1,17 @@
+version: 0.2
+env:
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    on-failure: ABORT
+    commands:
+      - echo "Starting install"
+  build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting build"
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting post build"

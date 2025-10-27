@@ -1,5 +1,5 @@
 terraform {
-  source = "${get_terragrunt_dir()}/../../..//tests/code-pipeline/base-pipeline-no-config/terraform"
+  source = "${get_terragrunt_dir()}/../../..//tests/code-pipeline/02-base-pipeline-base-codebuild/terraform"
 }
 
 locals {
