@@ -66,20 +66,24 @@ resource "aws_lb" "ingress" {
 resource "aws_lb_target_group" "forwarder" {
   count = length(var.port_mappings)
 
-  name        = "${var.name}-${var.port_mappings[count.index].forward_port}"
+  name        = "${var.name}-${count.index}"
   port        = var.port_mappings[count.index].forward_port
   protocol    = var.port_mappings[count.index].tg_protocol
   vpc_id      = var.vpc_id
   target_type = var.port_mappings[count.index].target_type
 
-  health_check {
-    enabled             = var.port_mappings[count.index].health_check.enabled
-    matcher             = var.port_mappings[count.index].health_check.matcher
-    interval            = var.port_mappings[count.index].health_check.interval
-    healthy_threshold   = var.port_mappings[count.index].health_check.healthy_threshold
-    unhealthy_threshold = var.port_mappings[count.index].health_check.unhealthy_threshold
-    protocol            = var.port_mappings[count.index].health_check.service_protocol
-    path                = var.port_mappings[count.index].health_check.path
+  dynamic "health_check" {
+    for_each = var.port_mappings[count.index].target_type != "lambda" ? [1] : []
+
+    content {
+      enabled             = var.port_mappings[count.index].health_check.enabled
+      matcher             = var.port_mappings[count.index].health_check.matcher
+      interval            = var.port_mappings[count.index].health_check.interval
+      healthy_threshold   = var.port_mappings[count.index].health_check.healthy_threshold
+      unhealthy_threshold = var.port_mappings[count.index].health_check.unhealthy_threshold
+      protocol            = var.port_mappings[count.index].health_check.service_protocol
+      path                = var.port_mappings[count.index].health_check.path
+    }
   }
 }
 

@@ -1,11 +1,13 @@
 resource "aws_lambda_function" "function" {
   function_name = var.function_name
 
+  filename  = var.file_path
   s3_bucket = var.bucket
   s3_key    = var.key
 
   runtime = var.runtime
   handler = var.handler
+  timeout = var.timeout
 
   role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
 
@@ -13,6 +15,14 @@ resource "aws_lambda_function" "function" {
     for_each = var.environment_vars != null ? [1] : []
     content {
       variables = var.environment_vars
+    }
+  }
+
+  dynamic "vpc_config" {
+    for_each = var.vpc_config != null ? [1] : []
+    content {
+      subnet_ids         = var.vpc_config.subnet_ids
+      security_group_ids = var.vpc_config.security_group_ids
     }
   }
 
@@ -47,6 +57,28 @@ resource "aws_iam_role" "lambda_exec" {
         }
       ]
     })
+  }
+
+  dynamic "inline_policy" {
+    for_each = var.vpc_config != null ? [1] : []
+
+    content {
+      name = "VpcAccess"
+      policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Action = [
+              "ec2:CreateNetworkInterface",
+              "ec2:DescribeNetworkInterfaces",
+              "ec2:DeleteNetworkInterface"
+            ]
+            Effect   = "Allow"
+            Resource = "*"
+          }
+        ]
+      })
+    }
   }
 
   dynamic "inline_policy" {

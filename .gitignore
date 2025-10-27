@@ -3,6 +3,9 @@
 .terraform-cache
 .terragrunt.lock.hcl
 .terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+.terraform
 devops/terragrunt-test
 devops/scripts-test
 
