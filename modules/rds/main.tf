@@ -23,15 +23,40 @@ resource "random_uuid" "snapshot" {
 locals {
   final_snapshot_id = var.final_snapshot_id != null ? "${local.final_snapshot_prefix}-${random_uuid.snapshot.result}" : null
   create_new_sg     = length(var.vpc_config.egress_cidr_whitelist) + length(var.vpc_config.egress_sg_whitelist) + length(var.vpc_config.ingress_cidr_whitelist) + length(var.vpc_config.ingress_sg_whitelist) > 0
+
+  new_sg_ingress_rules = concat([{
+    from_port   = var.port
+    to_port     = var.port
+    protocol    = "tcp"
+    cidr_blocks = var.vpc_config.ingress_cidr_whitelist
+    }], [for i, v in var.vpc_config.ingress_sg_whitelist : {
+    from_port                = var.port
+    to_port                  = var.port
+    protocol                 = "tcp"
+    source_security_group_id = v
+  }])
+
+  new_sg_egress_rules = concat([{
+    from_port   = var.port
+    to_port     = var.port
+    protocol    = "tcp"
+    cidr_blocks = var.vpc_config.egress_cidr_whitelist
+    }], [for i, v in var.vpc_config.egress_sg_whitelist : {
+    from_port                = var.port
+    to_port                  = var.port
+    protocol                 = "tcp"
+    source_security_group_id = v
+  }])
 }
 
 module "rds_sg" {
   count  = local.create_new_sg ? 1 : 0
   source = "../security-group"
 
-  name   = "${var.name}-rds-access"
-  vpc_id = var.vpc_config.vpc_id
-  # Do the rest of the whitelists
+  name      = "${var.name}-rds-access"
+  vpc_id    = var.vpc_config.vpc_id
+  ingresses = local.new_sg_ingress_rules
+  egresses  = local.new_sg_egress_rules
 }
 
 resource "aws_db_subnet_group" "subnets" {
@@ -82,16 +107,14 @@ resource "aws_db_instance" "db" {
   multi_az                    = var.multi_az
   auto_minor_version_upgrade  = var.auto_minor_version_upgrade
   allow_major_version_upgrade = var.allow_major_version_upgrade
-  skip_final_snapshot         = false
+  skip_final_snapshot         = var.final_snapshot_id != null
   network_type                = var.network_type
   storage_type                = var.storage_type
   final_snapshot_identifier   = local.final_snapshot_id
   db_subnet_group_name        = aws_db_subnet_group.subnets.name
   publicly_accessible         = var.publicly_accessible
   backup_retention_period     = var.backup_retention_period
-  vpc_security_group_ids = [
-    aws_security_group.rds.id
-  ]
+  vpc_security_group_ids      = concat(var.vpc_config.sg_ids, module.rds_sg[*].id)
 
   lifecycle {
     ignore_changes = [
@@ -101,7 +124,7 @@ resource "aws_db_instance" "db" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "low_storage_space" {
-  count = 0
+  count = var.free_storage_space_threshold != null ? 1 : 0
 
   alarm_name          = "${var.name}-low-storage-space"
   comparison_operator = "LessThanOrEqualToThreshold"

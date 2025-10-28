@@ -7,6 +7,7 @@ variable "vpc_config" {
   type = object({
     vpc_id                 = string
     subnets                = list(string)
+    sg_ids                 = optional(list(string), [])
     ingress_cidr_whitelist = optional(list(string), [])
     ingress_sg_whitelist   = optional(list(string), [])
     egress_cidr_whitelist  = optional(list(string), [])

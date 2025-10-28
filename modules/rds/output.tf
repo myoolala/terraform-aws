@@ -7,7 +7,7 @@ output "admin_default_password" {
 }
 
 output "sg_id" {
-  value = aws_security_group.rds.id
+  value = local.create_new_sg ? module.rds_sg[0].id : null
 }
 
 output "connection_url" {
@@ -31,5 +31,5 @@ output "instance_id" {
 }
 
 output "low_storage_alam_arn" {
-  value = null # aws_cloudwatch_metric_alarm.low_storage_space.arn
+  value = var.free_storage_space_threshold != null ? aws_cloudwatch_metric_alarm.low_storage_space[0].arn : null
 }
