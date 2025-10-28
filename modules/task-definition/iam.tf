@@ -14,15 +14,6 @@ data "aws_caller_identity" "current" {}
 resource "aws_iam_role" "task_role" {
   name = "${var.service_name}-task"
 
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  ]
-
-  inline_policy {
-    name   = "AppPermissions"
-    policy = var.permissions
-  }
-
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
   assume_role_policy = jsonencode({
@@ -48,36 +39,30 @@ resource "aws_iam_role" "task_role" {
   })
 }
 
+resource "aws_iam_role_policy" "task_role" {
+  # count = var.role == null ? 1 : 0
+
+  role   = aws_iam_role.task_role.name
+  name = "AppPermissions"
+  policy = var.permissions
+}
+
+locals {
+  task_role_managed_polciies = [
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "task_role_managed_polciies" {
+  count      = length(local.task_role_managed_polciies)
+
+  role       = aws_iam_role.task_role.arn
+  policy_arn = local.task_role_managed_polciies[count.index]
+}
+
 
 resource "aws_iam_role" "task_execution_role" {
   name = "${var.service_name}-task-exec"
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  ]
-
-  inline_policy {
-    name = "SecretsAccess"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = concat([
-        {
-          Action   = "secretsmanager:GetSecretValue"
-          Effect   = "Allow"
-          Sid      = ""
-          Resource = [for secret in var.secrets : secret.valueFrom]
-        }], length(var.secrets_keys) == 0 ? [] : [
-        {
-          Action = [
-            "kms:Decrypt"
-          ]
-          Effect   = "Allow"
-          Sid      = ""
-          Resource = var.secrets_keys
-        }
-      ])
-    })
-  }
 
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
@@ -97,4 +82,56 @@ resource "aws_iam_role" "task_execution_role" {
 
   tags = merge(var.tags, {
   })
+}
+
+data "aws_iam_policy_document" "task_exec_secret_perms" {
+  count = length(var.secrets) + lenth(var.secrets_keys) > 0 ? 1 : 0
+
+  dynamic "statement" {
+    for_each = length(var.secrets) > 0 ? 1 : 0
+
+    content {
+      sid = "SecretsAccess"
+
+      actions   = ["secretsmanager:GetSecretValue"]
+      effect   = "Allow"
+      resources = [for secret in var.secrets : secret.valueFrom]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = length(var.secrets_keys) > 0 ? 1 : 0
+
+    content {
+      sid = "SecretsKmsAccess"
+
+      actions = [
+        "kms:Decrypt"
+      ]
+      effect   = "Allow"
+      resources = var.secrets_keys
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "task_exec_secret_perms" {
+  # count = var.role == null ? 1 : 0
+
+  role   = aws_iam_role.task_execution_role
+  name = "SecretsPerms"
+  policy = data.aws_iam_policy_document.task_exec_secret_perms.json
+}
+
+locals {
+  exec_role_managed_polciies = [
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "exec_role_managed_polciies" {
+  count      = length(local.exec_role_managed_polciies)
+
+  role       = aws_iam_role.task_execution_role.arn
+  policy_arn = local.exec_role_managed_polciies[count.index]
 }
