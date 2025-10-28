@@ -43,7 +43,7 @@ resource "aws_iam_role_policy" "task_role" {
   # count = var.role == null ? 1 : 0
 
   role   = aws_iam_role.task_role.name
-  name = "AppPermissions"
+  name   = "AppPermissions"
   policy = var.permissions
 }
 
@@ -54,7 +54,7 @@ locals {
 }
 
 resource "aws_iam_role_policy_attachment" "task_role_managed_polciies" {
-  count      = length(local.task_role_managed_polciies)
+  count = length(local.task_role_managed_polciies)
 
   role       = aws_iam_role.task_role.arn
   policy_arn = local.task_role_managed_polciies[count.index]
@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "task_exec_secret_perms" {
       sid = "SecretsAccess"
 
       actions   = ["secretsmanager:GetSecretValue"]
-      effect   = "Allow"
+      effect    = "Allow"
       resources = [for secret in var.secrets : secret.valueFrom]
     }
   }
@@ -108,7 +108,7 @@ data "aws_iam_policy_document" "task_exec_secret_perms" {
       actions = [
         "kms:Decrypt"
       ]
-      effect   = "Allow"
+      effect    = "Allow"
       resources = var.secrets_keys
     }
   }
@@ -118,7 +118,7 @@ resource "aws_iam_role_policy" "task_exec_secret_perms" {
   # count = var.role == null ? 1 : 0
 
   role   = aws_iam_role.task_execution_role
-  name = "SecretsPerms"
+  name   = "SecretsPerms"
   policy = data.aws_iam_policy_document.task_exec_secret_perms.json
 }
 
@@ -130,7 +130,7 @@ locals {
 }
 
 resource "aws_iam_role_policy_attachment" "exec_role_managed_polciies" {
-  count      = length(local.exec_role_managed_polciies)
+  count = length(local.exec_role_managed_polciies)
 
   role       = aws_iam_role.task_execution_role.arn
   policy_arn = local.exec_role_managed_polciies[count.index]

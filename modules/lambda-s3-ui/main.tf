@@ -46,7 +46,7 @@ module "lambda" {
 
   timeout = 10
 
-  vpc_config = {
+  vpc_config = var.vpc_config == null ? null : {
     subnet_ids         = var.vpc_config.subnets
     security_group_ids = concat(var.vpc_config.sg_ids, module.sg[*].id)
   }
