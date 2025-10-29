@@ -3,7 +3,97 @@
 ########################################################################
 
 # Archive a single file.
-
+##
+# My word this resource nearly sent me to mars while sitting on a splinter causing wooden bidet with nyan cat playing in the background in a highpass filter
+# Basically, when the archive resource starts as a local module and then gets migrated to github, the state gets absolutely hosed by the nyc fire department
+# causing a flurry of errors
+# In my case, for a single resource I got this error trace and that was after fixing the archive file source which had to be removed from state and rebuild just to do a plan
+# 11:40:06.469 STDOUT tofu: module.ui_lambda.archive_file.source: Creating...
+# 11:40:06.977 STDERR tofu: ╷
+# 11:40:06.977 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.977 STDERR tofu: │ 
+# 11:40:06.977 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.977 STDERR tofu: │ for module.ui_lambda.archive_file.source.id. All values must be known after
+# 11:40:06.978 STDERR tofu: │ apply, so this is always a bug in the provider and should be reported in
+# 11:40:06.978 STDERR tofu: │ the provider's own repository. OpenTofu will still save the other known
+# 11:40:06.978 STDERR tofu: │ object values in the state.
+# 11:40:06.978 STDERR tofu: ╵
+# 11:40:06.978 STDERR tofu: ╷
+# 11:40:06.978 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.978 STDERR tofu: │ 
+# 11:40:06.978 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.978 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_base64sha256. All values
+# 11:40:06.978 STDERR tofu: │ must be known after apply, so this is always a bug in the provider and
+# 11:40:06.978 STDERR tofu: │ should be reported in the provider's own repository. OpenTofu will still
+# 11:40:06.978 STDERR tofu: │ save the other known object values in the state.
+# 11:40:06.978 STDERR tofu: ╵
+# 11:40:06.979 STDERR tofu: ╷
+# 11:40:06.979 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.979 STDERR tofu: │ 
+# 11:40:06.979 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.979 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_base64sha512. All values
+# 11:40:06.979 STDERR tofu: │ must be known after apply, so this is always a bug in the provider and
+# 11:40:06.979 STDERR tofu: │ should be reported in the provider's own repository. OpenTofu will still
+# 11:40:06.979 STDERR tofu: │ save the other known object values in the state.
+# 11:40:06.979 STDERR tofu: ╵
+# 11:40:06.979 STDERR tofu: ╷
+# 11:40:06.979 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.979 STDERR tofu: │ 
+# 11:40:06.979 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.979 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_md5. All values must be
+# 11:40:06.979 STDERR tofu: │ known after apply, so this is always a bug in the provider and should be
+# 11:40:06.979 STDERR tofu: │ reported in the provider's own repository. OpenTofu will still save the
+# 11:40:06.980 STDERR tofu: │ other known object values in the state.
+# 11:40:06.980 STDERR tofu: ╵
+# 11:40:06.980 STDERR tofu: ╷
+# 11:40:06.980 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.980 STDERR tofu: │ 
+# 11:40:06.980 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.980 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_sha. All values must be
+# 11:40:06.980 STDERR tofu: │ known after apply, so this is always a bug in the provider and should be
+# 11:40:06.980 STDERR tofu: │ reported in the provider's own repository. OpenTofu will still save the
+# 11:40:06.980 STDERR tofu: │ other known object values in the state.
+# 11:40:06.980 STDERR tofu: ╵
+# 11:40:06.980 STDERR tofu: ╷
+# 11:40:06.980 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.980 STDERR tofu: │ 
+# 11:40:06.980 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.980 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_sha256. All values must be
+# 11:40:06.980 STDERR tofu: │ known after apply, so this is always a bug in the provider and should be
+# 11:40:06.980 STDERR tofu: │ reported in the provider's own repository. OpenTofu will still save the
+# 11:40:06.980 STDERR tofu: │ other known object values in the state.
+# 11:40:06.980 STDERR tofu: ╵
+# 11:40:06.980 STDERR tofu: ╷
+# 11:40:06.980 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.981 STDERR tofu: │ 
+# 11:40:06.981 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.981 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_sha512. All values must be
+# 11:40:06.981 STDERR tofu: │ known after apply, so this is always a bug in the provider and should be
+# 11:40:06.981 STDERR tofu: │ reported in the provider's own repository. OpenTofu will still save the
+# 11:40:06.981 STDERR tofu: │ other known object values in the state.
+# 11:40:06.981 STDERR tofu: ╵
+# 11:40:06.981 STDERR tofu: ╷
+# 11:40:06.981 STDERR tofu: │ Error: Provider returned invalid result object after apply
+# 11:40:06.981 STDERR tofu: │ 
+# 11:40:06.981 STDERR tofu: │ After the apply operation, the provider still indicated an unknown value
+# 11:40:06.981 STDERR tofu: │ for module.ui_lambda.archive_file.source.output_size. All values must be
+# 11:40:06.981 STDERR tofu: │ known after apply, so this is always a bug in the provider and should be
+# 11:40:06.982 STDERR tofu: │ reported in the provider's own repository. OpenTofu will still save the
+# 11:40:06.982 STDERR tofu: │ other known object values in the state.
+# 11:40:06.982 STDERR tofu: ╵
+# 11:40:06.982 STDERR tofu: ╷
+# 11:40:06.982 STDERR tofu: │ Error: Archive creation error
+# 11:40:06.982 STDERR tofu: │ 
+# 11:40:06.982 STDERR tofu: │   with module.ui_lambda.archive_file.source,
+# 11:40:06.982 STDERR tofu: │   on .terraform/modules/ui_lambda/modules/lambda-s3-ui/main.tf line 7, in resource "archive_file" "source":
+# 11:40:06.982 STDERR tofu: │    7: resource "archive_file" "source" {
+# 11:40:06.982 STDERR tofu: │ 
+# 11:40:06.982 STDERR tofu: │ error creating archive: error archiving file: could not archive missing
+# 11:40:06.982 STDERR tofu: │ file: ./lambda-function/index.js
+# 11:40:06.983 STDERR tofu: ╵
+# 11:40:07.049 ERROR  tofu invocation failed in ./.terragrunt-cache/V7x_XiXulF03_jd60ffo7fyoj4c/_iaOS91LrFtS14ZDx_I4Z15xvR0/terraform/modules/web-app
+# 11:40:07.049 ERROR  error occurred:
+## 
 resource "archive_file" "source" {
   type        = "zip"
   source_file = abspath("${path.module}/lambda-function/index.js")
