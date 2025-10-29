@@ -86,7 +86,9 @@ resource "aws_db_parameter_group" "params" {
   }
 }
 
-# Make a lambda to turn off rds 
+# @TODO: adds a password rotation function
+
+# @TODO: Make a lambda to turn off rds for cost savings
 resource "aws_db_instance" "db" {
   identifier                  = var.name
   allocated_storage           = var.allocated_storage
