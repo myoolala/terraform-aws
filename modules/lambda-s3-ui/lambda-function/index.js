@@ -156,10 +156,8 @@ exports.handler = async event => {
     }
 
     const {file, body} = cacheObject;
-    logger.debug('Returining file contents', file);
-
-    // Return the response with the default headers merged and overwritten by the content headers
-    return mapS3Object(body, {
+    logger.debug('Returining file contents', body.length, body);
+    const toReturn = mapS3Object(body, {
         ...DEFAULT_RESPONSE_HEADERS,
         ...{
             // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
@@ -170,4 +168,9 @@ exports.handler = async event => {
             'cache-control': getCacheHeader(file.ContentType)
         }
     }, 200, true)
+
+    logger.debug('Returning response', toReturn);
+
+    // Return the response with the default headers merged and overwritten by the content headers
+    return toReturn
 }
