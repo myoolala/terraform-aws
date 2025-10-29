@@ -231,3 +231,13 @@ resource "aws_route" "nat_gateways_ipv6" {
   destination_ipv6_cidr_block = "::/0"
   nat_gateway_id              = aws_nat_gateway.private_internet_access[count.index].id
 }
+
+data "aws_region" "current" {}
+
+resource "aws_vpc_endpoint" "gateway_endpoints" {
+  count = length(var.gateway_endpoints)
+
+  vpc_id       = aws_vpc.main.id
+  service_name = "com.amazonaws.${data.aws_region.current.region}.${var.gateway_endpoints[count.index]}"
+  route_table_ids = concat([aws_default_route_table.primary.id], aws_route_table.internal[*].id)
+}
