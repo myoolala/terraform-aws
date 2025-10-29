@@ -147,7 +147,7 @@ exports.handler = async event => {
         [err, cacheObject] = await w(getAndCache(PREFIX + '/' + DEFAULT_FILE_PATH, bustCache));
 
         if (err) {
-            logger.error('Failed to find the default file');
+            logger.error('Failed to find the default file', err);
             return fourOhFour;
         }
     }
