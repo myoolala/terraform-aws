@@ -1,7 +1,7 @@
 'use-strict';
 
 const BUCKET = process.env['BUCKET'],
-      PREFIX = process.env['PREFIX'].replace(/\/+$/, ''),
+      PREFIX = process.env['PREFIX'].replace(/\/+$/, '').replace(/^\//, ''),
       LOG_LEVEL = process.env['LOG_LEVEL'],
       GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
       ONE_WEEK = 60 * 60 * 24 * 7,
@@ -64,19 +64,6 @@ const getCacheHeader = type =>  CACHE_MAPPING[type];
  */
 const s3Get = async options => client.send(new GetObjectCommand(options));
 
-/**
- * @summary - Converts a file stream to a buffer
- * @param {stream} stream - File stream to convert to a string
- * @returns {string} - Stream converted to a string
- */
-const streamToBuffer = async (stream) => {
-    const chunks = [];
-    for await (const chunk of stream) {
-        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-    }
-    return Buffer.concat(chunks);
-}
-
 // Keep this in global scope as that will allow it to be shared across invocation
 const cache = {};
 
@@ -96,9 +83,10 @@ const getAndCache = async (Key, override = false) => {
         }
     }
 
-    logger.debug('Returning the S3 version');
-    let file = await s3Get({BUCKET, Key});
-    let bodyBuffer = await streamToBuffer(file.body);
+    logger.debug(`Returning the S3 version of ${BUCKET} and ${Key}`);
+    let file = await s3Get({Bucket: BUCKET, Key});
+    logger.debug('Got file object:', file)
+    let bodyBuffer = await file.Body.transformToString();
     let body = bodyBuffer.toString('base64');
 
     // Update the cache with the new data
