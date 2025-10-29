@@ -26,9 +26,9 @@ locals {
     index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
   ]
   # @TODO integrate this
-  other_subnet_route_mapping = [for i, v in local.other_subnets :
-    index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
-  ]
+  # other_subnet_route_mapping = [for i, v in local.other_subnets :
+  #   index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
+  # ]
   create_internal_rt = var.public && length(var.compute_subnets) + length(local.other_subnets) > 0
 }
 

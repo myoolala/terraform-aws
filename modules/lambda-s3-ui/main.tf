@@ -167,16 +167,17 @@ module "lambda" {
   function_name = var.lambda_name
   file_path     = archive_file.source.output_path
 
-  environment_vars = {
-    "BUCKET"                   = var.config.bucket,
-    "PREFIX"                   = var.config.prefix,
-    "LOG_LEVEL"                = var.config.log_level,
-    "GZ_ASSETS"                = var.config.gz_assets ? "true" : "false",
-    "CACHE_MAPPING"            = var.config.cache_mapping != null ? jsonencode(var.config.cache_mapping) : "",
-    "SERVER_CACHE_MS"          = var.config.server_cache_ms,
-    "SPA_ENABLED"              = var.config.enable_spa ? "enabled" : "disabled",
-    "DEFAULT_FILE_PATH"        = var.config.default_file_path,
-    "DEFAULT_RESPONSE_HEADERS" = jsonencode(var.config.default_response_headers),
+  environment_vars = {for i, v in {
+      "BUCKET"                   = var.config.bucket,
+      "PREFIX"                   = var.config.prefix,
+      "LOG_LEVEL"                = var.config.log_level,
+      "GZ_ASSETS"                = var.config.gz_assets ? "true" : "false",
+      "CACHE_MAPPING"            = var.config.cache_mapping != null ? jsonencode(var.config.cache_mapping) : null,
+      "SERVER_CACHE_MS"          = var.config.server_cache_ms,
+      "SPA_ENABLED"              = var.config.enable_spa ? "enabled" : "disabled",
+      "DEFAULT_FILE_PATH"        = var.config.default_file_path,
+      "DEFAULT_RESPONSE_HEADERS" = var.config.default_response_headers != null ? jsonencode(var.config.default_response_headers) : null,
+    }: i => v if v != null
   }
 
   # I would like to do a data policy document but that confuses open tofu since it can't ***know*** if there is something to do or not
