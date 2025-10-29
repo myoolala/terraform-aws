@@ -6,8 +6,8 @@
 
 resource "archive_file" "source" {
   type        = "zip"
-  source_file = abspath("./lambda-function/index.js")
-  output_path = abspath("./output/lambda.zip")
+  source_file = "./lambda-function/index.js"
+  output_path = "./output/lambda.zip"
 }
 
 ########################################################################
