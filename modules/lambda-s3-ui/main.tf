@@ -104,6 +104,20 @@ resource "archive_file" "source" {
 ############                Security Group                  ############
 ########################################################################
 
+locals {
+  new_sg_egress_rules = concat(length(var.sg_config.egress_cidrs) == 0 ? [] : [{
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = var.sg_config.egress_cidrs
+    }], [for i, v in var.sg_config.egress_sgs : {
+      from_port                = 443
+      to_port                  = 443
+      protocol                 = "tcp"
+      source_security_group_id = v
+  }])
+}
+
 module "sg" {
   source = "../security-group"
   count  = var.sg_config.create ? 1 : 0

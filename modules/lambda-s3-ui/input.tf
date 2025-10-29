@@ -46,9 +46,9 @@ variable "sg_config" {
   type = object({
     create        = bool
     vpc_id        = string
-    ingress_cidrs = optional(list(string), [])
-    ingress_sgs   = optional(list(string), [])
-    egress_cidrs  = optional(list(string), [])
+    # Default is fine if the lambda is internal but sends responses over the internet,
+    # narrow it down when using VPC endpoints
+    egress_cidrs  = optional(list(string), ["0.0.0.0/0"])
     egress_sgs    = optional(list(string), [])
   })
   description = "Existing security group to use if there is one"
