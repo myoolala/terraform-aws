@@ -101,7 +101,7 @@ resource "archive_file" "source" {
 }
 
 ########################################################################
-############                  Main lambda                   ############
+############                Security Group                  ############
 ########################################################################
 
 module "sg" {
@@ -110,6 +110,37 @@ module "sg" {
 
   name   = "${var.lambda_name}-lambda-access"
   vpc_id = var.sg_config.vpc_id
+}
+
+########################################################################
+############                  Permissions                   ############
+########################################################################
+
+data "aws_iam_policy_document" "perms" {
+  statement {
+    sid = "S3UiFileAccess"
+
+    effect = "Allow"
+    actions = [
+          "s3:GetObject",
+          "s3:GetObject*"
+    ]
+    resources = ["arn:aws:s3:::${var.config.bucket}/${var.config.prefix}/*"]
+  }
+
+  dynamic "statement" {
+    for_each = length(var.config.storage_kms_keys) > 0 ? [1] : []
+
+    content {
+      sid = "S3UiFileAccess"
+
+      effect = "Allow"
+      actions = [
+            "kms:Decrypt"
+      ]
+      resources = [var.config.storage_kms_keys]
+    }
+  }
 }
 
 ########################################################################
@@ -127,13 +158,37 @@ module "lambda" {
     "PREFIX"                   = var.config.prefix,
     "LOG_LEVEL"                = var.config.log_level,
     "GZ_ASSETS"                = var.config.gz_assets ? "true" : "false",
-    "CACHE_MAPPING"            = jsonencode(var.config.cache_mapping),
+    "CACHE_MAPPING"            = var.config.cache_mapping != null ? jsonencode(var.config.cache_mapping) : "",
     "SERVER_CACHE_MS"          = var.config.server_cache_ms,
     "SPA_ENABLED"              = var.config.enable_spa ? "enabled" : "disabled",
     "DEFAULT_FILE_PATH"        = var.config.default_file_path,
     "DEFAULT_RESPONSE_HEADERS" = jsonencode(var.config.default_response_headers),
   }
 
+  # I would like to do a data policy document but that confuses open tofu since it can't ***know*** if there is something to do or not
+  permissions = jsonencode({
+    Version = "2012-10-17"
+    Statement = concat([
+      {
+        Sid = "UiFileAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:GetObject*"
+        ]
+        Resource = ["arn:aws:s3:::${var.config.bucket}/${var.config.prefix}/*"]
+      }
+    ], length(var.config.storage_kms_keys) == 0 ?  [] : [
+      {
+        Sid = "UiKmsKeyAccess"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [var.config.storage_kms_keys]
+      }
+    ])
+  })
   timeout = 10
 
   vpc_config = var.vpc_config == null ? null : {

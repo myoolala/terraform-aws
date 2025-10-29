@@ -12,6 +12,7 @@ variable "config" {
   type = object({
     bucket                   = string,
     prefix                   = string,
+    storage_kms_keys         = optional(list(string), [])
     log_level                = optional(string, "INFO"),
     gz_assets                = optional(bool, false)
     cache_mapping            = optional(map(any), null)

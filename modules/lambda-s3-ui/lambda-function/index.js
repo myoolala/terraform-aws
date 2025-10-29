@@ -6,18 +6,6 @@ const BUCKET = process.env['BUCKET'],
       GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
       ONE_WEEK = 60 * 60 * 24 * 7,
       FOUR_WEEKS = 60 * 60 * 24 * 7 * 4,
-      CACHE_MAPPING = process.env['CACHE_MAPPING'] && JSON.parse(process.env['CACHE_MAPPING']) ? JSON.parse(process.env['CACHE_MAPPING']) : {
-          'font/ttf': FOUR_WEEKS,
-          'image/png': FOUR_WEEKS,
-          'text/plain': FOUR_WEEKS,
-          'font/woff2': FOUR_WEEKS,
-          'applications/pdf': FOUR_WEEKS,
-          'text/css': ONE_WEEK,
-          'text/javascript': ONE_WEEK,
-          'application/json': ONE_WEEK,
-          'application/javascript': ONE_WEEK,
-          'application/manifest+json': ONE_WEEK,
-      },
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
       SPA_ENABLED = process.env['SPA_ENABLED'] === 'enabled',
       DEFAULT_FILE_PATH = process.env['DEFAULT_FILE_PATH'],
@@ -33,6 +21,34 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3'),
       logger = LOG_LEVELS.reduce((agg, level) => {
           return agg[level.toLocaleLowerCase()] = function() {log(level, arguments)}, agg;
       }, {error: function() {console.error(...arguments)}});
+
+let CACHE_MAPPING = process.env['CACHE_MAPPING'];
+if (CACHE_MAPPING && CACHE_MAPPING.length) {
+    try {
+        CACHE_MAPPING = JSON.parse(process.env['CACHE_MAPPING']);
+        // Any field that is not a string will cause the ALB to through a 502
+        for (let fileType of Object.keys(CACHE_MAPPING)) {
+            CACHE_MAPPING[fileType] = `${CACHE_MAPPING[fileType]}`;
+        }
+    } catch (err) {
+        logger.error('Unable to parse provided cache mapping', err);
+        CACHE_MAPPING = undefined;
+    }
+}
+ 
+// The default cache mapping
+CACHE_MAPPING = CACHE_MAPPING || {
+    'font/ttf': `${FOUR_WEEKS}`,
+    'image/png': `${FOUR_WEEKS}`,
+    'text/plain': `${FOUR_WEEKS}`,
+    'font/woff2': `${FOUR_WEEKS}`,
+    'applications/pdf': `${FOUR_WEEKS}`,
+    'text/css': `${ONE_WEEK}`,
+    'text/javascript': `${ONE_WEEK}`,
+    'application/json': `${ONE_WEEK}`,
+    'application/javascript': `${ONE_WEEK}`,
+    'application/manifest+json': `${ONE_WEEK}`,
+}
 
 /**
  * @summary - Converts input data into an ALB response object
@@ -64,20 +80,7 @@ const getCacheHeader = type =>  CACHE_MAPPING[type];
  */
 const s3Get = async options => client.send(new GetObjectCommand(options));
 
-/**
- * @summary - Converts a file stream to a buffer
- * @param {stream} stream - File stream to convert to a string
- * @returns {string} - Stream converted to a string
- */
-const streamToBuffer = async (stream) => {
-    const chunks = [];
-    for await (const chunk of stream) {
-        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-    }
-    return Buffer.concat(chunks);
-}
-
-// Keep this in global scope as that will allow it to be shared across invocation
+// Keep this in global scope as that will allow it to be shared across invocations within the runtime
 const cache = {};
 
 /**
@@ -97,6 +100,7 @@ const getAndCache = async (Key, override = false) => {
     }
 
     logger.debug(`Returning the S3 version of ${BUCKET} and ${Key}`);
+    // @TODO: add logic to cache 404 requests
     let file = await s3Get({Bucket: BUCKET, Key});
     logger.debug('Got file object:', file)
     let bodyBuffer = await file.Body.transformToString();
@@ -141,6 +145,7 @@ exports.handler = async event => {
     let [err, cacheObject] = await w(getAndCache(Key, bustCache));
 
     // If there is an error, assume it was a 404 for a single page request
+    // @TODO: this needs to look and check if there is a file extension, don't do the index.html for that
     if (err) {
         logger.debug('Failed to find the file:', Key);
         if (!SPA_ENABLED)

@@ -64,8 +64,8 @@ variable "secrets" {
 }
 
 variable "permissions" {
-  type        = map(any)
-  description = "Additional permissions the lambda will need"
+  type        = string
+  description = "Additional permissions the lambda will need json encoded"
   default     = null
 }
 

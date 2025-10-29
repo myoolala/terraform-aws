@@ -89,6 +89,13 @@ resource "aws_iam_role_policy" "perms" {
   policy = data.aws_iam_policy_document.perms[0].json
 }
 
+resource "aws_iam_role_policy" "provided_perms" {
+  count = var.role == null && var.permissions != null ? 1 : 0
+
+  role   = aws_iam_role.lambda_exec[0].name
+  policy = var.permissions
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   count      = var.role != null ? 1 : 0
   role       = aws_iam_role.lambda_exec[0].name
