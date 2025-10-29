@@ -1,7 +1,7 @@
 'use-strict';
 
 const BUCKET = process.env['BUCKET'],
-      PREFIX = process.env['PREFIX'],
+      PREFIX = process.env['PREFIX'].replace(/\/+$/, ''),
       LOG_LEVEL = process.env['LOG_LEVEL'],
       GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
       ONE_WEEK = 60 * 60 * 24 * 7,
@@ -124,7 +124,7 @@ exports.handler = async event => {
     }
 
     // If the key is the root, assume it's index.html
-    let Key = PREFIX.trim('/') + (event.path == '/' ? '/index.html' : event.path);
+    let Key = PREFIX + (event.path == '/' ? '/index.html' : event.path);
 
     // Since browsers love gzip, added support for that especially since the max response payload
     // size at the of 1MB
@@ -144,7 +144,7 @@ exports.handler = async event => {
             return fourOhFour;
         
         logger.debug('SPA mode enabled, returning default file');
-        [err, cacheObject] = await w(getAndCache(PREFIX.trim('/') + '/' + DEFAULT_FILE_PATH, bustCache));
+        [err, cacheObject] = await w(getAndCache(PREFIX + '/' + DEFAULT_FILE_PATH, bustCache));
 
         if (err) {
             logger.error('Failed to find the default file');
