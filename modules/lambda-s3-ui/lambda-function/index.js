@@ -6,7 +6,7 @@ const BUCKET = process.env['BUCKET'],
       GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
       ONE_WEEK = 60 * 60 * 24 * 7,
       FOUR_WEEKS = 60 * 60 * 24 * 7 * 4,
-      CACHE_MAPPING = process.env['CACHE_MAPPING'] ? JSON.parse(process.env['CACHE_MAPPING']) : {
+      CACHE_MAPPING = process.env['CACHE_MAPPING'] && JSON.parse(process.env['CACHE_MAPPING']) ? JSON.parse(process.env['CACHE_MAPPING']) : {
           'font/ttf': FOUR_WEEKS,
           'image/png': FOUR_WEEKS,
           'text/plain': FOUR_WEEKS,
@@ -64,6 +64,19 @@ const getCacheHeader = type =>  CACHE_MAPPING[type];
  */
 const s3Get = async options => client.send(new GetObjectCommand(options));
 
+/**
+ * @summary - Converts a file stream to a buffer
+ * @param {stream} stream - File stream to convert to a string
+ * @returns {string} - Stream converted to a string
+ */
+const streamToBuffer = async (stream) => {
+    const chunks = [];
+    for await (const chunk of stream) {
+        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+    }
+    return Buffer.concat(chunks);
+}
+
 // Keep this in global scope as that will allow it to be shared across invocation
 const cache = {};
 
@@ -87,7 +100,9 @@ const getAndCache = async (Key, override = false) => {
     let file = await s3Get({Bucket: BUCKET, Key});
     logger.debug('Got file object:', file)
     let bodyBuffer = await file.Body.transformToString();
-    let body = bodyBuffer.toString('base64');
+    logger.debug('Received body', bodyBuffer)
+    let body = Buffer.from(bodyBuffer).toString('base64');
+    logger.debug('Converted body to base64', body);
 
     // Update the cache with the new data
     cache[Key] = {
@@ -141,7 +156,7 @@ exports.handler = async event => {
     }
 
     const {file, body} = cacheObject;
-    logger.debug(file);
+    logger.debug('Returining file contents', file);
 
     // Return the response with the default headers merged and overwritten by the content headers
     return mapS3Object(body, {
