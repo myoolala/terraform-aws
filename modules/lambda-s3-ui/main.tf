@@ -191,7 +191,7 @@ module "lambda" {
           "s3:GetObject",
           "s3:GetObject*"
         ]
-        Resource = ["arn:aws:s3:::${var.config.bucket}/${var.config.prefix}/*"]
+        Resource = ["arn:aws:s3:::${var.config.bucket}/${trim(var.config.prefix, "/")}/*"]
       }
     ], length(var.config.storage_kms_keys) == 0 ?  [] : [
       {
