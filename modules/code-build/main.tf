@@ -11,7 +11,8 @@ module "sg" {
 }
 
 locals {
-  sg_ids = concat(var.vpc_config.sg_ids, module.sg[*].id)
+  provided_sgs = var.vpc_config != null ? var.vpc_config.sg_ids : []
+  sg_ids = concat(local.provided_sgs, module.sg[*].id)
 }
 
 ####################################################################################################
