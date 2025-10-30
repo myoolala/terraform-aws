@@ -3,7 +3,7 @@
 ####################################################################################################
 
 module "sg" {
-  count  = var.vpc_config.create_sg ? 1 : 0
+  count  = var.vpc_config != null && var.vpc_config.create_sg ? 1 : 0
   source = "../security-group"
 
   name   = "${var.name}-access"
