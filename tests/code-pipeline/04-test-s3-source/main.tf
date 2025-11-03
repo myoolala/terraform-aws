@@ -17,21 +17,6 @@ output "source_bucket" {
   value = module.source_bucket.id
 }
 
-data "aws_iam_policy_document" "source_perms" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "s3:*"
-    ]
-
-    resources = [
-      module.source_bucket.arn,
-      "${module.source_bucket.arn}/*"
-    ]
-  }
-}
-
 data "aws_kms_key" "default_s3_key" {
   key_id = "alias/aws/s3"
 }
@@ -50,8 +35,10 @@ module "base_pipeline" {
       Action = "s3:*"
       Effect = "Allow"
       Resource = [
-      module.source_bucket.arn,
-      "${module.source_bucket.arn}/*"
+        # @TODO: fix this to not be star resources
+        "*"
+      # module.source_bucket.arn,
+      # "${module.source_bucket.arn}/*"
       ]
       }
     ]

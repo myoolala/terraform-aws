@@ -18,7 +18,7 @@ phases:
     commands:
       - echo "Finished the build"
       - mkdir build
-      - cp index.hmtl build/
+      - cp index.html build/
 artifacts:
   files:
     - 'build/*'

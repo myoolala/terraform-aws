@@ -10,9 +10,9 @@ phases:
     on-failure: ABORT
     commands:
       - echo "Starting build"
-      - cat index.html
+      - ls -alh build
+      - cat build/index.html
   post_build:
     on-failure: ABORT
     commands:
       - echo "Finished the build"
-  name: builds/$CODEBUILD_BUILD_NUMBER/build-artifacts
