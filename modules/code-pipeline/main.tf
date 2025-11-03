@@ -110,6 +110,13 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
   policy = data.aws_iam_policy_document.codepipeline_policy[0].json
 }
 
+resource "aws_iam_role_policy" "supplied" {
+  count = var.iam_role == null && var.permissions != null ? 1 : 0
+
+  role   = aws_iam_role.codepipeline_role[0].id
+  policy = var.permissions
+}
+
 locals {
   pipeline_role = var.iam_role != null ? var.iam_role : aws_iam_role.codepipeline_role[0].arn
 }
@@ -130,11 +137,21 @@ module "build_projects" {
   description = local.builds_to_build[count.index].description
   cache       = local.builds_to_build[count.index].cache
   source_config = {
-    type      = "NO_SOURCE"
+    type      = "CODEPIPELINE"
     buildspec = local.builds_to_build[count.index].buildspec_path
   }
   environment = local.builds_to_build[count.index].environment
   vpc_config  = local.builds_to_build[count.index].vpc_config
+  permissions  = local.builds_to_build[count.index].permissions
+  artifact_store = {
+    type = "CODEPIPELINE"
+    location = local.artifacts_bucket
+    location_arn = local.artifacts_bucket_arn
+    kms_key = local.artifacts_bucket_kms_key
+  }
+  # artifact_store = {
+  #   type = "CODEPIPELINE"
+  # }
 }
 
 ####################################################################################################

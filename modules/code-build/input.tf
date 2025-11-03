@@ -92,3 +92,22 @@ variable "cache" {
     type = "NO_CACHE"
   }
 }
+
+variable "permissions" {
+  type = string
+  description = "Optional json string of permissions to add to the role"
+  default = null
+}
+
+variable "artifact_store" {
+  type = object({
+    type = string
+    location = optional(string, null)
+    location_arn = optional(string, null)
+    kms_key = optional(string, null)
+  })
+  description = "Artififact store to use for the codebuild project"
+  default = {
+    type = "NO_ARTIFACTS"
+  }
+}

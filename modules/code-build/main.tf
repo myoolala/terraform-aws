@@ -93,14 +93,22 @@ data "aws_iam_policy_document" "main" {
     }
   }
 
-  #   statement {
-  #     effect  = "Allow"
-  #     actions = ["s3:*"]
-  #     resources = [
-  #       aws_s3_bucket.main.arn,
-  #       "${aws_s3_bucket.main.arn}/*",
-  #     ]
-  #   }
+  dynamic "statement" {
+    for_each = var.artifact_store.location != null ? [1] : []
+
+    content {
+      effect  = "Allow"
+      actions = [
+        "s3:Get*",
+        "s3:Delete*",
+        "s3:Put*",
+      ]
+      resources = [
+        var.artifact_store.location_arn,
+        "${var.artifact_store.location_arn}/*",
+      ]
+    }
+  }
 
   #   statement {
   #     effect = "Allow"
@@ -117,6 +125,13 @@ resource "aws_iam_role_policy" "main" {
   policy = data.aws_iam_policy_document.main.json
 }
 
+resource "aws_iam_role_policy" "supplied" {
+  count = var.permissions != null ? 1 : 0
+
+  role   = aws_iam_role.main.name
+  policy = var.permissions
+}
+
 ####################################################################################################
 ####################                               Main                         ####################
 ####################################################################################################
@@ -129,7 +144,8 @@ resource "aws_codebuild_project" "main" {
 
   # @TODO? idk if this is something I care about yet
   artifacts {
-    type = "NO_ARTIFACTS"
+    type = var.artifact_store.type
+    location = var.artifact_store.location
   }
 
   cache {

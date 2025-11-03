@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    on-failure: ABORT
+    commands:
+      - echo "Starting install"
+      - npm install aws-sdk
+  build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting build"
+      - ls -alh
+      - cat index.html
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo "Finished the build"
+      - mkdir build
+      - cp index.hmtl build/
+artifacts:
+  files:
+    - 'build/*'
+  name: builds/$CODEBUILD_BUILD_NUMBER/build-artifacts
