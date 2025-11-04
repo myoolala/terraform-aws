@@ -12,7 +12,7 @@ module "sg" {
 
 locals {
   provided_sgs = var.vpc_config != null ? var.vpc_config.sg_ids : []
-  sg_ids = concat(local.provided_sgs, module.sg[*].id)
+  sg_ids       = concat(local.provided_sgs, module.sg[*].id)
 }
 
 ####################################################################################################
@@ -97,7 +97,7 @@ data "aws_iam_policy_document" "main" {
     for_each = var.artifact_store.location != null ? [1] : []
 
     content {
-      effect  = "Allow"
+      effect = "Allow"
       actions = [
         "s3:Get*",
         "s3:Delete*",
@@ -144,7 +144,7 @@ resource "aws_codebuild_project" "main" {
 
   # @TODO? idk if this is something I care about yet
   artifacts {
-    type = var.artifact_store.type
+    type     = var.artifact_store.type
     location = var.artifact_store.location
   }
 

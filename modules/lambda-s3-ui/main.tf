@@ -106,15 +106,15 @@ resource "archive_file" "source" {
 
 locals {
   new_sg_egress_rules = concat(length(var.sg_config.egress_cidrs) == 0 ? [] : [{
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = var.sg_config.egress_cidrs
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = var.sg_config.egress_cidrs
     }], [for i, v in var.sg_config.egress_sgs : {
-      from_port                = 443
-      to_port                  = 443
-      protocol                 = "tcp"
-      source_security_group_id = v
+    from_port                = 443
+    to_port                  = 443
+    protocol                 = "tcp"
+    source_security_group_id = v
   }])
 }
 
@@ -136,8 +136,8 @@ data "aws_iam_policy_document" "perms" {
 
     effect = "Allow"
     actions = [
-          "s3:GetObject",
-          "s3:GetObject*"
+      "s3:GetObject",
+      "s3:GetObject*"
     ]
     resources = ["arn:aws:s3:::${var.config.bucket}/${var.config.prefix}/*"]
   }
@@ -150,7 +150,7 @@ data "aws_iam_policy_document" "perms" {
 
       effect = "Allow"
       actions = [
-            "kms:Decrypt"
+        "kms:Decrypt"
       ]
       resources = [var.config.storage_kms_keys]
     }
@@ -167,17 +167,17 @@ module "lambda" {
   function_name = var.lambda_name
   file_path     = archive_file.source.output_path
 
-  environment_vars = {for i, v in {
-      "BUCKET"                   = var.config.bucket,
-      "PREFIX"                   = var.config.prefix,
-      "LOG_LEVEL"                = var.config.log_level,
-      "GZ_ASSETS"                = var.config.gz_assets ? "true" : "false",
-      "CACHE_MAPPING"            = var.config.cache_mapping != null ? jsonencode(var.config.cache_mapping) : null,
-      "SERVER_CACHE_MS"          = var.config.server_cache_ms,
-      "SPA_ENABLED"              = var.config.enable_spa ? "enabled" : "disabled",
-      "DEFAULT_FILE_PATH"        = var.config.default_file_path,
-      "DEFAULT_RESPONSE_HEADERS" = var.config.default_response_headers != null ? jsonencode(var.config.default_response_headers) : null,
-    }: i => v if v != null
+  environment_vars = { for i, v in {
+    "BUCKET"                   = var.config.bucket,
+    "PREFIX"                   = var.config.prefix,
+    "LOG_LEVEL"                = var.config.log_level,
+    "GZ_ASSETS"                = var.config.gz_assets ? "true" : "false",
+    "CACHE_MAPPING"            = var.config.cache_mapping != null ? jsonencode(var.config.cache_mapping) : null,
+    "SERVER_CACHE_MS"          = var.config.server_cache_ms,
+    "SPA_ENABLED"              = var.config.enable_spa ? "enabled" : "disabled",
+    "DEFAULT_FILE_PATH"        = var.config.default_file_path,
+    "DEFAULT_RESPONSE_HEADERS" = var.config.default_response_headers != null ? jsonencode(var.config.default_response_headers) : null,
+    } : i => v if v != null
   }
 
   # I would like to do a data policy document but that confuses open tofu since it can't ***know*** if there is something to do or not
@@ -185,7 +185,7 @@ module "lambda" {
     Version = "2012-10-17"
     Statement = concat([
       {
-        Sid = "UiFileAccess"
+        Sid    = "UiFileAccess"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
@@ -193,9 +193,9 @@ module "lambda" {
         ]
         Resource = ["arn:aws:s3:::${var.config.bucket}/${trim(var.config.prefix, "/")}/*"]
       }
-    ], length(var.config.storage_kms_keys) == 0 ?  [] : [
+      ], length(var.config.storage_kms_keys) == 0 ? [] : [
       {
-        Sid = "UiKmsKeyAccess"
+        Sid    = "UiKmsKeyAccess"
         Effect = "Allow"
         Action = [
           "kms:Decrypt"

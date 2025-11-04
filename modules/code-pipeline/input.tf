@@ -72,7 +72,7 @@ variable "iam_role" {
 }
 
 variable "permissions" {
-  type = string
+  type        = string
   description = "Optional json string of permissions to add to the role"
-  default = null
+  default     = null
 }

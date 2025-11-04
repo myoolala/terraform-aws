@@ -237,7 +237,7 @@ data "aws_region" "current" {}
 resource "aws_vpc_endpoint" "gateway_endpoints" {
   count = length(var.gateway_endpoints)
 
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.${data.aws_region.current.region}.${var.gateway_endpoints[count.index]}"
+  vpc_id          = aws_vpc.main.id
+  service_name    = "com.amazonaws.${data.aws_region.current.region}.${var.gateway_endpoints[count.index]}"
   route_table_ids = concat([aws_default_route_table.primary.id], aws_route_table.internal[*].id)
 }

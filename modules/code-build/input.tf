@@ -94,17 +94,17 @@ variable "cache" {
 }
 
 variable "permissions" {
-  type = string
+  type        = string
   description = "Optional json string of permissions to add to the role"
-  default = null
+  default     = null
 }
 
 variable "artifact_store" {
   type = object({
-    type = string
-    location = optional(string, null)
+    type         = string
+    location     = optional(string, null)
     location_arn = optional(string, null)
-    kms_key = optional(string, null)
+    kms_key      = optional(string, null)
   })
   description = "Artififact store to use for the codebuild project"
   default = {

@@ -142,12 +142,12 @@ module "build_projects" {
   }
   environment = local.builds_to_build[count.index].environment
   vpc_config  = local.builds_to_build[count.index].vpc_config
-  permissions  = local.builds_to_build[count.index].permissions
+  permissions = local.builds_to_build[count.index].permissions
   artifact_store = {
-    type = "CODEPIPELINE"
-    location = local.artifacts_bucket
+    type         = "CODEPIPELINE"
+    location     = local.artifacts_bucket
     location_arn = local.artifacts_bucket_arn
-    kms_key = local.artifacts_bucket_kms_key
+    kms_key      = local.artifacts_bucket_kms_key
   }
   # artifact_store = {
   #   type = "CODEPIPELINE"

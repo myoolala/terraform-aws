@@ -9,7 +9,7 @@ resource "random_string" "suffix" {
 module "source_bucket" {
   source = "../../../modules/s3-bucket"
 
-  name = "test-integration-${random_string.suffix.result}"
+  name               = "test-integration-${random_string.suffix.result}"
   versioning_enabled = true
 }
 
@@ -37,8 +37,8 @@ module "base_pipeline" {
       Resource = [
         # @TODO: fix this to not be star resources
         "*"
-      # module.source_bucket.arn,
-      # "${module.source_bucket.arn}/*"
+        # module.source_bucket.arn,
+        # "${module.source_bucket.arn}/*"
       ]
       }
     ]
@@ -53,8 +53,8 @@ module "base_pipeline" {
 
     # @Link: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-S3.html
     configuration = {
-        S3Bucket = module.source_bucket.id
-        S3ObjectKey = "index.zip"
+      S3Bucket    = module.source_bucket.id
+      S3ObjectKey = "index.zip"
     }
     }, {
     name             = "Build"
@@ -80,12 +80,12 @@ module "base_pipeline" {
       ProjectName = "test2"
     }
     }, {
-    name             = "Deploy"
-    category         = "Build"
-    owner            = "AWS"
-    provider         = "CodeBuild"
-    input_artifacts  = ["build_output"]
-    version          = "1"
+    name            = "Deploy"
+    category        = "Build"
+    owner           = "AWS"
+    provider        = "CodeBuild"
+    input_artifacts = ["build_output"]
+    version         = "1"
     codebuild_project = {
       create         = true
       name           = "test3"
@@ -119,14 +119,14 @@ data "aws_kms_alias" "s3" {
 }
 
 resource "aws_s3_object" "object" {
-  bucket = module.source_bucket.id
-  key    = "index.zip"
-  source = archive_file.source.output_path
+  bucket     = module.source_bucket.id
+  key        = "index.zip"
+  source     = archive_file.source.output_path
   kms_key_id = data.aws_kms_alias.s3.arn
 
-    depends_on = [
-      module.base_pipeline
-    ]
+  depends_on = [
+    module.base_pipeline
+  ]
 }
 
 provider "aws" {
