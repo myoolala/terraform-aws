@@ -85,7 +85,7 @@ variable "timeout" {
 }
 
 variable "tg_arns" {
-  type = list(string)
+  type        = list(string)
   description = "List of target group ARN's to attach to the lamdba"
-  default = []
+  default     = []
 }

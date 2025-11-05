@@ -32,6 +32,10 @@ resource "aws_ecs_task_definition" "service" {
     }
   ])
 
+  ephemeral_storage {
+    size_in_gib = var.storage
+  }
+
   # Uncomment if desired but for most apps this isn't necessary
   #   volume {
   #     name      = "service-storage"
