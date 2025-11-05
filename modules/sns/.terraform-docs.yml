@@ -1,10 +1,16 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # SNS
 
-  ## Example
-
-  Halp
+  WIP
 
   {{ .Providers }}
 

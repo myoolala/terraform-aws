@@ -1,9 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
+# SNS
 
-
-## Example
-
-Halp
+WIP
 
 ## Providers
 

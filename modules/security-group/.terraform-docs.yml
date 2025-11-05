@@ -1,10 +1,16 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # Security Group
 
-  ## Example
-
-  Halp
+  Thin wrapper around a security group to allow inline specification of ingress/egree rules without causing the normal issues
 
   {{ .Providers }}
 

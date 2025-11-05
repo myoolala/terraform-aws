@@ -1,10 +1,16 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # Task Definition
 
-  ## Example
-
-  Halp
+  Creates a Task Definition for an ECS service/task. Automates the IAM provisioning and creating the Task Definition itself
 
   {{ .Providers }}
 

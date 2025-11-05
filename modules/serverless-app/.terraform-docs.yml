@@ -1,10 +1,18 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # Serverless App
 
-  ## Example
+  Creates an entire lambda based application using CloudFront, API Gateway, and S3.
 
-  Halp
+  This is meant to act as a starting place or run simple applications
 
   {{ .Providers }}
 

@@ -1,9 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
+# SQS
 
-
-## Example
-
-Halp
+WIP
 
 ## Providers
 
