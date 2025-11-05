@@ -1,8 +1,8 @@
 locals {
   has_input = var.file_path != null || (var.bucket != null && var.key != null)
   runtime_map = {
-    "node20.x" = abspath("${path.module}/starter_code/index.mjs")
-    "node22.x" = abspath("${path.module}/starter_code/index.mjs")
+    "nodejs20.x" = abspath("${path.module}/starter_code/index.mjs")
+    "nodejs22.x" = abspath("${path.module}/starter_code/index.mjs")
   } 
 }
 
