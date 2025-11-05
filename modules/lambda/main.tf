@@ -142,7 +142,7 @@ resource "aws_lambda_permission" "tg_perms" {
 
   statement_id  = "load-balancer-invoke"
   action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_arn
+  function_name = aws_lambda_function.lambda.function_arn
   principal     = "elasticloadbalancing.amazonaws.com"
   source_arn    = var.tg_arns[count.index]
 }
