@@ -136,3 +136,24 @@ resource "aws_lambda_function" "function" {
     aws_iam_role_policy_attachment.lambda_policy
   ]
 }
+
+resource "aws_lambda_permission" "tg_perms" {
+  count = length(var.tg_arns)
+
+  statement_id  = "load-balancer-invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda.function_arn
+  principal     = "elasticloadbalancing.amazonaws.com"
+  source_arn    = var.tg_arns[count.index]
+}
+
+resource "aws_lb_target_group_attachment" "alb_connection" {
+  count = length(var.tg_arns)
+
+  target_group_arn = var.tg_arns[count.index]
+  target_id        = aws_lambda_function.function.function_arn
+
+  depends_on = [
+    aws_lambda_permission.tg_perms
+  ]
+}

@@ -168,6 +168,7 @@ module "lambda" {
 
   function_name = var.lambda_name
   file_path     = archive_file.source.output_path
+  tg_arns = [var.target_group_arn]
 
   environment_vars = { for i, v in {
     "BUCKET"                   = var.config.bucket,
@@ -212,21 +213,4 @@ module "lambda" {
     subnet_ids         = var.vpc_config.subnets
     security_group_ids = concat(var.vpc_config.sg_ids, module.sg[*].id)
   }
-}
-
-resource "aws_lambda_permission" "lambda_perms" {
-  statement_id  = "load-balancer-invoke"
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda.function_arn
-  principal     = "elasticloadbalancing.amazonaws.com"
-  source_arn    = var.alb_tg_arn
-}
-
-resource "aws_lb_target_group_attachment" "alb_connection" {
-  target_group_arn = var.alb_tg_arn
-  target_id        = module.lambda.function_arn
-
-  depends_on = [
-    aws_lambda_permission.lambda_perms
-  ]
 }
