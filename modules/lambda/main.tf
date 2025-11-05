@@ -142,7 +142,7 @@ resource "aws_lambda_permission" "tg_perms" {
 
   statement_id  = "load-balancer-invoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda.arn
+  function_name = aws_lambda_function.function.arn
   principal     = "elasticloadbalancing.amazonaws.com"
   source_arn    = var.tg_arns[count.index]
 }
@@ -151,7 +151,7 @@ resource "aws_lb_target_group_attachment" "alb_connection" {
   count = length(var.tg_arns)
 
   target_group_arn = var.tg_arns[count.index]
-  target_id        = aws_lambda_function.lambda.arn
+  target_id        = aws_lambda_function.function.arn
 
   depends_on = [
     aws_lambda_permission.tg_perms
