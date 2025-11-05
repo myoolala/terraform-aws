@@ -110,10 +110,19 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+
+resource "archive_file" "source" {
+  count = local.has_input == false ? 1 : 0
+
+  type        = "zip"
+  source_file = lookup(local.runtime_map, var.runtime)
+  output_path = abspath("${path.module}/output/lambda.zip")
+}
+
 resource "aws_lambda_function" "function" {
   function_name = var.function_name
 
-  filename  = local.has_input ? var.file_path : lookup(local.runtime_map, var.runtime)
+  filename  = local.has_input ? var.file_path : archive_file.source[0].output_path
   s3_bucket = var.bucket
   s3_key    = var.key
 
