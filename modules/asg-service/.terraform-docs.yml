@@ -1,10 +1,12 @@
 # .terraform-docs.yml
+
+header-from: main.tf
+
+settings:
+ type: false
+
 content: |-
   {{ .Header }}
-
-  ## Example
-
-  Halp
 
   {{ .Providers }}
 
