@@ -40,7 +40,7 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role_policy" "task_role" {
-  # count = var.role == null ? 1 : 0
+  count = var.permissions != null ? 1 : 0
 
   role   = aws_iam_role.task_role.name
   name   = "AppPermissions"
@@ -56,7 +56,7 @@ locals {
 resource "aws_iam_role_policy_attachment" "task_role_managed_polciies" {
   count = length(local.task_role_managed_polciies)
 
-  role       = aws_iam_role.task_role.arn
+  role       = aws_iam_role.task_role.name
   policy_arn = local.task_role_managed_polciies[count.index]
 }
 
@@ -85,10 +85,8 @@ resource "aws_iam_role" "task_execution_role" {
 }
 
 data "aws_iam_policy_document" "task_exec_secret_perms" {
-  count = length(var.secrets) + lenth(var.secrets_keys) > 0 ? 1 : 0
-
   dynamic "statement" {
-    for_each = length(var.secrets) > 0 ? 1 : 0
+    for_each = length(var.secrets) > 0 ? [1] : []
 
     content {
       sid = "SecretsAccess"
@@ -100,7 +98,7 @@ data "aws_iam_policy_document" "task_exec_secret_perms" {
   }
 
   dynamic "statement" {
-    for_each = length(var.secrets_keys) > 0 ? 1 : 0
+    for_each = length(var.secrets_keys) > 0 ? [1] : []
 
     content {
       sid = "SecretsKmsAccess"
@@ -115,9 +113,9 @@ data "aws_iam_policy_document" "task_exec_secret_perms" {
 }
 
 resource "aws_iam_role_policy" "task_exec_secret_perms" {
-  # count = var.role == null ? 1 : 0
+  count = length(var.secrets) > 0 || length(var.secrets_keys) > 0 ? 1 : 0
 
-  role   = aws_iam_role.task_execution_role
+  role   = aws_iam_role.task_execution_role.name
   name   = "SecretsPerms"
   policy = data.aws_iam_policy_document.task_exec_secret_perms.json
 }
@@ -132,6 +130,6 @@ locals {
 resource "aws_iam_role_policy_attachment" "exec_role_managed_polciies" {
   count = length(local.exec_role_managed_polciies)
 
-  role       = aws_iam_role.task_execution_role.arn
+  role       = aws_iam_role.task_execution_role.name
   policy_arn = local.exec_role_managed_polciies[count.index]
 }

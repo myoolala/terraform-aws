@@ -10,33 +10,17 @@ locals {
   partition         = data.aws_partition.current.partition
 }
 
-resource "aws_kms_key" "logging" {
+module "logging_key" {
   count = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? 1 : 0
+  source = "../kms-key"
 
-  description             = "${var.service_name} logging key"
-  deletion_window_in_days = 7
-
-  policy = jsonencode({
+  description = "${var.service_name} logging key"
+  permissions = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # Root access
-      {
-        Sid    = "Enable IAM User Permissions"
-        Action = "kms:*"
-        Effect = "Allow"
-        Principal = {
-          AWS = [
-            "arn:${local.partition}:iam::${local.acct_id}:root"
-          ]
-        }
-        # Gross and misleading I know, but it has to be star
-        # As it is attached to a single secret and AWS needs a resource line
-        # So this doesn't actually apply to all resources
-        Resource = "*"
-      },
       # Cloudwatch access to encrypt and render
       {
-        Sid = ""
+        Sid = "LoggingServiceAccess"
         "Effect" : "Allow",
         "Principal" : {
           "Service" : "logs.${local.region}.amazonaws.com"
@@ -88,7 +72,7 @@ resource "aws_cloudwatch_log_group" "logs" {
   name = var.service_name
 
   retention_in_days = var.log_retention
-  kms_key_id        = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? aws_kms_key.logging[0].arn : null
+  kms_key_id        = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? module.logging_key[0].arn : var.encrypt_logs.existing_key
 }
 
 module "image" {
@@ -101,7 +85,7 @@ module "image" {
   env_vars      = var.env_vars
   permissions   = var.permissions
   secrets       = concat(module.secrets.fargate_secrets, local.existing_secrets)
-  secrets_keys  = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
+  secrets_keys  = [module.secrets.kms_key]
   port_mappings = []
   cpu           = var.cpu
   memory        = var.memory
@@ -177,7 +161,7 @@ data "aws_iam_policy_document" "main" {
 }
 
 resource "aws_iam_role_policy" "main" {
-  role   = aws_iam_role.main.name
+  role   = aws_iam_role.invoker.name
   policy = data.aws_iam_policy_document.main.json
 }
 

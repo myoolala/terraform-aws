@@ -23,7 +23,7 @@ resource "aws_ecs_task_definition" "service" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-region"        = data.aws_region.current.name
+          "awslogs-region"        = data.aws_region.current.region
           "awslogs-group"         = var.log_group
           "awslogs-stream-prefix" = "streaming"
         }

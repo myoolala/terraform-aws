@@ -1,3 +1,7 @@
+###########################################################################
+###############                   Required                  ###############
+###########################################################################
+
 variable "service_name" {
   type        = string
   description = "Name to apply to the Fargate service"
@@ -8,12 +12,6 @@ variable "vpc_id" {
   description = "VPC to run the service in"
 }
 
-variable "scan_on_push" {
-  type        = bool
-  description = "Have ECR scan images on push"
-  default     = true
-}
-
 variable "cluster" {
   type = object({
     create = optional(bool, true)
@@ -21,6 +19,26 @@ variable "cluster" {
     arn    = optional(string, null)
   })
   description = "Cluster configuration to attach to the scheduled task"
+}
+
+variable "service_subnets" {
+  type        = list(string)
+  description = "Subnets to run the service in"
+}
+
+variable "schedule_expression" {
+  type        = string
+  description = "Schedule for a scheduled task. Conflicts with load_balancer"
+}
+
+###########################################################################
+###############                   Optional                  ###############
+###########################################################################
+
+variable "scan_on_push" {
+  type        = bool
+  description = "Have ECR scan images on push"
+  default     = true
 }
 
 variable "create_ecr_repo" {
@@ -41,21 +59,10 @@ variable "permissions" {
   description = "Json encoded string of permissions to attach to the container"
 }
 
-variable "service_subnets" {
-  type        = list(string)
-  description = "Subnets to run the service in"
-}
-
 variable "public" {
   type        = string
   description = "Should the docker containers get assigned public ip's"
   default     = false
-}
-
-variable "schedule_expression" {
-  type        = string
-  description = "Schedule for a scheduled task. Conflicts with load_balancer"
-  default     = null
 }
 
 variable "tags" {
