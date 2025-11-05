@@ -83,3 +83,9 @@ variable "timeout" {
   description = "Lambda timeout allowed"
   default     = 3
 }
+
+variable "tg_arns" {
+  type = list(string)
+  description = "List of target group ARN's to attach to the lamdba"
+  default = []
+}
