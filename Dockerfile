@@ -12,7 +12,7 @@ RUN <<EOF
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
     echo "Installing tenv"
     DKPG_VERSION=$(dpkg --print-architecture)
-    LATEST_VERSION=$(curl --silent https://api.github.com/repos/tofuutils/tenv/releases/latest | jq -r .tag_name)
+    LATEST_VERSION="v4.7.21"
     curl -O -L "https://github.com/tofuutils/tenv/releases/latest/download/tenv_${LATEST_VERSION}_${DKPG_VERSION}.deb"
     dpkg -i "tenv_${LATEST_VERSION}_${DKPG_VERSION}.deb"
     echo "Installing SOPS"

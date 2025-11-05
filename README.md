@@ -37,3 +37,17 @@ This folder just contains all of the tests used to validate the modules. This is
 ## Docker
 
 To aid in development, the docker file is just a development container which installs node, sops, aws, tenv, terragrunt, and open tofu. This is to reduce the amount of software needed to install in order to test and develop these modules
+
+## Required Software
+
+| Name | Version | 
+|------|:---------:|
+| Sops | ==3.11.0 |
+| GoLang | >=1.25.3 |
+| Python | >= 3.10.0 |
+| nvm | ==0.40.3 |
+| packer | >= 1.14.2 |
+| tenv | ==v4.7.21 |
+| tfdocs | ==0.20.0 |
+| opentofu | ==1.10.6 |
+| terragrunt | ==0.91.5 |
