@@ -168,7 +168,7 @@ module "lambda" {
 
   function_name = var.lambda_name
   file_path     = archive_file.source.output_path
-  tg_arns = [var.target_group_arn]
+  tg_arns = [var.alb_tg_arn]
 
   environment_vars = { for i, v in {
     "BUCKET"                   = var.config.bucket,
