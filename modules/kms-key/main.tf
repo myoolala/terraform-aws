@@ -6,6 +6,9 @@ locals {
   acct_id   = data.aws_caller_identity.current.account_id
   region    = data.aws_region.current.region
   partition = data.aws_partition.current.partition
+  permissions = var.permissions != null ? [
+    var.permissions
+  ] : null
 }
 
 data "aws_iam_policy_document" "this" {
@@ -25,9 +28,9 @@ data "aws_iam_policy_document" "this" {
     resources = ["*"]
   }
 
-  override_policy_documents = var.permissions != null ? [
-    var.permissions
-  ] : null
+
+  source_policy_documents   = local.permissions
+  override_policy_documents = local.permissions
 }
 
 resource "aws_kms_key" "this" {
