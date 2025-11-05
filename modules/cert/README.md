@@ -1,9 +1,9 @@
 <!-- BEGIN_TF_DOCS -->
+# ACM Certificate
 
+Creates an ACM cert to be used by other resources
 
-## Example
-
-Halp
+If provided, it will also automate the DNS verification for the certification
 
 ## Providers
 
@@ -27,5 +27,5 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_arn"></a> [arn](#output\_arn) | n/a |  
+| <a name="output_arn"></a> [arn](#output\_arn) | ARN of the acm certificate if there is one that can be returned |  
 <!-- END_TF_DOCS -->

@@ -1,4 +1,12 @@
-resource "aws_acm_certificate" "cert" {
+/**
+ * # ACM Certificate
+ *
+ * Creates an ACM cert to be used by other resources
+ *
+ * If provided, it will also automate the DNS verification for the certification
+ */
+ 
+ resource "aws_acm_certificate" "cert" {
   count = var.domain != null ? 1 : 0
 
   domain_name       = var.domain

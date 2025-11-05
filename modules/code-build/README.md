@@ -1,9 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
+# CodeBuild
 
+Creates a codebuild project to run a job
 
-## Example
-
-Halp
+If provided, it will appending the build into a vpc with a security group, applying permissions, roles
+etc...
 
 ## Providers
 

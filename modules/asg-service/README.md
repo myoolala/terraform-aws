@@ -46,5 +46,5 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cname_target"></a> [cname\_target](#output\_cname\_target) | n/a |  
+| <a name="output_cname_target"></a> [cname\_target](#output\_cname\_target) | DNS CNAME target to use to reach the service |  
 <!-- END_TF_DOCS -->
