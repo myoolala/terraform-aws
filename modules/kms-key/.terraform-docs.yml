@@ -1,10 +1,14 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
 content: |-
-  {{ .Header }}
+  # KMS Key
 
-  ## Example
+  Automates creating a KMS key. The man purpose of this module is to reduce the policy work to open the key to the account and couple an Alias to it
 
-  Halp
+  This does support overriding the default policy. [Follow the examples to learn more](../../tests/kms/)
 
   {{ .Providers }}
 

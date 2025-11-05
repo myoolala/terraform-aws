@@ -1,10 +1,16 @@
 # .terraform-docs.yml
+
+settings:
+  type: false
+
 content: |-
-  {{ .Header }}
+  # CodePipeline
 
-  ## Example
+  Creates a CodePipeline with a list of stages while autmating the creation the of shared artifacts bucket, codebuild projects if there are any, and any required permissions that might be needed.
 
-  Halp
+  ## Examples:
+  
+  [Click here to view a folder of example tests](../../tests/code-pipeline)
 
   {{ .Providers }}
 

@@ -1,9 +1,11 @@
 <!-- BEGIN_TF_DOCS -->
+# Lambda function
 
+Automates creating a lambda function, IAM role, CloudWatch logs, IAM permissions, and Security groups all in one module. The intention is to reduce the repeat work for a simple lambda.
 
-## Example
+If there is no code to deploy, like on an initial deploy of an environment, a default zip file is deployed in place to prevent the lambda from erroring out
 
-Halp
+[Examples can be found here](../../tests/lambda)
 
 ## Providers
 
@@ -39,8 +41,8 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_function_arn"></a> [function\_arn](#output\_function\_arn) | n/a |
-| <a name="output_function_name"></a> [function\_name](#output\_function\_name) | n/a |
-| <a name="output_invoke_arn"></a> [invoke\_arn](#output\_invoke\_arn) | n/a |
+| <a name="output_function_arn"></a> [function\_arn](#output\_function\_arn) | ARN of the Lambda function |
+| <a name="output_function_name"></a> [function\_name](#output\_function\_name) | Name applied to the Lambda function |
+| <a name="output_invoke_arn"></a> [invoke\_arn](#output\_invoke\_arn) | The invoke ARN of the Lambda function |
 | <a name="output_role"></a> [role](#output\_role) | ARN of the role created to add permissions to |  
 <!-- END_TF_DOCS -->

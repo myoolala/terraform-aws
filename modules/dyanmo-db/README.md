@@ -1,9 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
+# DyanmoDb
 
-
-## Example
-
-Halp
+Creates a DynamoDb table. That's pretty much it. All it does is wrap and automate some fields
 
 ## Providers
 
@@ -38,7 +36,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_arn"></a> [arn](#output\_arn) | n/a |
-| <a name="output_id"></a> [id](#output\_id) | n/a |
-| <a name="output_replica_arns"></a> [replica\_arns](#output\_replica\_arns) | n/a |  
+| <a name="output_arn"></a> [arn](#output\_arn) | ARN of the DDB table |
+| <a name="output_id"></a> [id](#output\_id) | ID for the DDB table |
+| <a name="output_replica_arns"></a> [replica\_arns](#output\_replica\_arns) | List of ARNs for the replica tables if there are any |  
 <!-- END_TF_DOCS -->

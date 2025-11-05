@@ -1,10 +1,23 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
 content: |-
-  {{ .Header }}
+  # Fargate Service
 
-  ## Example
+  Creates a ECS Fargate Service. Automates creating the:
+  
+  - cluster if needed
+  - ECR repo if needed
+  - IAM roles if needed
+  - Cloudwatch logs
+  - Task definition
+  - Secrets if needed
+  - Load balancer
+  - And anything else needed to run a service in Fargate
 
-  Halp
+  Currently there are limitation with ENV vars done via SSM, or enabling autoscaling policies and EFS volumes.
 
   {{ .Providers }}
 

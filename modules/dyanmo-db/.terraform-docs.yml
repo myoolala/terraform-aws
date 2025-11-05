@@ -1,10 +1,12 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
 content: |-
-  {{ .Header }}
+  # DyanmoDb
 
-  ## Example
-
-  Halp
+  Creates a DynamoDb table. That's pretty much it. All it does is wrap and automate some fields
 
   {{ .Providers }}
 

@@ -1,9 +1,18 @@
 <!-- BEGIN_TF_DOCS -->
+# Fargate Service
 
+Creates a ECS Fargate Service. Automates creating the:
 
-## Example
+- cluster if needed
+- ECR repo if needed
+- IAM roles if needed
+- Cloudwatch logs
+- Task definition
+- Secrets if needed
+- Load balancer
+- And anything else needed to run a service in Fargate
 
-Halp
+Currently there are limitation with ENV vars done via SSM, or enabling autoscaling policies and EFS volumes.
 
 ## Providers
 
@@ -36,5 +45,5 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cname_target"></a> [cname\_target](#output\_cname\_target) | n/a |  
+| <a name="output_cname_target"></a> [cname\_target](#output\_cname\_target) | DNS CNAME of the load balancer to reach in order to talk to the service |  
 <!-- END_TF_DOCS -->

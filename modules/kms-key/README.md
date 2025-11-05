@@ -1,9 +1,9 @@
 <!-- BEGIN_TF_DOCS -->
+# KMS Key
 
+Automates creating a KMS key. The man purpose of this module is to reduce the policy work to open the key to the account and couple an Alias to it
 
-## Example
-
-Halp
+This does support overriding the default policy. [Follow the examples to learn more](../../tests/kms/)
 
 ## Providers
 
@@ -33,7 +33,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_alias_arn"></a> [alias\_arn](#output\_alias\_arn) | n/a |
-| <a name="output_key_arn"></a> [key\_arn](#output\_key\_arn) | n/a |
-| <a name="output_key_id"></a> [key\_id](#output\_key\_id) | n/a |  
+| <a name="output_alias_arn"></a> [alias\_arn](#output\_alias\_arn) | ARN of the KMS Key Alias if one was created |
+| <a name="output_key_arn"></a> [key\_arn](#output\_key\_arn) | ARN of the KMS Key |
+| <a name="output_key_id"></a> [key\_id](#output\_key\_id) | ID of the KMS KEy |  
 <!-- END_TF_DOCS -->
