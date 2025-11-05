@@ -30,7 +30,7 @@ variable "key" {
 variable "runtime" {
   type        = string
   description = "Runtime to use for the lambda"
-  default     = "nodejs20.x"
+  default     = "nodejs22.x"
 }
 
 variable "handler" {

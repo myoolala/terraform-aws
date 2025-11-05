@@ -1,3 +1,11 @@
+locals {
+  has_input = var.file_path != null || (var.bucket != null && var.key != null)
+  runtime_map = {
+    "node20.x" = abspath("${path.module}/starter_code/index.mjs")
+    "node22.x" = abspath("${path.module}/starter_code/index.mjs")
+  } 
+}
+
 resource "aws_cloudwatch_log_group" "logs" {
   name = "/aws/lambda/${aws_lambda_function.function.function_name}"
 
@@ -105,7 +113,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 resource "aws_lambda_function" "function" {
   function_name = var.function_name
 
-  filename  = var.file_path
+  filename  = local.has_input ? var.file_path : lookup(local.runtime_map, var.runtime)
   s3_bucket = var.bucket
   s3_key    = var.key
 
