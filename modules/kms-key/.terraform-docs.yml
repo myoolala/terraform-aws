@@ -3,6 +3,10 @@
 settings:
   type: true
 
+sort:
+  enabled: true
+  by: required
+
 content: |-
   # KMS Key
 

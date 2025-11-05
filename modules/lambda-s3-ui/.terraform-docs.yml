@@ -1,10 +1,28 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # Lambda S3 UI
 
-  ## Example
+  Creates a Lambda based S3 proxy sitting behind an ALB to handle UI requests. The main intention is to add logic for SPA apps where a 404 isn't necessarily a 404
 
-  Halp
+  This is intended for small or burst scale where a fargate service cannot compete in price
+
+  Key notes:
+
+  - If your system is 100% internal, you will need a VPC endpoint such that the target group can reach the Lambda service. 
+  - In addition, the lambda itself will need a VPC endpoint if it lives inside a private only network to reach s3
+  - Otherwise, hosting this in a VPC is not required
+  - All responses are cache via a configuration
+  - Cache busting headers will bust the in memory RunTime cache
+
+  [Examples can be found here](../../tests/ui-lambda)
 
   {{ .Providers }}
 

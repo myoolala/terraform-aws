@@ -5,6 +5,10 @@ header-from: main.tf
 settings:
  type: true
 
+sort:
+  enabled: true
+  by: required
+
 content: |-
   {{ .Header }}
 

@@ -19,9 +19,9 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_description"></a> [description](#input\_description) | Description for the KMS key | `string` | n/a | yes |
 | <a name="input_alias"></a> [alias](#input\_alias) | Alias to assign to the key if there is one | `string` | `null` | no |
 | <a name="input_deletion_window_in_days"></a> [deletion\_window\_in\_days](#input\_deletion\_window\_in\_days) | Deletion windon in day. Defaults to 7 | `number` | `7` | no |
-| <a name="input_description"></a> [description](#input\_description) | Description for the KMS key | `string` | n/a | yes |
 | <a name="input_enable_whole_account_access"></a> [enable\_whole\_account\_access](#input\_enable\_whole\_account\_access) | Enable the whole account to be allowed to be given permissions to the key. Disable if absolutely necessary | `bool` | `true` | no |
 | <a name="input_is_enabled"></a> [is\_enabled](#input\_is\_enabled) | Is the key currently enabled | `bool` | `true` | no |
 | <a name="input_key_usage"></a> [key\_usage](#input\_key\_usage) | Key Usage field to set on the key. Defaults to ENCRYPT\_DECRYPT | `string` | `"ENCRYPT_DECRYPT"` | no |

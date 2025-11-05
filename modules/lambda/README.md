@@ -22,10 +22,10 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_function_name"></a> [function\_name](#input\_function\_name) | Name for the new lambda function | `string` | n/a | yes |
 | <a name="input_bucket"></a> [bucket](#input\_bucket) | Name of the bucket to pull the code from | `string` | `null` | no |
 | <a name="input_environment_vars"></a> [environment\_vars](#input\_environment\_vars) | Environment variables to pass into the lambda | `map(string)` | `null` | no |
 | <a name="input_file_path"></a> [file\_path](#input\_file\_path) | Path to the zip file to deploy if one is available | `string` | `null` | no |
-| <a name="input_function_name"></a> [function\_name](#input\_function\_name) | Name for the new lambda function | `string` | n/a | yes |
 | <a name="input_handler"></a> [handler](#input\_handler) | Handler function | `string` | `"index.handler"` | no |
 | <a name="input_key"></a> [key](#input\_key) | S3 Key of the source zip file | `string` | `null` | no |
 | <a name="input_log_retention"></a> [log\_retention](#input\_log\_retention) | Number in days to store logs in cloudwatch | `number` | `7` | no |

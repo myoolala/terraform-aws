@@ -1,9 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
+# Load Balancer
 
-
-## Example
-
-Halp
+Still WIP, creates an AWS PowerTools layer to be used with Python based lambda functions
 
 ## Providers
 

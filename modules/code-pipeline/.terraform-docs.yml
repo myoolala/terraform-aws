@@ -3,6 +3,10 @@
 settings:
   type: false
 
+sort:
+  enabled: true
+  by: required
+
 content: |-
   # CodePipeline
 

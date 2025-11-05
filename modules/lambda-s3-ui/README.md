@@ -1,9 +1,19 @@
 <!-- BEGIN_TF_DOCS -->
+# Lambda S3 UI
 
+Creates a Lambda based S3 proxy sitting behind an ALB to handle UI requests. The main intention is to add logic for SPA apps where a 404 isn't necessarily a 404
 
-## Example
+This is intended for small or burst scale where a fargate service cannot compete in price
 
-Halp
+Key notes:
+
+- If your system is 100% internal, you will need a VPC endpoint such that the target group can reach the Lambda service. 
+- In addition, the lambda itself will need a VPC endpoint if it lives inside a private only network to reach s3
+- Otherwise, hosting this in a VPC is not required
+- All responses are cache via a configuration
+- Cache busting headers will bust the in memory RunTime cache
+
+[Examples can be found here](../../tests/ui-lambda)
 
 ## Providers
 
@@ -21,11 +31,11 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_alb_tg_arn"></a> [alb\_tg\_arn](#input\_alb\_tg\_arn) | ARN of the ALB Target group that forward requests to the lambda | `string` | n/a | yes |
+| <a name="input_config"></a> [config](#input\_config) | Configuration for the lambda function code | <pre>object({<br/>    bucket                   = string,<br/>    prefix                   = string,<br/>    storage_kms_keys         = optional(list(string), [])<br/>    log_level                = optional(string, "INFO"),<br/>    gz_assets                = optional(bool, false)<br/>    cache_mapping            = optional(map(any), null)<br/>    server_cache_ms          = optional(number, 5 * 60 * 1000)<br/>    enable_spa               = optional(bool, false)<br/>    default_file_path        = optional(string, "index.html")<br/>    default_response_headers = optional(map(any), null)<br/>  })</pre> | n/a | yes |
+| <a name="input_lambda_name"></a> [lambda\_name](#input\_lambda\_name) | Name for the lambda function | `string` | n/a | yes |
 | <a name="input_bucket_key"></a> [bucket\_key](#input\_bucket\_key) | S3 URI for the lambda zip file | `string` | `null` | no |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Name of the bucket the code will be stored in | `string` | `null` | no |
-| <a name="input_config"></a> [config](#input\_config) | Configuration for the lambda function code | <pre>object({<br/>    bucket                   = string,<br/>    prefix                   = string,<br/>    storage_kms_keys         = optional(list(string), [])<br/>    log_level                = optional(string, "INFO"),<br/>    gz_assets                = optional(bool, false)<br/>    cache_mapping            = optional(map(any), null)<br/>    server_cache_ms          = optional(number, 5 * 60 * 1000)<br/>    enable_spa               = optional(bool, false)<br/>    default_file_path        = optional(string, "index.html")<br/>    default_response_headers = optional(map(any), null)<br/>  })</pre> | n/a | yes |
 | <a name="input_environment_vars"></a> [environment\_vars](#input\_environment\_vars) | Environment variables to pass into the lambda | `map(string)` | `null` | no |
-| <a name="input_lambda_name"></a> [lambda\_name](#input\_lambda\_name) | Name for the lambda function | `string` | n/a | yes |
 | <a name="input_sg_config"></a> [sg\_config](#input\_sg\_config) | Existing security group to use if there is one | <pre>object({<br/>    create = bool<br/>    vpc_id = string<br/>    # Default is fine if the lambda is internal but sends responses over the internet,<br/>    # narrow it down when using VPC endpoints<br/>    egress_cidrs = optional(list(string), ["0.0.0.0/0"])<br/>    egress_sgs   = optional(list(string), [])<br/>  })</pre> | <pre>{<br/>  "create": false,<br/>  "vpc_id": null<br/>}</pre> | no |
 | <a name="input_vpc_config"></a> [vpc\_config](#input\_vpc\_config) | VPC config to use | <pre>object({<br/>    subnets = list(string)<br/>    sg_ids  = optional(list(string), [])<br/>  })</pre> | `null` | no |
 
@@ -33,6 +43,6 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_function_name"></a> [function\_name](#output\_function\_name) | n/a |
-| <a name="output_sg_id"></a> [sg\_id](#output\_sg\_id) | n/a |  
+| <a name="output_function_name"></a> [function\_name](#output\_function\_name) | Name of the Lambda function |
+| <a name="output_sg_id"></a> [sg\_id](#output\_sg\_id) | Security group ID created if one was created |  
 <!-- END_TF_DOCS -->

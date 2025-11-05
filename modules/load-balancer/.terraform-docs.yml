@@ -1,10 +1,18 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # Load Balancer
 
-  ## Example
+  Creates a load balancer with listeners and target group pairs.
 
-  Halp
+  [Examples can be found here](../../tests/load-balancer/)
 
   {{ .Providers }}
 

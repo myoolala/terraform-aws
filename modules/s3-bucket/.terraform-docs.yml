@@ -1,10 +1,16 @@
 # .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
 content: |-
-  {{ .Header }}
+  # S3 Bucket
 
-  ## Example
-
-  Halp
+  Creates an S3 bucket with some automated behavior like setting encryption and policies
 
   {{ .Providers }}
 
