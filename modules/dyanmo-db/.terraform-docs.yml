@@ -1,0 +1,21 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # DyanmoDb
+
+  Creates a DynamoDb table. That's pretty much it. All it does is wrap and automate some fields
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

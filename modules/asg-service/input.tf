@@ -1,21 +1,20 @@
-variable "block_mappings" {
-  type = list(object({
-    name                  = string
-    size                  = number
-    delete_on_termination = optional(bool, true)
-    encrypted             = optional(bool, true)
-    iops                  = optional(string, null)
-    kms_key               = optional(string, null)
-    snapshot_id           = optional(string, null)
-    type                  = optional(string, null)
-  }))
-  description = "Block mappings to attach to each server in the asg"
-  default = [
-    {
-      name = "/dev/sdf"
-      size = 20
-    }
-  ]
+###########################################################################
+###############                   Required                  ###############
+###########################################################################
+
+variable "name" {
+  type        = string
+  description = "Name for the autoscaling group and associated resources"
+}
+
+variable "ami" {
+  type        = string
+  description = "AMI to deploy to the group"
+}
+
+variable "instance_type" {
+  type        = string
+  description = "Instance type to deploy"
 }
 
 variable "network" {
@@ -34,14 +33,28 @@ variable "network" {
   description = "Network config for the ASG"
 }
 
-variable "ami" {
-  type        = string
-  description = "AMI to deploy to the group"
-}
+###########################################################################
+###############                   Optional                  ###############
+###########################################################################
 
-variable "instance_type" {
-  type        = string
-  description = "Instance type to deploy"
+variable "block_mappings" {
+  type = list(object({
+    name                  = string
+    size                  = number
+    delete_on_termination = optional(bool, true)
+    encrypted             = optional(bool, true)
+    iops                  = optional(string, null)
+    kms_key               = optional(string, null)
+    snapshot_id           = optional(string, null)
+    type                  = optional(string, null)
+  }))
+  description = "Block mappings to attach to each server in the asg"
+  default = [
+    {
+      name = "/dev/sdf"
+      size = 20
+    }
+  ]
 }
 
 variable "public" {
@@ -90,11 +103,6 @@ variable "key_name" {
   type        = string
   description = "SSH key to attach to the instances"
   default     = null
-}
-
-variable "name" {
-  type        = string
-  description = "Name for the autoscaling group and associated resources"
 }
 
 variable "managed_policies" {

@@ -1,34 +1,9 @@
-resource "aws_lambda_function" "function" {
-  function_name = var.function_name
-
-  filename  = var.file_path
-  s3_bucket = var.bucket
-  s3_key    = var.key
-
-  runtime = var.runtime
-  handler = var.handler
-  timeout = var.timeout
-
-  role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
-
-  dynamic "environment" {
-    for_each = var.environment_vars != null ? [1] : []
-    content {
-      variables = var.environment_vars
-    }
+locals {
+  has_input = var.file_path != null || (var.bucket != null && var.key != null)
+  runtime_map = {
+    "nodejs20.x" = abspath("${path.module}/starter_code/index.mjs")
+    "nodejs22.x" = abspath("${path.module}/starter_code/index.mjs")
   }
-
-  dynamic "vpc_config" {
-    for_each = var.vpc_config != null ? [1] : []
-    content {
-      subnet_ids         = var.vpc_config.subnet_ids
-      security_group_ids = var.vpc_config.security_group_ids
-    }
-  }
-
-  depends_on = [
-    aws_iam_role.lambda_exec
-  ]
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
@@ -122,8 +97,80 @@ resource "aws_iam_role_policy" "perms" {
   policy = data.aws_iam_policy_document.perms[0].json
 }
 
+resource "aws_iam_role_policy" "provided_perms" {
+  count = var.role == null && var.permissions != null ? 1 : 0
+
+  role   = aws_iam_role.lambda_exec[0].name
+  policy = var.permissions
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   count      = var.role != null ? 1 : 0
   role       = aws_iam_role.lambda_exec[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+
+resource "archive_file" "source" {
+  count = local.has_input == false ? 1 : 0
+
+  type        = "zip"
+  source_file = lookup(local.runtime_map, var.runtime)
+  output_path = abspath("${path.module}/output/lambda.zip")
+}
+
+resource "aws_lambda_function" "function" {
+  function_name = var.function_name
+
+  filename  = local.has_input ? var.file_path : archive_file.source[0].output_path
+  s3_bucket = var.bucket
+  s3_key    = var.key
+
+  runtime = var.runtime
+  handler = var.handler
+  timeout = var.timeout
+
+  role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
+
+  dynamic "environment" {
+    for_each = var.environment_vars != null ? [1] : []
+    content {
+      variables = var.environment_vars
+    }
+  }
+
+  dynamic "vpc_config" {
+    for_each = var.vpc_config != null ? [1] : []
+    content {
+      subnet_ids         = var.vpc_config.subnet_ids
+      security_group_ids = var.vpc_config.security_group_ids
+    }
+  }
+
+  depends_on = [
+    aws_iam_role.lambda_exec,
+    aws_iam_role_policy.perms,
+    aws_iam_role_policy_attachment.lambda_policy
+  ]
+}
+
+resource "aws_lambda_permission" "tg_perms" {
+  count = length(var.tg_arns)
+
+  statement_id  = "load-balancer-invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.function.arn
+  principal     = "elasticloadbalancing.amazonaws.com"
+  source_arn    = var.tg_arns[count.index]
+}
+
+resource "aws_lb_target_group_attachment" "alb_connection" {
+  count = length(var.tg_arns)
+
+  target_group_arn = var.tg_arns[count.index]
+  target_id        = aws_lambda_function.function.arn
+
+  depends_on = [
+    aws_lambda_permission.tg_perms
+  ]
 }

@@ -1,0 +1,27 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # Scheduled Task
+
+  Creates a scheduled task job that runs on a cron. The intended purpose is to allow serverless crons to run that are too big for Lambda.
+
+  And example use case would be a database backup to s3 for something greater than 10GB. Or an analytic job that runs for more than 15 minutes
+
+  This also automates creating everything needed to run the job, much like the fargate service, such that it takes minimal effort to run for a Lambda based application
+
+  [Example implementation](../../tests/scheduled-job)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

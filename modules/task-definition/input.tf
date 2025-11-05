@@ -72,3 +72,9 @@ variable "secrets_keys" {
   default     = []
   description = "If there are any kms keys used with the secrets, add them here"
 }
+
+variable "storage" {
+  type        = number
+  description = "Size of the ephemeral storage volume for the container"
+  default     = 20
+}

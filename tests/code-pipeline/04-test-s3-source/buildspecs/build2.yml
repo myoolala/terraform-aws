@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    on-failure: ABORT
+    commands:
+      - echo "Starting install"
+  build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting build"
+      - ls -alh build
+      - cat build/index.html
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo "Finished the build"

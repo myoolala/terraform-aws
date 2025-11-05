@@ -26,9 +26,9 @@ locals {
     index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
   ]
   # @TODO integrate this
-  other_subnet_route_mapping = [for i, v in local.other_subnets :
-    index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
-  ]
+  # other_subnet_route_mapping = [for i, v in local.other_subnets :
+  #   index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
+  # ]
   create_internal_rt = var.public && length(var.compute_subnets) + length(local.other_subnets) > 0
 }
 
@@ -230,4 +230,14 @@ resource "aws_route" "nat_gateways_ipv6" {
   route_table_id              = aws_route_table.internal[count.index].id
   destination_ipv6_cidr_block = "::/0"
   nat_gateway_id              = aws_nat_gateway.private_internet_access[count.index].id
+}
+
+data "aws_region" "current" {}
+
+resource "aws_vpc_endpoint" "gateway_endpoints" {
+  count = length(var.gateway_endpoints)
+
+  vpc_id          = aws_vpc.main.id
+  service_name    = "com.amazonaws.${data.aws_region.current.region}.${var.gateway_endpoints[count.index]}"
+  route_table_ids = concat([aws_default_route_table.primary.id], aws_route_table.internal[*].id)
 }

@@ -1,0 +1,25 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # VPC
+
+  Creates a VPC in a variety of configurations. This primarily supports the ingress/public and compute/private subnet idea but supports an arbitrary number of subnets types.
+
+  There are integrations for mapping NAT Gateways to AZ's, conditionally creating Internet Gateways, enabling IPV6 or 4
+
+  [Examples can be found here](../../tests/vpc/)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

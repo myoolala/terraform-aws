@@ -18,9 +18,10 @@ variable "stages" {
       name           = optional(string, null)
       description    = optional(string, null)
       buildspec_path = optional(string, null)
+      permissions    = optional(string, null)
       environment = optional(object({
         compute_type                = optional(string, "BUILD_GENERAL1_SMALL")
-        image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:4.0")
+        image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:5.0")
         type                        = optional(string, "LINUX_CONTAINER")
         image_pull_credentials_type = optional(string, "CODEBUILD")
         privileged_mode             = optional(bool, false)
@@ -67,5 +68,11 @@ variable "artifact_store" {
 variable "iam_role" {
   type        = string
   description = "Existing IAM role to use for the pipeline. Leave null to create one"
+  default     = null
+}
+
+variable "permissions" {
+  type        = string
+  description = "Optional json string of permissions to add to the role"
   default     = null
 }

@@ -30,7 +30,7 @@ variable "key" {
 variable "runtime" {
   type        = string
   description = "Runtime to use for the lambda"
-  default     = "nodejs20.x"
+  default     = "nodejs22.x"
 }
 
 variable "handler" {
@@ -64,8 +64,8 @@ variable "secrets" {
 }
 
 variable "permissions" {
-  type        = map(any)
-  description = "Additional permissions the lambda will need"
+  type        = string
+  description = "Additional permissions the lambda will need json encoded"
   default     = null
 }
 
@@ -82,4 +82,10 @@ variable "timeout" {
   type        = number
   description = "Lambda timeout allowed"
   default     = 3
+}
+
+variable "tg_arns" {
+  type        = list(string)
+  description = "List of target group ARN's to attach to the lamdba"
+  default     = []
 }

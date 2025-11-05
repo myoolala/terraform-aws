@@ -6,14 +6,14 @@ variable "secrets" {
 
 variable "kms_key_id" {
   type        = string
-  default     = null
+  default     = "alias/aws/secretsmanager"
   description = "Name of the kms key to associate with the secrets"
 }
 
 variable "create_new_key" {
   type        = bool
   default     = true
-  description = "Create a new key to encrypt the secrets data with"
+  description = "Create a new key to encrypt the secrets data with instead of using the provided key"
 }
 
 variable "region" {

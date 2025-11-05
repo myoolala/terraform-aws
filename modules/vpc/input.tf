@@ -6,14 +6,14 @@ variable "name" {
   description = "Name to apply to the VPC for reference"
 }
 
-###########################################################################
-###############                 Not Required                ###############
-###########################################################################
 variable "ipv4_cidr" {
   type        = string
   description = "IPV4 CIDR for the VPC"
 }
 
+###########################################################################
+###############                 Not Required                ###############
+###########################################################################
 variable "ipv6_conf" {
   type = object({
     border_group = string
@@ -108,4 +108,13 @@ variable "enable_dns_hostnames" {
   type        = bool
   description = "Enabled DNS hostnames in the vpc"
   default     = true
+}
+
+variable "gateway_endpoints" {
+  type        = list(string)
+  description = "List of gateway endpoints to deploy if any"
+  default = [
+    "s3",
+    "dynamodb"
+  ]
 }

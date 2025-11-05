@@ -1,3 +1,13 @@
+/**
+ * # AutoScaling Group Service
+ *
+ * An EC2 autoscaling group based service to function similarly to an ECS service
+ *
+ * The intent here is to help run systems at a larger scale that makes sense for fargate 
+ * or the services themselfves are too large for fargate. Alternatively, EC2 native 
+ * autoscaling policies are at the time of writing more configurable than ECS
+ */
+
 module "secrets" {
   count  = var.secrets != null ? 1 : 0
   source = "../secrets"

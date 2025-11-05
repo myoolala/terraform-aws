@@ -1,0 +1,25 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # Lambda function
+
+  Automates creating a lambda function, IAM role, CloudWatch logs, IAM permissions, and Security groups all in one module. The intention is to reduce the repeat work for a simple lambda.
+
+  If there is no code to deploy, like on an initial deploy of an environment, a default zip file is deployed in place to prevent the lambda from erroring out
+
+  [Examples can be found here](../../tests/lambda)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  
