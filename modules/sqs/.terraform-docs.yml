@@ -1,0 +1,15 @@
+# .terraform-docs.yml
+content: |-
+  {{ .Header }}
+
+  ## Example
+
+  Halp
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

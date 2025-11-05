@@ -28,7 +28,6 @@ data "aws_iam_policy_document" "this" {
     resources = ["*"]
   }
 
-
   source_policy_documents   = local.permissions
   override_policy_documents = local.permissions
 }
