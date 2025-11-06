@@ -1,5 +1,5 @@
 output "alias_arn" {
-    value = var.alias ? aws_kms_alias.this[0].arn : null
+    value = var.alias != null ? aws_kms_alias.this[0].arn : null
     description = "ARN of the KMS Key Alias if one was created"
 }
 

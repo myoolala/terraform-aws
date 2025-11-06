@@ -10,7 +10,9 @@ sort:
 content: |-
   # SNS
 
-  WIP
+  Creates an SNS topic with an optional KMS key configuration and policy configuration
+
+  [Examples can be found here](../../tests/sns/)
 
   {{ .Providers }}
 
