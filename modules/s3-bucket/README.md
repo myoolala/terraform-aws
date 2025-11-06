@@ -1,7 +1,9 @@
 <!-- BEGIN_TF_DOCS -->
 # S3 Bucket
 
-Creates an S3 bucket with some automated behavior like setting encryption and policies
+Creates an S3 bucket with some automated behavior like setting encryption and versioning
+
+[Examples can be found here](../../tests/s3-bucket)
 
 ## Providers
 
