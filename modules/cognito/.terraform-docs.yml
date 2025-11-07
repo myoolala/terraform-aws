@@ -1,0 +1,21 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # Cognito
+
+  Creates a Cognito User Pool
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  
