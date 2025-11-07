@@ -1,6 +1,7 @@
 resource "aws_iam_role" "server_role" {
   name = var.name
 
+  # @TODO: fix this
   managed_policy_arns = var.managed_policies
 
 
