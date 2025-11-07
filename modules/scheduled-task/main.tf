@@ -11,7 +11,7 @@ locals {
 }
 
 module "logging_key" {
-  count = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? 1 : 0
+  count  = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? 1 : 0
   source = "../kms-key"
 
   description = "${var.service_name} logging key"

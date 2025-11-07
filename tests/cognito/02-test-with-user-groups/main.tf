@@ -3,10 +3,10 @@ module "cognito" {
 
   name = "base-test"
   groups = [{
-    name = "test-1"
+    name        = "test-1"
     description = "test-1"
-  }, {
-    name = "test-2"
+    }, {
+    name        = "test-2"
     description = "test-2"
   }]
 }
@@ -23,9 +23,9 @@ provider "aws" {
 
 terraform {
   required_providers {
-   aws = {
-      source = "hashicorp/aws"
+    aws = {
+      source  = "hashicorp/aws"
       version = "=6.19.0"
-   }
+    }
   }
 }

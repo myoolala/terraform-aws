@@ -1,7 +1,7 @@
 module "sns" {
   source = "../../../modules/sns"
 
-  name = "test-integration-topic"
+  name         = "test-integration-topic"
   display_name = "Test integration topic"
   kms = {
     key = "create"

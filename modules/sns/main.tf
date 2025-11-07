@@ -3,9 +3,9 @@ data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 
 locals {
-  acct_id           = data.aws_caller_identity.current.account_id
-  region            = data.aws_region.current.region
-  partition         = data.aws_partition.current.partition
+  acct_id   = data.aws_caller_identity.current.account_id
+  region    = data.aws_region.current.region
+  partition = data.aws_partition.current.partition
 }
 
 ###################################################################################################
@@ -15,45 +15,45 @@ data "aws_iam_policy_document" "assume_role" {
   count = var.kms.key == "create" ? 1 : 0
 
   statement {
-    
+
     effect = "Allow"
     principals {
-        type = "Service"
-        identifiers = ["sns.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
     }
 
     actions = [
-        "kms:Encrypt*",
-        "kms:Decrypt*",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:Describe*"
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*"
     ]
     resources = ["*"]
     condition {
-        test = "ArnLike"
-        variable = "aws:SourceArn"
-        values = ["arn:${local.partition}:sns:${local.region}:${local.acct_id}:${var.name}"]
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:${local.partition}:sns:${local.region}:${local.acct_id}:${var.name}"]
     }
     condition {
-        test = "StringEquals"
-        variable = "aws:SourceAccount"
-        values = [local.acct_id]
-        }
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [local.acct_id]
     }
+  }
 
   source_policy_documents   = [var.kms.permissions]
   override_policy_documents = [var.kms.permissions]
 }
 
 module "kms_key" {
-  count = var.kms.key == "create" ? 1 : 0
+  count  = var.kms.key == "create" ? 1 : 0
   source = "../kms-key"
 
   description             = "${var.name} bucket encryption key"
   deletion_window_in_days = var.kms.deletion_window
-  alias = "alias/${var.name}-sns"
-  permissions = data.aws_iam_policy_document.assume_role[0].json
+  alias                   = "alias/${var.name}-sns"
+  permissions             = data.aws_iam_policy_document.assume_role[0].json
 }
 
 ###################################################################################################

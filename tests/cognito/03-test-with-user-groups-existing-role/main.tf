@@ -22,15 +22,15 @@ module "cognito" {
 
   name = "base-test"
   groups = [{
-    name = "test-1"
+    name        = "test-1"
     description = "test-1"
-    role_arn = aws_iam_role.test.arn
-  }, {
-    name = "test-2"
+    role_arn    = aws_iam_role.test.arn
+    }, {
+    name        = "test-2"
     description = "test-2"
-    role_arn = aws_iam_role.test.arn
-  }, {
-    name = "test-3-no-role"
+    role_arn    = aws_iam_role.test.arn
+    }, {
+    name        = "test-3-no-role"
     description = "test-3"
   }]
 }
@@ -47,9 +47,9 @@ provider "aws" {
 
 terraform {
   required_providers {
-   aws = {
-      source = "hashicorp/aws"
+    aws = {
+      source  = "hashicorp/aws"
       version = "=6.19.0"
-   }
+    }
   }
 }

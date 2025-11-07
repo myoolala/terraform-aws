@@ -7,10 +7,10 @@ resource "random_string" "suffix" {
 }
 
 module "test" {
-    source = "../../../modules/s3-bucket"
+  source = "../../../modules/s3-bucket"
 
-    name = "test-integration-${random_string.suffix.result}"
-    versioning_enabled = true
+  name               = "test-integration-${random_string.suffix.result}"
+  versioning_enabled = true
 }
 
 provider "aws" {

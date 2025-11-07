@@ -39,6 +39,7 @@ No requirements.
 |------|-------------|
 | <a name="output_dns_name"></a> [dns\_name](#output\_dns\_name) | DNS CNAME for the load balancer |
 | <a name="output_lb_arn"></a> [lb\_arn](#output\_lb\_arn) | ARN for the created load balancer |
+| <a name="output_listener_arn"></a> [listener\_arn](#output\_listener\_arn) | ARN for the created load balancer listener |
 | <a name="output_sg_id"></a> [sg\_id](#output\_sg\_id) | Security Group ID if one was created |
 | <a name="output_tg_arns"></a> [tg\_arns](#output\_tg\_arns) | List of Target Group ARNs for the load balancer |  
 <!-- END_TF_DOCS -->

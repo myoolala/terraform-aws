@@ -7,13 +7,13 @@ resource "random_string" "suffix" {
 }
 
 module "test" {
-    source = "../../../modules/s3-bucket"
+  source = "../../../modules/s3-bucket"
 
-    name = "test-integration-${random_string.suffix.result}"
-    encryption = {
-      algorithm = "aws:kms"
-      key = "alias/aws/s3"
-    }
+  name = "test-integration-${random_string.suffix.result}"
+  encryption = {
+    algorithm = "aws:kms"
+    key       = "alias/aws/s3"
+  }
 }
 
 provider "aws" {
