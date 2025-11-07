@@ -87,7 +87,7 @@ resource "aws_lb_target_group" "forwarder" {
   }
 }
 
-resource "aws_lb_listener" "public_endpoint" {
+resource "aws_lb_listener" "this" {
   count = length(var.port_mappings)
 
   load_balancer_arn = aws_lb.ingress.arn

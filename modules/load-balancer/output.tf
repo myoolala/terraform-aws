@@ -17,3 +17,8 @@ output "lb_arn" {
   value = aws_lb.ingress.arn
   description = "ARN for the created load balancer"
 }
+
+output "listener_arn" {
+  value = aws_lb_listener.this[*].arn
+  description = "ARN for the created load balancer listener"
+}
