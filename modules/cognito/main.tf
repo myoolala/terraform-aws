@@ -25,7 +25,3 @@ resource "aws_cognito_user_pool_client" "userpool_client" {
   allowed_oauth_scopes                 = var.client_config.allowed_oauth_scopes
   supported_identity_providers         = var.client_config.supported_identity_providers
 }
-
-resource "aws_cognito_user_pool" "pool" {
-  name = "pool"
-}
