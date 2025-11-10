@@ -21,7 +21,7 @@ No requirements.
 |------|-------------|------|---------|:--------:|
 | <a name="input_display_name"></a> [display\_name](#input\_display\_name) | Display name to attach to the SNS Topic | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Name to attach to the SNS Topic | `string` | n/a | yes |
-| <a name="input_kms"></a> [kms](#input\_kms) | Encryption configuration which defaults to no encyrption. Supports passing in a key or creating one with the Key 'create' | <pre>object({<br/>    key             = string<br/>    deletion_window = optional(number, 14)<br/>    permissions = optional(string, "")<br/>  })</pre> | <pre>{<br/>  "key": null<br/>}</pre> | no |
+| <a name="input_kms"></a> [kms](#input\_kms) | Encryption configuration which defaults to no encyrption. Supports passing in a key or creating one with the Key 'create' | <pre>object({<br/>    key             = string<br/>    deletion_window = optional(number, 14)<br/>    permissions     = optional(string, "")<br/>  })</pre> | <pre>{<br/>  "key": null<br/>}</pre> | no |
 | <a name="input_policy"></a> [policy](#input\_policy) | Policy to attach to the topic if applicable | `string` | `null` | no |
 
 ## Outputs

@@ -47,8 +47,8 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input\_name) | Name for the Cognito User Pool | `string` | n/a | yes |
-| <a name="input_client_config"></a> [client\_config](#input\_client\_config) | Configuration for the client if there is one | <pre>object({<br/>        name = string<br/>        callback_urls = list(string)<br/>        allowed_oauth_flows_user_pool_client = optional(bool, true)<br/>        allowed_oauth_flows = list(string)<br/>        allowed_oauth_scopes = list(string)<br/>        supported_identity_providers = list(string)<br/>    })</pre> | `null` | no |
-| <a name="input_groups"></a> [groups](#input\_groups) | List of groups to create along side the Cognito User Pool | <pre>list(object({<br/>        name = string<br/>        description = string<br/>        precidence = optional(number, 100)<br/>        role_arn = optional(string, null)<br/>        # permissions = optional(string, null)<br/>    }))</pre> | `[]` | no |
+| <a name="input_client_config"></a> [client\_config](#input\_client\_config) | Configuration for the client if there is one | <pre>object({<br/>    name                                 = string<br/>    callback_urls                        = list(string)<br/>    allowed_oauth_flows_user_pool_client = optional(bool, true)<br/>    allowed_oauth_flows                  = list(string)<br/>    allowed_oauth_scopes                 = list(string)<br/>    supported_identity_providers         = list(string)<br/>  })</pre> | `null` | no |
+| <a name="input_groups"></a> [groups](#input\_groups) | List of groups to create along side the Cognito User Pool | <pre>list(object({<br/>    name        = string<br/>    description = string<br/>    precidence  = optional(number, 100)<br/>    role_arn    = optional(string, null)<br/>    # permissions = optional(string, null)<br/>  }))</pre> | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Default tags to apply to the resources | `map(string)` | `{}` | no |
 
 ## Outputs

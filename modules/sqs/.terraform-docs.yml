@@ -10,7 +10,22 @@ sort:
 content: |-
   # SQS
 
-  WIP
+  Creates an SQS Queue with an optional KMS key configuration and policy configuration
+
+  ## Creating a queue with the AWS provided KMS Key
+
+  ```hcl
+  module "sqs" {
+    source = "../../../modules/sqs"
+
+    name         = "test-integration-queue"
+    kms = {
+      key = "alias/aws/sqs"
+    }
+  }
+  ```
+
+  [More examples can be found here](../../tests/sqs/)
 
   {{ .Providers }}
 
