@@ -44,63 +44,72 @@ module "base_pipeline" {
     ]
   })
   stages = [{
-    name             = "Source"
-    category         = "Source"
-    owner            = "AWS"
-    provider         = "S3"
-    version          = "1"
-    output_artifacts = ["source_output"]
+    name = "Source"
+    actions = [{
+      name             = "S3"
+      category         = "Source"
+      owner            = "AWS"
+      provider         = "S3"
+      version          = "1"
+      output_artifacts = ["source_output"]
 
-    # @Link: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-S3.html
-    configuration = {
-      S3Bucket    = module.source_bucket.id
-      S3ObjectKey = "index.zip"
-    }
+      # @Link: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-S3.html
+      configuration = {
+        S3Bucket    = module.source_bucket.id
+        S3ObjectKey = "index.zip"
+      }
+    }]
     }, {
-    name             = "Build"
-    category         = "Build"
-    owner            = "AWS"
-    provider         = "CodeBuild"
-    input_artifacts  = ["source_output"]
-    output_artifacts = ["build_output"]
-    version          = "1"
-    codebuild_project = {
-      create         = true
-      name           = "test2"
-      description    = "Example build project"
-      buildspec_path = file("${path.module}/buildspecs/build.yml")
-      environment_variables = [{
-        name  = "fu"
-        value = "bar"
-      }]
-      vpc_config = null
-    }
+    name = "Build"
+    actions = [{
+      name             = "Test"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_output"]
+      version          = "1"
+      codebuild_project = {
+        create         = true
+        name           = "test2"
+        description    = "Example build project"
+        buildspec_path = file("${path.module}/buildspecs/build.yml")
+        environment_variables = [{
+          name  = "fu"
+          value = "bar"
+        }]
+        vpc_config = null
+      }
 
-    configuration = {
-      ProjectName = "test2"
-    }
+      configuration = {
+        ProjectName = "test2"
+      }
+    }]
     }, {
-    name            = "Deploy"
-    category        = "Build"
-    owner           = "AWS"
-    provider        = "CodeBuild"
-    input_artifacts = ["build_output"]
-    version         = "1"
-    codebuild_project = {
-      create         = true
-      name           = "test3"
-      description    = "Example build project"
-      buildspec_path = file("${path.module}/buildspecs/build2.yml")
-      environment_variables = [{
-        name  = "fu"
-        value = "bar"
-      }]
-      vpc_config = null
-    }
+    name = "Deploy"
+    actions = [{
+      name            = "Test"
+      category        = "Build"
+      owner           = "AWS"
+      provider        = "CodeBuild"
+      input_artifacts = ["build_output"]
+      version         = "1"
+      codebuild_project = {
+        create         = true
+        name           = "test3"
+        description    = "Example build project"
+        buildspec_path = file("${path.module}/buildspecs/build2.yml")
+        environment_variables = [{
+          name  = "fu"
+          value = "bar"
+        }]
+        vpc_config = null
+      }
 
-    configuration = {
-      ProjectName = "test3"
-    }
+      configuration = {
+        ProjectName = "test3"
+      }
+    }]
   }]
 
   depends_on = [

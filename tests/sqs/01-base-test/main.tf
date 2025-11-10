@@ -1,7 +1,7 @@
 module "sqs" {
   source = "../../../modules/sqs"
 
-  name         = "test-integration-queue"
+  name = "test-integration-queue"
 }
 
 provider "aws" {

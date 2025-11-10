@@ -80,12 +80,12 @@ data "aws_iam_policy_document" "codepipeline_policy" {
   }
 
   dynamic "statement" {
-    for_each = length(var.stages) > 0 && var.stages[0].provider == "CodeStarSourceConnection" ? [1] : []
+    for_each = length(local.stage_actions) > 0 && local.stage_actions[0].provider == "CodeStarSourceConnection" ? [1] : []
 
     content {
       effect    = "Allow"
       actions   = ["codestar-connections:UseConnection"]
-      resources = [var.stages[0].configuration.ConnectionArn]
+      resources = [local.stage_actions[0].configuration.ConnectionArn]
     }
   }
 
@@ -126,7 +126,12 @@ locals {
 ####################################################################################################
 
 locals {
-  builds_to_build = [for i, v in var.stages : v.codebuild_project if v.codebuild_project.create == true]
+  # First create a single list of every stage actions
+  stage_actions = flatten([for i, v in var.stages : v.actions])
+  # Then filter out what we don't care about
+  # This might get messy with... state. Adding a new action will require a few state moves
+  # Refactor to an object?
+  builds_to_build = [for i, v in local.stage_actions : v.codebuild_project if v.codebuild_project.create == true]
 }
 
 module "build_projects" {
@@ -179,16 +184,20 @@ resource "aws_codepipeline" "this" {
     content {
       name = stage.value.name
 
-      action {
-        name             = stage.value.name
-        category         = stage.value.category
-        owner            = stage.value.owner
-        provider         = stage.value.provider
-        input_artifacts  = stage.value.input_artifacts
-        output_artifacts = stage.value.output_artifacts
-        version          = stage.value.version
+      dynamic "action" {
+        for_each = stage.value.actions
 
-        configuration = stage.value.configuration
+        content {
+          name             = action.value.name
+          category         = action.value.category
+          owner            = action.value.owner
+          provider         = action.value.provider
+          input_artifacts  = action.value.input_artifacts
+          output_artifacts = action.value.output_artifacts
+          version          = action.value.version
+
+          configuration = action.value.configuration
+        }
       }
     }
   }

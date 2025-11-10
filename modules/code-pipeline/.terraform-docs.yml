@@ -12,7 +12,55 @@ content: |-
 
   Creates a CodePipeline with a list of stages while autmating the creation the of shared artifacts bucket, codebuild projects if there are any, and any required permissions that might be needed.
 
-  ## Examples:
+  ## Example of a minimally set pipeline:
+  ```hcl
+  resource "aws_codestarconnections_connection" "code_source" {
+    name          = "my-code-source"
+    provider_type = "GitHub"
+  }
+
+  module "example_pipeline" {
+    source = "github.com/myoolala/terraform-aws/modules//code-pipeline"
+
+    name = "base-minimal-config"
+    artifact_store = {
+      create      = true
+      kms_key_arn = "aws/s3"
+    }
+    stages = [{
+      name             = "Source"
+      actions = [{
+        name             = "Git"
+        category         = "Source"
+        owner            = "AWS"
+        provider         = "CodeStarSourceConnection"
+        version          = "1"
+        output_artifacts = ["source_output"]
+
+        configuration = {
+          ConnectionArn    = aws_codestarconnections_connection.code_source.arn
+          FullRepositoryId = "myoolala/terraform-aws"
+          BranchName       = "main"
+        }
+      }]
+    }, {
+      name             = "Build"
+      actions = [{
+        name             = "Project"
+        category         = "Build"
+        owner            = "AWS"
+        provider         = "CodeBuild"
+        input_artifacts  = ["source_output"]
+        output_artifacts = ["build2_output"]
+        version          = "1"
+
+        configuration = {
+          ProjectName = "buildMyCode"
+        }
+      }]
+    }]
+  }
+  ```
   
   [Click here to view a folder of example tests](../../tests/code-pipeline)
 

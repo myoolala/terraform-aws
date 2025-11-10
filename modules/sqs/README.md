@@ -6,8 +6,8 @@ Creates an SQS Queue with an optional KMS key configuration and policy configura
 ## Creating a queue with the AWS provided KMS Key
 
 ```hcl
-module "sqs" {
-  source = "../../../modules/sqs"
+module "example_queue" {
+  source = "github.com/myoolala/terraform-aws/modules//sqs"
 
   name         = "test-integration-queue"
   kms = {
