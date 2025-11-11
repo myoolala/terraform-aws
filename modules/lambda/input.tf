@@ -1,12 +1,20 @@
-variable "role" {
-  type        = string
-  description = "Existing role to attach to the lambda if desired"
-  default     = null
-}
+###########################################################################
+###############                   Required                  ###############
+###########################################################################
 
 variable "function_name" {
   type        = string
   description = "Name for the new lambda function"
+}
+
+###########################################################################
+###############                   Optional                  ###############
+###########################################################################
+
+variable "role" {
+  type        = string
+  description = "Existing role to attach to the lambda if desired"
+  default     = null
 }
 
 variable "file_path" {
@@ -31,6 +39,13 @@ variable "runtime" {
   type        = string
   description = "Runtime to use for the lambda"
   default     = "nodejs22.x"
+}
+
+# @Link: https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html#configuration-memory-use-cases
+variable "memory" {
+  type = number
+  description = "Memory allocation per runtime for the lambda"
+  default = 128
 }
 
 variable "handler" {
@@ -88,4 +103,10 @@ variable "tg_arns" {
   type        = list(string)
   description = "List of target group ARN's to attach to the lamdba"
   default     = []
+}
+
+variable "schedule" {
+  type = string
+  description = "Cron schedule to invoke the lambda on if there is one"
+  default = null
 }
