@@ -76,5 +76,5 @@ variable "secrets_keys" {
 variable "storage" {
   type        = number
   description = "Size of the ephemeral storage volume for the container"
-  default     = 20
+  default     = 21
 }

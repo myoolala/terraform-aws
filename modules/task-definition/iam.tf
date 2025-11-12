@@ -85,6 +85,8 @@ resource "aws_iam_role" "task_execution_role" {
 }
 
 data "aws_iam_policy_document" "task_exec_secret_perms" {
+  count = length(var.secrets) > 0 ? 1 : 0
+
   dynamic "statement" {
     for_each = length(var.secrets) > 0 ? [1] : []
 
@@ -113,11 +115,11 @@ data "aws_iam_policy_document" "task_exec_secret_perms" {
 }
 
 resource "aws_iam_role_policy" "task_exec_secret_perms" {
-  count = length(var.secrets) > 0 || length(var.secrets_keys) > 0 ? 1 : 0
+  count = length(var.secrets) > 0 ? 1 : 0
 
   role   = aws_iam_role.task_execution_role.name
   name   = "SecretsPerms"
-  policy = data.aws_iam_policy_document.task_exec_secret_perms.json
+  policy = data.aws_iam_policy_document.task_exec_secret_perms[0].json
 }
 
 locals {

@@ -58,3 +58,9 @@ variable "start_grace_period" {
   description = "Number of hours to allow premature starting of the instance"
   default = 0
 }
+
+variable "permissions" {
+    type = string
+    description = "JSON encoded permissions policy to override the default policy with"
+    default = null
+}

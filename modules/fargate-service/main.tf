@@ -1,8 +1,10 @@
+data "aws_region" "current" {}
+
 module "secrets" {
   source = "../secrets"
 
   secrets         = var.secrets
-  region          = var.region
+  region = data.aws_region.current.region
   create_new_key  = true
   recovery_window = 0
 }
@@ -47,7 +49,7 @@ module "image" {
   env_vars     = var.env_vars
   secrets      = module.secrets.fargate_secrets
   secrets_keys = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
-  port_mappings = [for i in var.lb.port_mappings : {
+  port_mappings = [for i in try(var.lb.port_mappings, []) : {
     containerPort = i.forward_port
     hostPort      = i.forward_port
   }]
@@ -63,13 +65,13 @@ resource "aws_security_group" "service" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  count = length(var.lb.port_mappings)
+  count = try(length(var.lb.port_mappings), 0)
 
   type                     = "ingress"
   from_port                = var.lb.port_mappings[count.index].listen_port
   to_port                  = var.lb.port_mappings[count.index].listen_port
   protocol                 = var.lb.port_mappings[count.index].sg_protocol
-  source_security_group_id = module.lb.sg_id
+  source_security_group_id = module.lb[0].sg_id
   security_group_id        = aws_security_group.service.id
 }
 
@@ -105,10 +107,10 @@ resource "aws_ecs_service" "app" {
   #   }
 
   dynamic "load_balancer" {
-    for_each = var.lb.port_mappings
+    for_each = try(var.lb.port_mappings, [])
 
     content {
-      target_group_arn = module.lb.tg_arns[load_balancer.key]
+      target_group_arn = module.lb[0].tg_arns[load_balancer.key]
       container_name   = var.service_name
       container_port   = load_balancer.value.forward_port
     }
@@ -126,6 +128,8 @@ resource "aws_ecs_service" "app" {
     ]
   }
 
+  tags = var.tags
+
   depends_on = [
     module.image,
     module.lb
@@ -133,6 +137,7 @@ resource "aws_ecs_service" "app" {
 }
 
 module "lb" {
+  count = var.lb != null ? 1 : 0
   source = "../load-balancer"
 
   vpc_id        = var.lb.vpc_id != null ? var.lb.vpc_id : var.network.vpc_id

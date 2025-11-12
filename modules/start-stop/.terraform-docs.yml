@@ -1,0 +1,46 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # Start Stop Lambda Service
+
+  Creates a lambda that scans ASG's, ECS services, EC2 instances, and EventBridge rules for anything that can be enabled/disabled via a schedule. This is done via tags to all for a single regional deployment of this lambda to affect any number of services.
+
+  The default permissions are expansive and should be restricted down as necessary per system.
+
+  It runs on a default schedule of every 30 minutes
+
+  The tag it looks for is configurable enabling multiple deployments of this lambda for multiple projects even without permissions
+
+  For the services:
+  
+  - ASG is scaled to the minimum size or the minimum size + 1
+  - EC2 instance is stopped/started
+  - ECS Service is scaled to 0 or 1 tasks
+  - EventBridge rules are enabled/disabled
+
+  # Examples
+
+  ## Basic minimally set service
+
+  ```hcl
+  module "start_stop_lambder" {
+    source = "../../../modules/start-stop"
+
+    name = "start-stop-service"
+  }
+  ```
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

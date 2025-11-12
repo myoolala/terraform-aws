@@ -1,3 +1,7 @@
+###########################################################################
+###############                   Required                  ###############
+###########################################################################
+
 variable "service_name" {
   type        = string
   description = "Name to apply to the Fargate service"
@@ -19,6 +23,10 @@ variable "cluster" {
   })
   description = "Cluster information for the service"
 }
+
+###########################################################################
+###############                   Optional                  ###############
+###########################################################################
 
 variable "ecr" {
   type = object({
@@ -42,11 +50,6 @@ variable "image_tag" {
   type        = string
   description = "Version of the app in ECR to deploy"
   default     = null
-}
-
-variable "region" {
-  type        = string
-  description = "Region to deploy the service to"
 }
 
 variable "tags" {
@@ -103,4 +106,6 @@ variable "lb" {
       }), {})
     }))
   })
+  description = "Load balancer configuration for the service if there is one"
+  default = null
 }

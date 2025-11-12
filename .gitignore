@@ -13,3 +13,5 @@ devops/scripts-test
 devops/terragrunt/
 
 output
+
+node_modules

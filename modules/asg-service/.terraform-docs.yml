@@ -1,16 +1,76 @@
 # .terraform-docs.yml
 
-header-from: main.tf
-
 settings:
- type: false
+  type: true
 
 sort:
   enabled: true
   by: required
 
 content: |-
-  {{ .Header }}
+  # ASG Service
+
+  Creates an ASG Service similar in style to a Fargate Service. Automates creating the:
+  
+  - ASG
+  - IAM roles if needed
+  - Cloudwatch logs
+  - Task definition
+  - Secrets if needed
+  - Load balancer
+  - And anything else needed to run a service in Fargate
+
+  Currently there are limitation with ENV vars done via SSM, or enabling autoscaling policies and EFS volumes.
+
+  # Examples
+
+  ## Basic minimally set ASG with no load balancer
+
+  ```hcl
+  module "vpc" {
+    source = "../../../modules/vpc"
+
+    name ="private-vpc-test"
+    ipv4_cidr = "172.31.0.0/16"
+    ingress_subnets = []
+    compute_subnets = [{
+      ipv4_cidr = "172.31.1.0/25"
+      az = "us-east-1a"
+    },
+    {
+      ipv4_cidr = "172.31.1.128/25"
+      az = "us-east-1b"
+    }]
+  }
+
+  data "aws_ami" "ubuntu" {
+    most_recent = true
+
+    filter {
+      name   = "name"
+      values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+    }
+
+    filter {
+      name   = "virtualization-type"
+      values = ["hvm"]
+    }
+
+    owners = ["099720109477"] # Canonical
+  }
+
+  module "asg" {
+    source = "../../../modules/asg-service"
+
+    name = "test-for-start-stop"
+    ami = data.aws_ami.ubuntu.id
+    instance_type = "t3.micro"
+    network = {
+      vpc = module.vpc.vpc_id
+      subnets = module.vpc.compute_subnet_ids
+    }
+  }
+  ```
 
   {{ .Providers }}
 

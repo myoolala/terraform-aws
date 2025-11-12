@@ -28,7 +28,7 @@ No requirements.
 | <a name="input_port_mappings"></a> [port\_mappings](#input\_port\_mappings) | n/a | `list(map(number))` | <pre>[<br/>  {<br/>    "containerPort": 443,<br/>    "hostPort": 443<br/>  }<br/>]</pre> | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | Secrets to load into the container's environment | <pre>list(object({<br/>    name      = string<br/>    valueFrom = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_secrets_keys"></a> [secrets\_keys](#input\_secrets\_keys) | If there are any kms keys used with the secrets, add them here | `list(string)` | `[]` | no |
-| <a name="input_storage"></a> [storage](#input\_storage) | Size of the ephemeral storage volume for the container | `number` | `20` | no |
+| <a name="input_storage"></a> [storage](#input\_storage) | Size of the ephemeral storage volume for the container | `number` | `21` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources. Ie: environment, cost tracking, etc... | `map(any)` | `{}` | no |
 
 ## Outputs

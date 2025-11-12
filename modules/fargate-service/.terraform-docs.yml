@@ -10,7 +10,7 @@ sort:
 content: |-
   # Fargate Service
 
-  Creates a ECS Fargate Service. Automates creating the:
+  Creates an ECS Fargate Service. Automates creating the:
   
   - cluster if needed
   - ECR repo if needed

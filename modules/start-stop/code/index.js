@@ -17,12 +17,18 @@ const {
     ListRulesCommand,
     PutRuleCommand
 } = require("@aws-sdk/client-eventbridge");
+const {
+    AutoScalingClient,
+    DescribeAutoScalingGroupsCommand,
+    UpdateAutoScalingGroupCommand
+} = require('@aws-sdk/client-auto-scaling');
 const ecsClient = new ECSClient();
 const ec2Client = new EC2Client();
 const eventBridgeClient = new EventBridgeClient();
-const TAG_LOOKUP = process.env['TAG_LOOKUP'] || 'ServiceRunTime';
+const asgClient = new AutoScalingClient();
+const TAG_LOOKUP = process.env['TAG_LOOKUP'] || 'ServiceRunSchedule';
 const DRY_RUN = process.env['DRY_RUN'] === 'true';
-const START_GRACE_IN_HOURS = int(process.env['START_GRACE_IN_HOURS'] || 2);
+const START_GRACE_IN_HOURS = parseInt(process.env['START_GRACE_IN_HOURS'] || 2);
 
 // Promise wrapper that removes the need for try/catch in an async func
 const wrapper = promise => Promise.resolve(promise).then((data) => [undefined, data]).catch((err) => [err]);
@@ -54,11 +60,14 @@ const getTime = time => {
 }
 
 const callService = function() {
+    const [callThis, ...args] = arguments;
+    logger.debug('Making a call to edit an AWS resources', callThis, args);
     if (DRY_RUN) {
-        logger.warn('Dry Run mode enabled, skipping the calling: ', arguments[0], arguments.slice(1));
+        logger.warn('Dry Run mode enabled, skipping the call');
         return sleep(100);
     }
-    return arguments[0](...arguments.slice(1));
+    logger.debug('Calling AWS');
+    return callThis(...args);
 }
 
 /**
@@ -98,9 +107,16 @@ const getDays = days => {
     return toReturn;
 }
 
+/**
+ * @summary Given a schedule and state, returns what should be done to achieve the desired state
+ * @param {string} schedule - Schedule to use for the time check
+ * @param {Date} timeStamp - The timestamp to check against the schedule 
+ * @param {string} state - The current state of the system to use to determine what to do
+ * @returns {string<up|down|no>} - up means scale up, down means scale down, and no means do nothing
+ */
 const getDecision = (schedule, timeStamp, state) => {
     // Parse the tag to find out when the service should be scaled up
-    [days, start, end] = schedule.split('/');
+    let [days, start, end] = schedule.split('/');
     logger.debug(days, start, end);
     days = getDays(days);
     let startBuffer = parseInt(start.split(':')[0]) - START_GRACE_IN_HOURS;
@@ -145,6 +161,7 @@ const getDecision = (schedule, timeStamp, state) => {
  * @returns {Promise<void>} - A promise signifying completion of the task
  */
 const handleEcs = async timeStamp => {
+    logger.debug('Starting process to check ECS Services');
     // Get all the clusters for the region
     const clusters = await ecsClient.send(new ListClustersCommand({
         maxResults: 100
@@ -173,14 +190,13 @@ const handleEcs = async timeStamp => {
             const tags = service.tags.reduce((agg, {key, value}) => (agg[key] = value, agg), {});
             logger.debug('Tags found: ', tags);
             
-            let end, start, days;
             // Ignore any servie that doesn't have the scaling tag
             if (!tags[TAG_LOOKUP] || !tags[TAG_LOOKUP].length) {
                 logger.info(`${service.serviceName} doesn't have the relatant tags, skipping`);
                 continue;
             }
 
-            const decision = getDecision(tags[TAG_LOOKUP], timeStamp);
+            const decision = getDecision(tags[TAG_LOOKUP], timeStamp, service.desiredCount ? 'up' : 'down');
 
             if (decision === 'up') {
                 logger.info(`Scaling up ${service.serviceName}`);
@@ -219,19 +235,22 @@ const handleEc2 = async timeStamp => {
         instances.push(...data.Reservations.map(({Instances}) => Instances).flat());
     }
 
-    logger.debug(data);
+    logger.debug('EC2 list instances response: ', data);
     // Filter out instances that do not care about money
     instances = instances.filter(instance => {
         return !!instance.Tags.filter(tag => tag.Key === TAG_LOOKUP).length
     });
-    logger.debug(instances);
+    logger.debug('Filtered down EC2 instances: ', instances);
 
     // Group the instances by required actions
     let instancesToStop = [];
     let instancesToStart = [];
     for (let instance of instances) {
-        const tags = instance.Tags.reduce((agg, {key, value}) => (agg[key] = value, agg), {});
-        let decision = getDecision(tags[TAG_LOOKUP], timeStamp); 
+        logger.debug('Checking instance: ', instance.InstanceId);
+        const tags = instance.Tags.reduce((agg, {Key, Value}) => (agg[Key] = Value, agg), {});
+        logger.debug('Found tags: ', tags);
+        let decision = getDecision(tags[TAG_LOOKUP], timeStamp, instance.State.Name === 'running' ? 'up' : 'down'); 
+        logger.debug('For the instance the decision is: ', decision);
 
         if (decision === 'up') {
             instancesToStart.push(instance.InstanceId);
@@ -263,7 +282,65 @@ const handleEc2 = async timeStamp => {
  * @summary: Scans through EC2 AutoScaling groups in the current region and scales based on tags
  * @returns {Promise<void>} - A promise signifying completion of the task
  */
-const handleAsg = async () => {
+const handleAsg = async timeStamp => {
+    logger.debug('Starting process to check AutoScaling groups');
+
+    // Go get all of the instances, we really only need to get the id's and tags
+    let [err, data] = await wrapper(asgClient.send(new DescribeAutoScalingGroupsCommand({
+        MaxRecords: 100,
+        Filters: [{
+            Name: "tag-key",
+            Values: [
+                TAG_LOOKUP,
+            ],
+        }]
+    })));
+    if (err)
+        return logger.error(err)
+    
+    let groups = data.AutoScalingGroups;
+    while (data.NextToken) {
+        [err, data] = await wrapper(asgClient.send(new DescribeAutoScalingGroupsCommand({
+            MaxRecords: 100,
+            Filters: [{
+                Name: "tag-key",
+                Values: [
+                    TAG_LOOKUP,
+                ],
+            }],
+            NextToken: data.NextToken
+        })));
+        if (err)
+            return logger.error(err)
+        groups.push(...data.AutoScalingGroups);
+    }
+    logger.debug('Found AS Groups: ', groups);
+
+    for (let asg of groups) {
+        logger.debug('Checking the group: ', asg);
+
+        const state = asg.DesiredCapacity > asg.MinSize ? 'up' : 'down';
+        const tags = asg.Tags.reduce((agg, {Key, Value}) => (agg[Key] = Value, agg), {});
+        logger.debug('Found ASG tags: ', tags)
+        let decision = getDecision(tags[TAG_LOOKUP], timeStamp, state);
+        logger.debug(`Got decision ${decision} for the asg: `, tags[TAG_LOOKUP], timeStamp, state);
+
+        if (decision === 'down') {
+            logger.info(`Scaling down the ASG ${asg.AutoScalingGroupName}`);
+            await callService(asgClient.send.bind(asgClient), new UpdateAutoScalingGroupCommand({
+                AutoScalingGroupName: asg.AutoScalingGroupName,
+                DesiredCapacity: Math.min(asg.MinSize, asg.DesiredCapacity - 1)
+            }));
+        } else if (decision === 'up') {
+            logger.info(`Scaling up the ASG ${asg.AutoScalingGroupName}`);
+            await callService(asgClient.send.bind(asgClient), new UpdateAutoScalingGroupCommand({
+                AutoScalingGroupName: asg.AutoScalingGroupName,
+                DesiredCapacity: Math.max(asg.MaxSize, asg.DesiredCapacity + 1)
+            }));
+        } else {
+            logger.debug('Doing nothing for the ASG ' + asg.AutoScalingGroupName);
+        }
+    }
 }
 
 /**
@@ -291,13 +368,17 @@ const handleCrons = async timeStamp => {
         rules.push(...data.Rules);
     }
 
-    logger.debug(rules);
+    logger.debug('Found these rules to check: ', rules);
 
     for (let rule of rules) {
-        const schedule = rule.Description.split(" --- ")[-1];
-        if (!schedule)
+        const schedule = rule.Description.split(" --- ");
+        logger.debug('Found schedule for cron: ', rule.Name, schedule[1]);
+        logger.debug(rule.Description.split(" --- "));
+        if (schedule.length < 2)
             continue
-        let decision = getDecision(schedule, timeStamp, rule.State === 'ENABLED' ? 'up' : 'down');
+        logger.debug('Making decision for Cron schedule');
+        let decision = getDecision(schedule[1], timeStamp, rule.State === 'ENABLED' ? 'up' : 'down');
+        logger.debug('Cron decision is ', decision);
 
         if (decision === 'up') {
             await callService(eventBridgeClient.send.bind(eventBridgeClient), new PutRuleCommand({
@@ -314,15 +395,17 @@ const handleCrons = async timeStamp => {
 }
 
 exports.handler = async event => {
-    logger.debug(event);
+    logger.debug('Incoming event: ', event);
 
     // Time stamp to check against for scaling options
     const timeStamp = new Date();
+    logger.info('Time stamp to check against: ', timeStamp);
 
-    await Promise.all([
-        wrapper(handleEcs(timeStamp)),
-        wrapper(handleEc2(timeStamp)),
-        wrapper(handleCrons(timeStamp)),
-        wrapper(handleAsg(timeStamp))
+    const result = await Promise.allSettled([
+        handleEcs(timeStamp),
+        handleEc2(timeStamp),
+        handleCrons(timeStamp),
+        handleAsg(timeStamp)
     ]);
+    logger.debug(result);
 }

@@ -1,10 +1,6 @@
 resource "aws_iam_role" "server_role" {
   name = var.name
 
-  # @TODO: fix this
-  managed_policy_arns = var.managed_policies
-
-
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
   assume_role_policy = jsonencode({
@@ -23,6 +19,13 @@ resource "aws_iam_role" "server_role" {
 
   tags = merge(var.tags, {
   })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_policy" {
+  count      = try(length(var.managed_policies), 0)
+
+  role       = aws_iam_role.server_role.name
+  policy_arn = var.managed_policies[count.index]
 }
 
 resource "aws_iam_role_policy" "app_permissions" {

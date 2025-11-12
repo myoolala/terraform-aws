@@ -29,9 +29,11 @@ No requirements.
 | <a name="input_handler"></a> [handler](#input\_handler) | Handler function | `string` | `"index.handler"` | no |
 | <a name="input_key"></a> [key](#input\_key) | S3 Key of the source zip file | `string` | `null` | no |
 | <a name="input_log_retention"></a> [log\_retention](#input\_log\_retention) | Number in days to store logs in cloudwatch | `number` | `7` | no |
+| <a name="input_memory"></a> [memory](#input\_memory) | Memory allocation per runtime for the lambda | `number` | `128` | no |
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | Additional permissions the lambda will need json encoded | `string` | `null` | no |
 | <a name="input_role"></a> [role](#input\_role) | Existing role to attach to the lambda if desired | `string` | `null` | no |
 | <a name="input_runtime"></a> [runtime](#input\_runtime) | Runtime to use for the lambda | `string` | `"nodejs22.x"` | no |
+| <a name="input_schedule"></a> [schedule](#input\_schedule) | Cron schedule to invoke the lambda on if there is one | `string` | `null` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | List of secrets and associated kms keys the lambda will need access to | <pre>object({<br/>    arns     = list(string)<br/>    kms_keys = list(string)<br/>  })</pre> | <pre>{<br/>  "arns": [],<br/>  "kms_keys": []<br/>}</pre> | no |
 | <a name="input_tg_arns"></a> [tg\_arns](#input\_tg\_arns) | List of target group ARN's to attach to the lamdba | `list(string)` | `[]` | no |
 | <a name="input_timeout"></a> [timeout](#input\_timeout) | Lambda timeout allowed | `number` | `3` | no |

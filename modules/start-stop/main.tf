@@ -1,12 +1,5 @@
-module "start_stop" {
-  source = "../lambda"
-
-  environment_vars = {
-    LOG_LEVEL = var.log_level
-    DRY_RUN = var.dry_run_mode_enabled
-  }
-  log_retention = var.log_retention
-  permissions = {
+locals {
+  default_permissions = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -21,10 +14,21 @@ module "start_stop" {
         Resource = ["*"]
       }
     ]
+  })
+}
+
+module "start_stop" {
+  source = "../lambda"
+
+  environment_vars = {
+    LOG_LEVEL = var.log_level
+    DRY_RUN = var.dry_run_mode_enabled
   }
+  log_retention = var.log_retention
+  permissions = var.permissions != null ? var.permissions : local.default_permissions
   runtime       = "nodejs22.x"
   function_name = var.name
-  memory   = var.memory
+  memory        = var.memory
   timeout       = var.timeout
   handler       = "index.handler"
   schedule = var.schedule

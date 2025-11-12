@@ -29,7 +29,7 @@ RUN <<EOF
     tenv tofu use 1.10.6
     tenv terragrunt install 0.91.5
     tenv terragrunt use 0.91.5
-    bash -c "source ~/.bashrc && nvm install 20"
+    bash -c "source ~/.bashrc && nvm install 22"
     echo 'alias tf="tofu"' >> ~/.bashrc
     echo 'alias tfi="tofu init"' >> ~/.bashrc
     echo 'alias tfp="tofu plan"' >> ~/.bashrc

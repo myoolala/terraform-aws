@@ -42,13 +42,13 @@ resource "aws_security_group_rule" "ingresses" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  count = length(var.lb.port_mappings)
+  count = try(length(var.lb.port_mappings), 0)
 
   type                     = "ingress"
   from_port                = var.lb.port_mappings[count.index].forward_port
   to_port                  = var.lb.port_mappings[count.index].forward_port
   protocol                 = var.lb.port_mappings[count.index].sg_protocol
-  source_security_group_id = module.lb.sg_id
+  source_security_group_id = module.lb[0].sg_id
   security_group_id        = aws_security_group.service.id
 }
 
@@ -180,12 +180,24 @@ resource "aws_autoscaling_group" "cluster" {
       desired_capacity
     ]
   }
+
+  dynamic "tag" {
+    for_each = var.asg_tags
+
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = false
+    }
+  }
+
   depends_on = [
     module.lb
   ]
 }
 
 module "lb" {
+  count = var.lb != null ? 1 : 0
   source = "../load-balancer"
 
   vpc_id        = var.lb.vpc_id != null ? var.lb.vpc_id : var.network.vpc
@@ -202,9 +214,9 @@ module "lb" {
 }
 
 resource "aws_autoscaling_attachment" "asg_lb" {
-  count = length(module.lb.tg_arns)
+  count = try(length(module.lb.tg_arns), 0)
 
   autoscaling_group_name = aws_autoscaling_group.cluster.id
   # elb                    = aws_elb.example.id
-  lb_target_group_arn = module.lb.tg_arns[count.index]
+  lb_target_group_arn = module.lb[0].tg_arns[count.index]
 }

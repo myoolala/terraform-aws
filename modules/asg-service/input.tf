@@ -117,6 +117,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "asg_tags" {
+  type        = map(string)
+  description = "Map of tags to apply to all the ASG itself"
+  default     = {}
+}
+
 variable "permissions" {
   type        = string
   default     = null
@@ -197,4 +203,6 @@ variable "lb" {
       }), {})
     }))
   })
+  description = "Load balancer configuration if there is one"
+  default = null
 }
