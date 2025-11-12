@@ -14,7 +14,32 @@ content: |-
 
   If there is no code to deploy, like on an initial deploy of an environment, a default zip file is deployed in place to prevent the lambda from erroring out
 
-  [Examples can be found here](../../tests/lambda)
+  # Examples
+
+  ## Base lambda with minimal configuration
+
+  ```hcl
+  module "lambda" {
+    source = "../../../modules/lambda"
+
+    function_name = "lambda-function"
+    file_path     = archive_file.source.output_path
+  }
+  ```
+
+  ## Lambda with a cron based schedule to automatically trigger invocation
+
+  ```hcl
+  module "lambda" {
+    source = "../../../modules/lambda"
+
+    function_name = "lambda-function"
+    file_path     = archive_file.source.output_path
+    schedule = "rate(1 day)"
+  }
+  ```
+
+  [More examples can be found here](../../tests/lambda)
 
   {{ .Providers }}
 

@@ -175,3 +175,34 @@ resource "aws_lb_target_group_attachment" "alb_connection" {
     aws_lambda_permission.tg_perms
   ]
 }
+
+##################################################################
+##################################################################
+##########                Cron trigger                  ##########
+##################################################################
+##################################################################
+
+resource "aws_cloudwatch_event_rule" "cron_trigger" {
+  count = var.schedule != null ? 1 : 0
+
+  name = "${var.function_name}-cron-trigger"
+  schedule_expression = var.schedule
+}
+
+resource "aws_lambda_permission" "cron_perms" {
+  count = var.schedule != null ? 1 : 0
+
+  statement_id  = "cron-invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.function.arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.cron_trigger[0].arn
+}
+
+resource "aws_cloudwatch_event_target" "schedule" {
+  count = var.schedule != null ? 1 : 0
+
+  target_id = "${var.function_name}-cron-trigger"
+  arn = aws_lambda_function.function.arn
+  rule = aws_cloudwatch_event_rule.cron_trigger[0].name
+}
