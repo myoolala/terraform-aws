@@ -22,16 +22,16 @@ module "start_stop" {
 
   environment_vars = {
     LOG_LEVEL = var.log_level
-    DRY_RUN = var.dry_run_mode_enabled
+    DRY_RUN   = var.dry_run_mode_enabled
   }
   log_retention = var.log_retention
-  permissions = var.permissions != null ? var.permissions : local.default_permissions
+  permissions   = var.permissions != null ? var.permissions : local.default_permissions
   runtime       = "nodejs22.x"
   function_name = var.name
   memory        = var.memory
   timeout       = var.timeout
   handler       = "index.handler"
-  schedule = var.schedule
+  schedule      = var.schedule
 }
 
 resource "aws_cloudwatch_metric_alarm" "failed_to_start_stop" {

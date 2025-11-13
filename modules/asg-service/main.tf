@@ -197,7 +197,7 @@ resource "aws_autoscaling_group" "cluster" {
 }
 
 module "lb" {
-  count = var.lb != null ? 1 : 0
+  count  = var.lb != null ? 1 : 0
   source = "../load-balancer"
 
   vpc_id        = var.lb.vpc_id != null ? var.lb.vpc_id : var.network.vpc

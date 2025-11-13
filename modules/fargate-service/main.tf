@@ -4,7 +4,7 @@ module "secrets" {
   source = "../secrets"
 
   secrets         = var.secrets
-  region = data.aws_region.current.region
+  region          = data.aws_region.current.region
   create_new_key  = true
   recovery_window = 0
 }
@@ -137,7 +137,7 @@ resource "aws_ecs_service" "app" {
 }
 
 module "lb" {
-  count = var.lb != null ? 1 : 0
+  count  = var.lb != null ? 1 : 0
   source = "../load-balancer"
 
   vpc_id        = var.lb.vpc_id != null ? var.lb.vpc_id : var.network.vpc_id

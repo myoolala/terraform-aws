@@ -20,6 +20,7 @@ In addition, the tests folders serve the other purpose to provide examples of ho
 * [load-balancer](./modules/load-balancer/README.md)
 * [power-tools](./modules/power-tools/README.md)
 * [rds](./modules/rds/README.md)
+* [rotate-admin-rds-pw](./modules/rotate-admin-rds-pw/README.md)
 * [s3-bucket](./modules/s3-bucket/README.md)
 * [s3-site](./modules/s3-site/README.md)
 * [scheduled-task](./modules/scheduled-task/README.md)
@@ -28,6 +29,7 @@ In addition, the tests folders serve the other purpose to provide examples of ho
 * [serverless-app](./modules/serverless-app/README.md)
 * [sns](./modules/sns/README.md)
 * [sqs](./modules/sqs/README.md)
+* [start-stop](./modules/start-stop/README.md)
 * [task-definition](./modules/task-definition/README.md)
 * [vpc](./modules/vpc/README.md)
 

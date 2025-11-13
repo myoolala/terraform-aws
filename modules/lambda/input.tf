@@ -43,9 +43,9 @@ variable "runtime" {
 
 # @Link: https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html#configuration-memory-use-cases
 variable "memory" {
-  type = number
+  type        = number
   description = "Memory allocation per runtime for the lambda"
-  default = 128
+  default     = 128
 }
 
 variable "handler" {
@@ -106,7 +106,13 @@ variable "tg_arns" {
 }
 
 variable "schedule" {
-  type = string
+  type        = string
   description = "Cron schedule to invoke the lambda on if there is one"
-  default = null
+  default     = null
+}
+
+variable "schedule_input" {
+  type        = string
+  description = "JSON encoded string of any information to pass in when the schedule triggers the lambda"
+  default     = null
 }

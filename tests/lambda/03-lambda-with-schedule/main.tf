@@ -9,7 +9,7 @@ module "lambda" {
 
   function_name = "test-base-lambda"
   file_path     = archive_file.source.output_path
-  schedule = "rate(1 day)"
+  schedule      = "rate(1 day)"
 }
 
 provider "aws" {

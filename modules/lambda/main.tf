@@ -126,9 +126,9 @@ resource "aws_lambda_function" "function" {
   s3_bucket = var.bucket
   s3_key    = var.key
 
-  runtime = var.runtime
-  handler = var.handler
-  timeout = var.timeout
+  runtime     = var.runtime
+  handler     = var.handler
+  timeout     = var.timeout
   memory_size = var.memory
 
   role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
@@ -185,7 +185,7 @@ resource "aws_lb_target_group_attachment" "alb_connection" {
 resource "aws_cloudwatch_event_rule" "cron_trigger" {
   count = var.schedule != null ? 1 : 0
 
-  name = "${var.function_name}-cron-trigger"
+  name                = "${var.function_name}-cron-trigger"
   schedule_expression = var.schedule
 }
 
@@ -203,6 +203,11 @@ resource "aws_cloudwatch_event_target" "schedule" {
   count = var.schedule != null ? 1 : 0
 
   target_id = "${var.function_name}-cron-trigger"
-  arn = aws_lambda_function.function.arn
-  rule = aws_cloudwatch_event_rule.cron_trigger[0].name
+  arn       = aws_lambda_function.function.arn
+  rule      = aws_cloudwatch_event_rule.cron_trigger[0].name
+  input     = var.schedule_input
+
+  depends_on = [
+    aws_lambda_permission.cron_perms
+  ]
 }

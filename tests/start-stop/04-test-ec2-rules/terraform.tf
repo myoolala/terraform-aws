@@ -10,16 +10,16 @@
 module "vpc" {
   source = "../../../modules/vpc"
 
-  name ="private-vpc-test"
-  ipv4_cidr = "172.31.0.0/16"
+  name            = "private-vpc-test"
+  ipv4_cidr       = "172.31.0.0/16"
   ingress_subnets = []
   compute_subnets = [{
     ipv4_cidr = "172.31.1.0/25"
-    az = "us-east-1a"
-  },
-  {
-    ipv4_cidr = "172.31.1.128/25"
-    az = "us-east-1b"
+    az        = "us-east-1a"
+    },
+    {
+      ipv4_cidr = "172.31.1.128/25"
+      az        = "us-east-1b"
   }]
 }
 

@@ -107,5 +107,5 @@ variable "lb" {
     }))
   })
   description = "Load balancer configuration for the service if there is one"
-  default = null
+  default     = null
 }

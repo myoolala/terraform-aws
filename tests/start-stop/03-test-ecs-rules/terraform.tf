@@ -10,16 +10,16 @@
 module "vpc" {
   source = "../../../modules/vpc"
 
-  name ="private-vpc-test"
-  ipv4_cidr = "172.31.0.0/16"
+  name            = "private-vpc-test"
+  ipv4_cidr       = "172.31.0.0/16"
   ingress_subnets = []
   compute_subnets = [{
     ipv4_cidr = "172.31.1.0/25"
-    az = "us-east-1a"
-  },
-  {
-    ipv4_cidr = "172.31.1.128/25"
-    az = "us-east-1b"
+    az        = "us-east-1a"
+    },
+    {
+      ipv4_cidr = "172.31.1.128/25"
+      az        = "us-east-1b"
   }]
 }
 
@@ -29,12 +29,12 @@ module "test_service" {
 
   service_name = "test-for-start-stop"
   network = {
-    vpc_id = module.vpc.vpc_id
+    vpc_id  = module.vpc.vpc_id
     subnets = module.vpc.compute_subnet_ids
   }
   cluster = {
     create = true
-    name = "test-for-start-stop"
+    name   = "test-for-start-stop"
   }
   tags = {
     ServiceRunSchedule = "2-6/06:30/06:59"

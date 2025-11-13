@@ -16,17 +16,54 @@ For the services:
 - ECS Service is scaled to 0 or 1 tasks
 - EventBridge rules are enabled/disabled
 
+# The tag structure
+
+The tag/pattern used for the logic contains a specific pattern that is checked for. An example being 2-6/06:30/18:30 being Monday to Friday 0630 to 1830 UTC
+
+## The 3 sections of the pattern
+
+The pattern itself is just a / delimited list in 3 parts
+
+### Part 1 - The days of the week
+
+The days of the week this is intended to scale up for days of the week numbered 1 to 7 inclusively. Allowed patterns are:
+
+- start-end inclsusively
+- "\*" for all days
+- day,day,day,day to specify particular days of the week
+
+### Part 2 - The start time
+
+This is the time the instance should turn on UTC. Supported options are:
+
+- hh:mm to specify the start time
+- "no" to specify not to start the instance if the instance gets manually turned on
+
+### Part 3 - The end time
+
+This is the time the instance should turn off UTC. Supported options are:
+
+- hh:mm to specify the stop time
+
+### Examples:
+
+- 2-6/06:30/18:30 - Turn on the system Mon through Fri 6:30am to 6:30pm UTC, turn off otherwise
+- */no/19:00 - Turn off the system everyday between 7pm and midnight UTC
+- 1/12:00/13:00 - Turn on the system from noon to 1pm UTC every Sunday
+
 # Examples
 
 ## Basic minimally set service
 
 ```hcl
 module "start_stop_lambder" {
-  source = "../../../modules/start-stop"
+  source = "github.com/myoolala/terraform-aws/modules//start-stop"
 
   name = "start-stop-service"
 }
 ```
+
+[More examples can be found here](../../test/start-stop/)
 
 ## Providers
 

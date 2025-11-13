@@ -204,5 +204,5 @@ variable "lb" {
     }))
   })
   description = "Load balancer configuration if there is one"
-  default = null
+  default     = null
 }

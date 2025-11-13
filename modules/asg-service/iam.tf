@@ -22,7 +22,7 @@ resource "aws_iam_role" "server_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
-  count      = try(length(var.managed_policies), 0)
+  count = try(length(var.managed_policies), 0)
 
   role       = aws_iam_role.server_role.name
   policy_arn = var.managed_policies[count.index]

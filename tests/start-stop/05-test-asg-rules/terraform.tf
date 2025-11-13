@@ -10,16 +10,16 @@
 module "vpc" {
   source = "../../../modules/vpc"
 
-  name ="private-vpc-test"
-  ipv4_cidr = "172.31.0.0/16"
+  name            = "private-vpc-test"
+  ipv4_cidr       = "172.31.0.0/16"
   ingress_subnets = []
   compute_subnets = [{
     ipv4_cidr = "172.31.1.0/25"
-    az = "us-east-1a"
-  },
-  {
-    ipv4_cidr = "172.31.1.128/25"
-    az = "us-east-1b"
+    az        = "us-east-1a"
+    },
+    {
+      ipv4_cidr = "172.31.1.128/25"
+      az        = "us-east-1b"
   }]
 }
 
@@ -42,11 +42,11 @@ data "aws_ami" "ubuntu" {
 module "asg" {
   source = "../../../modules/asg-service"
 
-  name = "test-for-start-stop"
-  ami = data.aws_ami.ubuntu.id
+  name          = "test-for-start-stop"
+  ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
   network = {
-    vpc = module.vpc.vpc_id
+    vpc     = module.vpc.vpc_id
     subnets = module.vpc.compute_subnet_ids
   }
   asg_tags = {
