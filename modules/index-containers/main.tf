@@ -11,8 +11,6 @@ locals {
 ##########                   Code Bucket                ##########
 ##################################################################
 resource "random_string" "suffix" {
-  count = var.artifact_store.create ? 1 : 0
-
   length  = 8
   special = false # Set to true to include special characters
   numeric = true # Set to true to include numbers
@@ -21,7 +19,7 @@ resource "random_string" "suffix" {
 }
 
 module "code_bucket" {
-    count = var.code_bucket_config != null ? 1 : 0
+    count = var.code_bucket_config == null ? 1 : 0
     source = "../s3-bucket"
 
     name = "${var.name}-${random_string.suffix.result}"
@@ -29,9 +27,9 @@ module "code_bucket" {
 
 locals {
     source_bucket = {
-        id = var.code_bucket_config ? var.code_bucket_config.id : module.code_bucket[0].id
-        arn = var.code_bucket_config ? var.code_bucket_config.arn : module.code_bucket[0].arn
-        prefix = var.code_bucket_config ? var.code_bucket_config.prefix : "/"
+        id = var.code_bucket_config != null ? var.code_bucket_config.id : module.code_bucket[0].id
+        arn = var.code_bucket_config != null ? var.code_bucket_config.arn : module.code_bucket[0].arn
+        prefix = var.code_bucket_config != null ? var.code_bucket_config.prefix : "/"
     }
 }
 
@@ -39,12 +37,12 @@ locals {
 ##########                  Image builder               ##########
 ##################################################################
 
-resource "aws_s3_object" "file_upload" {
-  bucket = local.source_bucket.id
-  key    = "${local.source_bucket.prefix}${local.zip_name}"
-  source = "${path.module}/my_files.zip"
-  etag   = "${filemd5("${path.module}/my_files.zip")}"
-}
+# resource "aws_s3_object" "file_upload" {
+#   bucket = local.source_bucket.id
+#   key    = "${local.source_bucket.prefix}${local.zip_name}"
+#   source = "${path.module}/my_files.zip"
+#   etag   = "${filemd5("${path.module}/my_files.zip")}"
+# }
 
 module "image_build" {
     source = "../code-build"
