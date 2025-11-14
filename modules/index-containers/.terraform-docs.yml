@@ -1,0 +1,46 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # Index Containers service
+
+  This deploys a background service that listens for pushed containers to ECR and will then go and index them via [SOCI](https://github.com/awslabs/soci-snapshotter?tab=readme-ov-file)
+
+  This is to implement lazy loading of containers to increase autoscaling speed in an all in one module
+
+  # Examples
+  
+  ## Base deployment
+
+  ```hcl
+  module "index_ecr_containers" {
+    source = "github.com/myoolala/terraform-aws//modules/index-containers"
+
+    name = "us-east-1-index-containers"
+    vpc = {
+      id = "vpc-01234567890123456"
+      subnets = [
+        "subnet-01234567890123456",
+        "subnet-65432109876543210"
+      ]
+    }
+    cluster = {
+      create = true
+      name = "index-containers-with-soci"
+    }
+  }
+  ```
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

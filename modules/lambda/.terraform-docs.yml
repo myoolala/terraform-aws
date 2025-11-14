@@ -20,7 +20,7 @@ content: |-
 
   ```hcl
   module "lambda" {
-    source = "../../../modules/lambda"
+    source = "github.com/myoolala/terraform-aws//modules/lambda"
 
     function_name = "lambda-function"
     file_path     = archive_file.source.output_path
@@ -31,7 +31,7 @@ content: |-
 
   ```hcl
   module "lambda" {
-    source = "../../../modules/lambda"
+    source = "github.com/myoolala/terraform-aws//modules//lambda"
 
     function_name = "lambda-function"
     file_path     = archive_file.source.output_path

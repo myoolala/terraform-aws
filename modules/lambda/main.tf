@@ -133,6 +133,10 @@ resource "aws_lambda_function" "function" {
 
   role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
 
+  ephemeral_storage {
+    size = var.storage
+  }
+
   dynamic "environment" {
     for_each = var.environment_vars != null ? [1] : []
     content {

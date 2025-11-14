@@ -48,6 +48,12 @@ variable "memory" {
   default     = 128
 }
 
+variable "storage" {
+  type        = number
+  description = "Ephemeral storage allocation per runtime for the lambda"
+  default     = 512
+}
+
 variable "handler" {
   type        = string
   description = "Handler function"

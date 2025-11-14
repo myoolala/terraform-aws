@@ -26,9 +26,12 @@ variable "service_subnets" {
   description = "Subnets to run the service in"
 }
 
-variable "schedule_expression" {
-  type        = string
-  description = "Schedule for a scheduled task. Conflicts with load_balancer"
+variable "trigger" {
+  type        = object({
+    schedule_expression = optional(string, null)
+    event_pattern = optional(string, null)
+  })
+  description = "Trigger for a scheduled task"
 }
 
 ###########################################################################

@@ -1,0 +1,24 @@
+version: 0.2
+env:
+  variables:
+    # Default all the vars here for a nice little reference of what's needed
+    SOURCE_ZIP: "temp"
+    ECR_BASE: "1234567890.dkr.ecr.us-gov-west-1.amazonaws.com"
+    ECR_REPO: "temp"
+    ACCOUNT_ID: "0123456789"
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    on-failure: ABORT
+    commands:
+      - echo "Starting install"
+      - aws s3 cp $SOURCE_ZIP ./
+  build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting build"
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo "Starting post build"

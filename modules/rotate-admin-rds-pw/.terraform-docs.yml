@@ -48,7 +48,7 @@ content: |-
   }
 
   module "test" {
-    source = "../../../modules/rotate-admin-rds-pw"
+    source = "github.com/myoolala/terraform-aws//modules/rotate-admin-rds-pw"
 
     name = "test-integration-rotate-rds-pw"
     permissions = data.aws_iam_policy_document.rds_pw_updates.json
@@ -64,7 +64,7 @@ content: |-
 
   ```hcl
   module "test" {
-    source = "../../../modules/rotate-admin-rds-pw"
+    source = "github.com/myoolala/terraform-aws//modules/rotate-admin-rds-pw"
 
     name = "test-integration-rotate-rds-pw"
     permissions = null

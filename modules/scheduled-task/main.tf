@@ -10,6 +10,10 @@ locals {
   partition         = data.aws_partition.current.partition
 }
 
+###########################################################################
+###############                    Logging                  ###############
+###########################################################################
+
 module "logging_key" {
   count  = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? 1 : 0
   source = "../kms-key"
@@ -43,6 +47,17 @@ module "logging_key" {
   })
 }
 
+resource "aws_cloudwatch_log_group" "logs" {
+  name = var.service_name
+
+  retention_in_days = var.log_retention
+  kms_key_id        = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? module.logging_key[0].arn : var.encrypt_logs.existing_key
+}
+
+###########################################################################
+###############                  Encryption                 ###############
+###########################################################################
+
 module "secrets" {
   source = "../secrets"
 
@@ -51,6 +66,10 @@ module "secrets" {
   create_new_key  = true
   recovery_window = 0
 }
+
+###########################################################################
+###############                       ECS                   ###############
+###########################################################################
 
 resource "aws_ecs_cluster" "cluster" {
   count = var.cluster.create ? 1 : 0
@@ -66,13 +85,6 @@ resource "aws_ecr_repository" "service_repo" {
   image_scanning_configuration {
     scan_on_push = var.scan_on_push
   }
-}
-
-resource "aws_cloudwatch_log_group" "logs" {
-  name = var.service_name
-
-  retention_in_days = var.log_retention
-  kms_key_id        = var.encrypt_logs.enabled && var.encrypt_logs.existing_key == null ? module.logging_key[0].arn : var.encrypt_logs.existing_key
 }
 
 module "image" {
@@ -115,10 +127,9 @@ resource "aws_security_group_rule" "egress" {
   security_group_id = aws_security_group.service.id
 }
 
-resource "aws_cloudwatch_event_rule" "schedule_trigger" {
-  name                = "${var.service_name}-backup-trigger"
-  schedule_expression = var.schedule_expression
-}
+###########################################################################
+###############                    Invoke                   ###############
+###########################################################################
 
 resource "aws_iam_role" "invoker" {
   name = "${var.service_name}-task-invoker"
@@ -163,6 +174,12 @@ data "aws_iam_policy_document" "main" {
 resource "aws_iam_role_policy" "main" {
   role   = aws_iam_role.invoker.name
   policy = data.aws_iam_policy_document.main.json
+}
+
+resource "aws_cloudwatch_event_rule" "schedule_trigger" {
+  name                = "${var.service_name}-backup-trigger"
+  schedule_expression = var.trigger.schedule_expression
+  event_pattern = var.trigger.event_pattern
 }
 
 resource "aws_cloudwatch_event_target" "schedule_trigger" {
