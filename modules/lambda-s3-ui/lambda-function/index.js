@@ -130,7 +130,7 @@ exports.handler = async event => {
     }
 
     // If the key is the root, assume it's index.html
-    let Key = PREFIX + (event.path == '/' ? '/index.html' : event.path);
+    let Key = PREFIX + (event.path.endsWith('/') ? event.path + 'index.html' : event.path);
 
     // Since browsers love gzip, added support for that especially since the max response payload
     // size at the of 1MB
