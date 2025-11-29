@@ -40,6 +40,7 @@ if (CACHE_MAPPING && CACHE_MAPPING.length) {
 CACHE_MAPPING = CACHE_MAPPING || {
     'font/ttf': `${FOUR_WEEKS}`,
     'image/png': `${FOUR_WEEKS}`,
+    'image/jpeg': `${FOUR_WEEKS}`,
     'text/plain': `${FOUR_WEEKS}`,
     'font/woff2': `${FOUR_WEEKS}`,
     'applications/pdf': `${FOUR_WEEKS}`,
@@ -71,7 +72,7 @@ const mapS3Object = (body, headers = {}, statusCode = 200, isBase64Encoded = fal
  * @param {string} type - Content type to match to a cache time
  * @returns {string} - Time in seconds to cache a file in the browser
  */
-const getCacheHeader = type =>  CACHE_MAPPING[type];
+const getCacheHeader = type =>  CACHE_MAPPING[type] ? `max-age=${CACHE_MAPPING[type]}` : undefined;
 
 /**
  * @summary - Runs s3 get on the options
