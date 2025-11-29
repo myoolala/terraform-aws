@@ -103,10 +103,9 @@ const getAndCache = async (Key, override = false) => {
     // @TODO: add logic to cache 404 requests
     let file = await s3Get({Bucket: BUCKET, Key});
     logger.debug('Got file object:', file)
-    let bodyBuffer = await file.Body.transformToString();
-    logger.debug('Received body', bodyBuffer)
+    let bodyBuffer = await file.Body.transformToByteArray();
     let body = Buffer.from(bodyBuffer).toString('base64');
-    logger.debug('Converted body to base64', body);
+    logger.debug('Converted body to base64', body.length);
 
     // Update the cache with the new data
     cache[Key] = {
