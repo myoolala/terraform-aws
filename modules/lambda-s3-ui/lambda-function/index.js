@@ -80,7 +80,6 @@ const createHostHitMetric = (host) => {
         },
         // Custom properties used as metrics or dimensions
         "host": host,
-        "ProcessingLatency": 100,
         "RequestCount": 1
     }));
 }
