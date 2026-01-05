@@ -15,5 +15,7 @@ services:
       - $HOME/.ssh:/root/.ssh
       # enable aws access
       - ~/.aws:/root/.aws
+      - tenv:/root/.tenv
 volumes:
   devops_history:
+  tenv:
