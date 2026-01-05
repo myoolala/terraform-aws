@@ -61,7 +61,7 @@ CACHE_MAPPING = CACHE_MAPPING || {
 const createHostHitMetric = (host) => {
     if(!metricsConfig.enabled) return;
     if (!host) return logger.error('No host provided to createHostHitMetric');
-    if (net.isIP(host) !== 0) logger.warn(`Not invoked with a domain but instead an IP "${host}", ignoring metric`);
+    if (net.isIP(host) !== 0) return logger.warn(`Not invoked with a domain but instead an IP "${host}", ignoring metric`);
 
     // Console log here to make sure our logs are perfect
     console.log(JSON.stringify({
