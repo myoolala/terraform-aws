@@ -67,7 +67,7 @@ module "lambda-ui" {
     vpc_id = module.vpc.vpc_id
   }
   metrics_config = {
-    enabled = true
+    enabled   = true
     namespace = "aws-development"
   }
 }

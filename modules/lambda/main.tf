@@ -1,5 +1,5 @@
 locals {
-  has_input = var.file_path != null || (var.bucket != null && var.key != null)
+  has_input   = var.file_path != null || (var.bucket != null && var.key != null)
   item_to_sha = var.file_path != null ? var.file_path : (local.has_input ? archive_file.source[0].output_path : null)
   runtime_map = {
     "nodejs20.x" = abspath("${path.module}/starter_code/index.mjs")
@@ -123,10 +123,10 @@ resource "archive_file" "source" {
 resource "aws_lambda_function" "function" {
   function_name = var.function_name
 
-  filename  = local.has_input ? var.file_path : archive_file.source[0].output_path
-  code_sha256   = var.code_hash256
-  s3_bucket = var.bucket
-  s3_key    = var.key
+  filename    = local.has_input ? var.file_path : archive_file.source[0].output_path
+  code_sha256 = var.code_hash256
+  s3_bucket   = var.bucket
+  s3_key      = var.key
 
   runtime     = var.runtime
   handler     = var.handler

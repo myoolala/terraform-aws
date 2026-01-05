@@ -179,7 +179,7 @@ resource "aws_iam_role_policy" "main" {
 resource "aws_cloudwatch_event_rule" "schedule_trigger" {
   name                = "${var.service_name}-backup-trigger"
   schedule_expression = var.trigger.schedule_expression
-  event_pattern = var.trigger.event_pattern
+  event_pattern       = var.trigger.event_pattern
 }
 
 resource "aws_cloudwatch_event_target" "schedule_trigger" {

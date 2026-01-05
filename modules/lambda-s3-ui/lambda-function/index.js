@@ -1,6 +1,7 @@
 'use-strict';
 
-const BUCKET = process.env['BUCKET'],
+const net = require('net');
+      BUCKET = process.env['BUCKET'],
       PREFIX = process.env['PREFIX'].replace(/\/+$/, '').replace(/^\//, ''),
       LOG_LEVEL = process.env['LOG_LEVEL'],
       GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
@@ -60,6 +61,7 @@ CACHE_MAPPING = CACHE_MAPPING || {
 const createHostHitMetric = (host) => {
     if(!metricsConfig.enabled) return;
     if (!host) return logger.error('No host provided to createHostHitMetric');
+    if (net.isIP(host) !== 0) logger.warn(`Not invoked with a domain but instead an IP "${host}", ignoring metric`);
 
     // Console log here to make sure our logs are perfect
     console.log(JSON.stringify({

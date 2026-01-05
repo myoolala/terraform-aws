@@ -77,7 +77,7 @@ variable "vpc_config" {
 
 variable "metrics_config" {
   type = object({
-    enabled = bool
+    enabled   = bool
     namespace = optional(string, null)
   })
   description = "Whether the lambda should create an embbeded metric for the domain that was hit"

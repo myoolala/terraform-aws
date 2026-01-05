@@ -27,9 +27,9 @@ variable "service_subnets" {
 }
 
 variable "trigger" {
-  type        = object({
+  type = object({
     schedule_expression = optional(string, null)
-    event_pattern = optional(string, null)
+    event_pattern       = optional(string, null)
   })
   description = "Trigger for a scheduled task"
 }

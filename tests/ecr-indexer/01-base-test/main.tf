@@ -1,20 +1,20 @@
 module "vpc" {
-    source = "../../../modules/vpc"
+  source = "../../../modules/vpc"
 
-    name ="soci-index-test"
-    public = true
-    ipv4_cidr = "172.31.0.0/16"
-    ingress_subnets = [{
-        ipv4_cidr = "172.31.0.0/27"
-        az = "us-east-1a"
-        nat = false
+  name      = "soci-index-test"
+  public    = true
+  ipv4_cidr = "172.31.0.0/16"
+  ingress_subnets = [{
+    ipv4_cidr = "172.31.0.0/27"
+    az        = "us-east-1a"
+    nat       = false
     },
     {
-        ipv4_cidr = "172.31.0.32/27"
-        az = "us-east-1b"
-        nat = false
-    }]
-    compute_subnets = []
+      ipv4_cidr = "172.31.0.32/27"
+      az        = "us-east-1b"
+      nat       = false
+  }]
+  compute_subnets = []
 }
 
 module "test" {
@@ -22,12 +22,12 @@ module "test" {
 
   name = "test-for-integration"
   vpc = {
-    id = module.vpc.vpc_id
+    id      = module.vpc.vpc_id
     subnets = module.vpc.ingress_subnet_ids
   }
   cluster = {
     create = true
-    name = "test-for-soci-indexing"
+    name   = "test-for-soci-indexing"
   }
 }
 
