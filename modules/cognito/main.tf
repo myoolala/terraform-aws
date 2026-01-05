@@ -1,3 +1,10 @@
+resource "aws_cognito_user_pool_domain" "this" {
+  count = var.domain != null ? 1 : 0
+
+  domain       = var.domain
+  user_pool_id = aws_cognito_user_pool.this.id
+}
+
 resource "aws_cognito_user_pool" "this" {
   name = var.name
 

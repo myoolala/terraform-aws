@@ -36,6 +36,12 @@ variable "client_config" {
   default     = null
 }
 
+variable "domain" {
+  type = string
+  description = "Domain to add to the pool if there is one. If you want a FQDN, leave null and manually create"
+  default = null
+}
+
 variable "tags" {
   type        = map(string)
   description = "Default tags to apply to the resources"
