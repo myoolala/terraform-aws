@@ -168,6 +168,7 @@ module "lambda" {
 
   function_name = var.lambda_name
   file_path     = archive_file.source.output_path
+  # code_hash256  = archive_file.source.output_base64sha256
   tg_arns       = [var.alb_tg_arn]
 
   environment_vars = { for i, v in {

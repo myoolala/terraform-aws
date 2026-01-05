@@ -122,3 +122,9 @@ variable "schedule_input" {
   description = "JSON encoded string of any information to pass in when the schedule triggers the lambda"
   default     = null
 }
+
+variable "code_hash256" {
+  type = string
+  description = "SHA256 hash of the input code if there you wish to use terraform to trigger updates when the source code changes"
+  default = null
+}

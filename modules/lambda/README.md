@@ -49,6 +49,7 @@ No requirements.
 |------|-------------|------|---------|:--------:|
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | Name for the new lambda function | `string` | n/a | yes |
 | <a name="input_bucket"></a> [bucket](#input\_bucket) | Name of the bucket to pull the code from | `string` | `null` | no |
+| <a name="input_code_hash256"></a> [code\_hash256](#input\_code\_hash256) | SHA256 hash of the input code if there you wish to use terraform to trigger updates when the source code changes | `string` | `null` | no |
 | <a name="input_environment_vars"></a> [environment\_vars](#input\_environment\_vars) | Environment variables to pass into the lambda | `map(string)` | `null` | no |
 | <a name="input_file_path"></a> [file\_path](#input\_file\_path) | Path to the zip file to deploy if one is available | `string` | `null` | no |
 | <a name="input_handler"></a> [handler](#input\_handler) | Handler function | `string` | `"index.handler"` | no |
