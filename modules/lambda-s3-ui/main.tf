@@ -180,6 +180,7 @@ module "lambda" {
     "SPA_ENABLED"              = var.config.enable_spa ? "enabled" : "disabled",
     "DEFAULT_FILE_PATH"        = var.config.default_file_path,
     "DEFAULT_RESPONSE_HEADERS" = var.config.default_response_headers != null ? jsonencode(var.config.default_response_headers) : null,
+    "METRICS_CONFIG"           = jsonencode(var.metrics_config)
     } : i => v if v != null
   }
 

@@ -25,7 +25,7 @@ variable "stages" {
         permissions    = optional(string, null)
         environment = optional(object({
           compute_type                = optional(string, "BUILD_GENERAL1_SMALL")
-          image                       = optional(string, "aws/codebuild/amazonlinux2-x86_64-standard:5.0")
+          image                       = optional(string, "aws/codebuild/amazonlinux-x86_64-standard:5.0")
           type                        = optional(string, "LINUX_CONTAINER")
           image_pull_credentials_type = optional(string, "CODEBUILD")
           privileged_mode             = optional(bool, false)

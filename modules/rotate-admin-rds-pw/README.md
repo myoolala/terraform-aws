@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "rds_pw_updates" {
 }
 
 module "test" {
-  source = "../../../modules/rotate-admin-rds-pw"
+  source = "github.com/myoolala/terraform-aws//modules/rotate-admin-rds-pw"
 
   name = "test-integration-rotate-rds-pw"
   permissions = data.aws_iam_policy_document.rds_pw_updates.json
@@ -55,7 +55,7 @@ module "test" {
 
 ```hcl
 module "test" {
-  source = "../../../modules/rotate-admin-rds-pw"
+  source = "github.com/myoolala/terraform-aws//modules/rotate-admin-rds-pw"
 
   name = "test-integration-rotate-rds-pw"
   permissions = null
@@ -80,7 +80,7 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_event_schedule_input"></a> [event\_schedule\_input](#input\_event\_schedule\_input) | Information to pass to the lambda when invoked to rotate the password | <pre>object({<br/>        rdsIdentifier = string<br/>        rdsAdminInfoLocation = string<br/>        mode = optional(string, "instance")<br/>        pwLength = optional(number, 64)<br/>    })</pre> | n/a | yes |
+| <a name="input_event_schedule_input"></a> [event\_schedule\_input](#input\_event\_schedule\_input) | Information to pass to the lambda when invoked to rotate the password | <pre>object({<br/>    rdsIdentifier        = string<br/>    rdsAdminInfoLocation = string<br/>    mode                 = optional(string, "instance")<br/>    pwLength             = optional(number, 64)<br/>  })</pre> | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | value | `string` | n/a | yes |
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | JSON encoded permissions string for any required DB/Secrets access | `string` | n/a | yes |
 | <a name="input_alerts_topic"></a> [alerts\_topic](#input\_alerts\_topic) | Alert topic to send updates to if there is one | `string` | `null` | no |

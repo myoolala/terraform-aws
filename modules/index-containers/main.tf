@@ -37,6 +37,10 @@ locals {
 ##########                  Image builder               ##########
 ##################################################################
 
+# data "http" "sico_download" {
+#   url = "https://checkpoint-api.hashicorp.com/v1/check/terraform"
+# }
+
 # resource "aws_s3_object" "file_upload" {
 #   bucket = local.source_bucket.id
 #   key    = "${local.source_bucket.prefix}${local.zip_name}"

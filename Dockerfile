@@ -12,7 +12,7 @@ RUN <<EOF
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
     echo "Installing tenv"
     DKPG_VERSION=$(dpkg --print-architecture)
-    LATEST_VERSION="v4.7.21"
+    LATEST_VERSION=$(curl --silent https://api.github.com/repos/tofuutils/tenv/releases/latest | jq -r .tag_name)
     curl -O -L "https://github.com/tofuutils/tenv/releases/latest/download/tenv_${LATEST_VERSION}_${DKPG_VERSION}.deb"
     dpkg -i "tenv_${LATEST_VERSION}_${DKPG_VERSION}.deb"
     echo "Installing SOPS"
@@ -29,7 +29,7 @@ RUN <<EOF
     tenv tofu use 1.10.6
     tenv terragrunt install 0.91.5
     tenv terragrunt use 0.91.5
-    bash -c "source ~/.bashrc && nvm install 22"
+    bash -c "source ~/.bashrc && nvm install 20"
     echo 'alias tf="tofu"' >> ~/.bashrc
     echo 'alias tfi="tofu init"' >> ~/.bashrc
     echo 'alias tfp="tofu plan"' >> ~/.bashrc

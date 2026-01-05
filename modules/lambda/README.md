@@ -11,7 +11,7 @@ If there is no code to deploy, like on an initial deploy of an environment, a de
 
 ```hcl
 module "lambda" {
-  source = "../../../modules/lambda"
+  source = "github.com/myoolala/terraform-aws//modules/lambda"
 
   function_name = "lambda-function"
   file_path     = archive_file.source.output_path
@@ -22,7 +22,7 @@ module "lambda" {
 
 ```hcl
 module "lambda" {
-  source = "../../../modules/lambda"
+  source = "github.com/myoolala/terraform-aws//modules//lambda"
 
   function_name = "lambda-function"
   file_path     = archive_file.source.output_path
@@ -61,6 +61,7 @@ No requirements.
 | <a name="input_schedule"></a> [schedule](#input\_schedule) | Cron schedule to invoke the lambda on if there is one | `string` | `null` | no |
 | <a name="input_schedule_input"></a> [schedule\_input](#input\_schedule\_input) | JSON encoded string of any information to pass in when the schedule triggers the lambda | `string` | `null` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | List of secrets and associated kms keys the lambda will need access to | <pre>object({<br/>    arns     = list(string)<br/>    kms_keys = list(string)<br/>  })</pre> | <pre>{<br/>  "arns": [],<br/>  "kms_keys": []<br/>}</pre> | no |
+| <a name="input_storage"></a> [storage](#input\_storage) | Ephemeral storage allocation per runtime for the lambda | `number` | `512` | no |
 | <a name="input_tg_arns"></a> [tg\_arns](#input\_tg\_arns) | List of target group ARN's to attach to the lamdba | `list(string)` | `[]` | no |
 | <a name="input_timeout"></a> [timeout](#input\_timeout) | Lambda timeout allowed | `number` | `3` | no |
 | <a name="input_vpc_config"></a> [vpc\_config](#input\_vpc\_config) | VPC config for the lambda | <pre>object({<br/>    subnet_ids         = list(string)<br/>    security_group_ids = list(string)<br/>  })</pre> | `null` | no |

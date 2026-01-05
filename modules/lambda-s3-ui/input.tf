@@ -1,3 +1,7 @@
+################################################################################
+################                    Required                    ################
+################################################################################
+
 variable "lambda_name" {
   type        = string
   description = "Name for the lambda function"
@@ -23,6 +27,10 @@ variable "config" {
   })
   description = "Configuration for the lambda function code"
 }
+
+################################################################################
+################                    Required                    ################
+################################################################################
 
 variable "environment_vars" {
   type        = map(string)
@@ -65,4 +73,15 @@ variable "vpc_config" {
   })
   description = "VPC config to use"
   default     = null
+}
+
+variable "metrics_config" {
+  type = object({
+    enabled = bool
+    namespace = optional(string, null)
+  })
+  description = "Whether the lambda should create an embbeded metric for the domain that was hit"
+  default = {
+    enabled = false
+  }
 }

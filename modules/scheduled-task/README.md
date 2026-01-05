@@ -24,9 +24,9 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster"></a> [cluster](#input\_cluster) | Cluster configuration to attach to the scheduled task | <pre>object({<br/>    create = optional(bool, true)<br/>    name   = optional(string, null)<br/>    arn    = optional(string, null)<br/>  })</pre> | n/a | yes |
-| <a name="input_schedule_expression"></a> [schedule\_expression](#input\_schedule\_expression) | Schedule for a scheduled task. Conflicts with load\_balancer | `string` | n/a | yes |
 | <a name="input_service_name"></a> [service\_name](#input\_service\_name) | Name to apply to the Fargate service | `string` | n/a | yes |
 | <a name="input_service_subnets"></a> [service\_subnets](#input\_service\_subnets) | Subnets to run the service in | `list(string)` | n/a | yes |
+| <a name="input_trigger"></a> [trigger](#input\_trigger) | Trigger for a scheduled task | <pre>object({<br/>    schedule_expression = optional(string, null)<br/>    event_pattern = optional(string, null)<br/>  })</pre> | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC to run the service in | `string` | n/a | yes |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | CPU value to give to the docker definition | `number` | `256` | no |
 | <a name="input_create_ecr_repo"></a> [create\_ecr\_repo](#input\_create\_ecr\_repo) | Create a new ecr repo or not | `bool` | `true` | no |

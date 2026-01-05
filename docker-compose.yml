@@ -5,6 +5,7 @@ services:
     environment:
       # Move the history file to be in the volume
       - HISTFILE=/root/bash_history/.bash_history
+      - TENV_AUTO_INSTALL=true
     volumes:
       # Store the history
       - devops_history:/root/bash_history

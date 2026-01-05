@@ -9,7 +9,8 @@ const BUCKET = process.env['BUCKET'],
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
       SPA_ENABLED = process.env['SPA_ENABLED'] === 'enabled',
       DEFAULT_FILE_PATH = process.env['DEFAULT_FILE_PATH'],
-      DEFAULT_RESPONSE_HEADERS = process.env['DEFAULT_RESPONSE_HEADERS'] ? JSON.parse(process.env['DEFAULT_RESPONSE_HEADERS']) : {};
+      DEFAULT_RESPONSE_HEADERS = process.env['DEFAULT_RESPONSE_HEADERS'] ? JSON.parse(process.env['DEFAULT_RESPONSE_HEADERS']) : {},
+      metricsConfig = process.env['METRICS_CONFIG'] ? JSON.parse(process.env['METRICS_CONFIG']) : {enabled: false};
 
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3'),
       client = new S3Client(),
@@ -49,6 +50,39 @@ CACHE_MAPPING = CACHE_MAPPING || {
     'application/json': `${ONE_WEEK}`,
     'application/javascript': `${ONE_WEEK}`,
     'application/manifest+json': `${ONE_WEEK}`,
+}
+
+/**
+ * @summary - Ouputs an embedded cloudwatch log to create a metric for the request for the domain
+ * @param {string} host - host domain that was hit
+ * @returns {void}
+ */
+const createHostHitMetric = (host) => {
+    if(!metricsConfig.enabled) return;
+    if (!host) return logger.error('No host provided to createHostHitMetric');
+
+    // Console log here to make sure our logs are perfect
+    console.log(JSON.stringify({
+        "_aws": {
+          "Timestamp": new Date().valueOf(), // Unix timestamp in milliseconds
+          "CloudWatchMetrics": [
+            {
+              "Namespace": metricsConfig.namespace,
+              "Dimensions": [["host"]],
+              "Metrics": [
+                {
+                  "Name": "RequestCount",
+                  "Unit": "Count"
+                }
+              ]
+            }
+          ]
+        },
+        // Custom properties used as metrics or dimensions
+        "host": host,
+        "ProcessingLatency": 100,
+        "RequestCount": 1
+    }));
 }
 
 /**
@@ -129,6 +163,8 @@ exports.handler = async event => {
         logger.debug(`Invalid method "${event.httpMethod}" was given`)
         return mapS3Object('STAHP!!', {}, 405);
     }
+
+    createHostHitMetric(event.headers.host);
 
     // If the key is the root, assume it's index.html
     let Key = PREFIX + (event.path.endsWith('/') ? event.path + 'index.html' : event.path);
