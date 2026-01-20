@@ -22,6 +22,11 @@ module "cognito" {
   }
 }
 
+output "cognito" {
+  sensitive = true
+  value = module.cognito
+}
+
 provider "aws" {
   region = "us-east-1"
   default_tags {
