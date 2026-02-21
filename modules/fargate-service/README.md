@@ -39,6 +39,7 @@ No requirements.
 | <a name="input_log_retention"></a> [log\_retention](#input\_log\_retention) | Number of days to store the service logs for | `number` | `7` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | List of secrets to attach to the service | `list(map(string))` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources. Ie: environment, cost tracking, etc... | `map(any)` | `{}` | no |
+| <a name="input_target_groups"></a> [target\_groups](#input\_target\_groups) | List of existing target groups to associate with the service | <pre>list(object({<br/>    arn = string<br/>    container_port = number<br/>  }))</pre> | `[]` | no |
 
 ## Outputs
 

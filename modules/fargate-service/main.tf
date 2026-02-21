@@ -116,6 +116,16 @@ resource "aws_ecs_service" "app" {
     }
   }
 
+  dynamic "load_balancer" {
+    for_each = var.target_groups
+
+    content {
+      target_group_arn = each.value.arn
+      container_name   = var.service_name
+      container_port   = each.value.container_port
+    }
+  }
+
   #   placement_constraints {
   #     type       = "memberOf"
   #     expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"

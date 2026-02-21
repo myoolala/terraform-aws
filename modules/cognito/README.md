@@ -56,5 +56,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_client_id"></a> [client\_id](#output\_client\_id) | n/a |
+| <a name="output_client_secret"></a> [client\_secret](#output\_client\_secret) | n/a |
 | <a name="output_pool_id"></a> [pool\_id](#output\_pool\_id) | n/a |  
 <!-- END_TF_DOCS -->

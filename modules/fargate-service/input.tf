@@ -109,3 +109,12 @@ variable "lb" {
   description = "Load balancer configuration for the service if there is one"
   default     = null
 }
+
+variable "target_groups" {
+  type = list(object({
+    arn = string
+    container_port = number
+  }))
+  description = "List of existing target groups to associate with the service"
+  default = []
+}

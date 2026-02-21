@@ -1,6 +1,6 @@
 services:
   devops:
-    image: 5pmgrass/tenviac
+    image: 5pmgrass/tenviac:golang-4.9.3
     volumes:
       # Store the history
       - devops_history:/root/bash_history
