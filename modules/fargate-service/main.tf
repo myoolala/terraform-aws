@@ -120,9 +120,9 @@ resource "aws_ecs_service" "app" {
     for_each = var.target_groups
 
     content {
-      target_group_arn = each.value.arn
+      target_group_arn = load_balancer.value.arn
       container_name   = var.service_name
-      container_port   = each.value.container_port
+      container_port   = load_balancer.value.container_port
     }
   }
 
