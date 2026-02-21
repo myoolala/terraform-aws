@@ -49,10 +49,13 @@ module "image" {
   env_vars     = var.env_vars
   secrets      = module.secrets.fargate_secrets
   secrets_keys = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
-  port_mappings = [for i in try(var.lb.port_mappings, []) : {
+  port_mappings = concat([for i in try(var.lb.port_mappings, []) : {
     containerPort = i.forward_port
     hostPort      = i.forward_port
-  }]
+  }], [for i in var.target_groups: {
+    containerPort = i.container_port
+    hostPort      = i.container_port
+  }])
 
   depends_on = [
     module.secrets
