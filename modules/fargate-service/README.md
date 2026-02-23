@@ -45,5 +45,6 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cname_target"></a> [cname\_target](#output\_cname\_target) | DNS CNAME of the load balancer to reach in order to talk to the service |  
+| <a name="output_cname_target"></a> [cname\_target](#output\_cname\_target) | DNS CNAME of the load balancer to reach in order to talk to the service |
+| <a name="output_sg_id"></a> [sg\_id](#output\_sg\_id) | ID of the created security group if there is one |  
 <!-- END_TF_DOCS -->
