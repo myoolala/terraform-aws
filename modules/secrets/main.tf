@@ -1,4 +1,12 @@
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+
+locals {
+  region = data.aws_region.current.region
+  partition = data.aws_partition.current.partition
+  acct = data.aws_caller_identity.current.account_id
+}
 
 resource "aws_kms_key" "key" {
   count = var.create_new_key ? 1 : 0
@@ -15,7 +23,7 @@ resource "aws_kms_key" "key" {
         Effect = "Allow"
         Principal = {
           AWS = [
-            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+            "arn:${local.partition}:iam::${local.acct}:root"
           ]
         }
         # Gross and misleading I know, but it has to be star
