@@ -1,5 +1,15 @@
 # @TODO: refactor this to use the lambda with target group module
 
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+
+locals {
+  region = data.aws_region.current.region
+  partition = data.aws_partition.current.partition
+  acct = data.aws_caller_identity.current.account_id
+}
+
 ########################################################################
 ############                   zip bundle                   ############
 ########################################################################
@@ -141,7 +151,7 @@ data "aws_iam_policy_document" "perms" {
       "s3:GetObject",
       "s3:GetObject*"
     ]
-    resources = ["arn:aws:s3:::${var.config.bucket}/${var.config.prefix}/*"]
+    resources = ["arn:${local.partition}:s3:::${var.config.bucket}/${var.config.prefix}/*"]
   }
 
   dynamic "statement" {
@@ -196,7 +206,7 @@ module "lambda" {
           "s3:GetObject",
           "s3:GetObject*"
         ]
-        Resource = ["arn:aws:s3:::${var.config.bucket}/${trim(var.config.prefix, "/")}/*"]
+        Resource = ["arn:${local.partition}:s3:::${var.config.bucket}/${trim(var.config.prefix, "/")}/*"]
       }
       ], length(var.config.storage_kms_keys) == 0 ? [] : [
       {

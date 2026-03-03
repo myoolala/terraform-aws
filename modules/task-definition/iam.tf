@@ -1,3 +1,13 @@
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+
+locals {
+  region = data.aws_region.current.region
+  partition = data.aws_partition.current.partition
+  acct = data.aws_caller_identity.current.account_id
+}
+
 data "aws_iam_policy_document" "container-assume-role-policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -8,8 +18,6 @@ data "aws_iam_policy_document" "container-assume-role-policy" {
     }
   }
 }
-
-data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "task_role" {
   name = "${var.service_name}-task"
@@ -49,7 +57,7 @@ resource "aws_iam_role_policy" "task_role" {
 
 locals {
   task_role_managed_polciies = [
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+    "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   ]
 }
 
@@ -124,8 +132,8 @@ resource "aws_iam_role_policy" "task_exec_secret_perms" {
 
 locals {
   exec_role_managed_polciies = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+    "arn:${local.partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   ]
 }
 

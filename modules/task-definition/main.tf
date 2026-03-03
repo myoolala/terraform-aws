@@ -1,5 +1,3 @@
-data "aws_region" "current" {}
-
 resource "aws_ecs_task_definition" "service" {
   family                   = var.service_name
   execution_role_arn       = aws_iam_role.task_execution_role.arn

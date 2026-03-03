@@ -1,3 +1,13 @@
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+
+locals {
+  region = data.aws_region.current.region
+  partition = data.aws_partition.current.partition
+  acct = data.aws_caller_identity.current.account_id
+}
+
 resource "aws_s3_bucket_website_configuration" "s3_site" {
   bucket = var.host_s3_bucket
 
@@ -171,7 +181,7 @@ data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions = ["s3:GetObject"]
     resources = [
-      "arn:aws:s3:::${var.host_s3_bucket}/${var.s3_prefix}/*"
+      "arn:${local.partition}:s3:::${var.host_s3_bucket}/${var.s3_prefix}/*"
     ]
 
     principals {

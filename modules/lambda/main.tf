@@ -1,3 +1,13 @@
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+
+locals {
+  region = data.aws_region.current.region
+  partition = data.aws_partition.current.partition
+  acct = data.aws_caller_identity.current.account_id
+}
+
 locals {
   has_input   = var.file_path != null || (var.bucket != null && var.key != null)
   item_to_sha = var.file_path != null ? var.file_path : (local.has_input ? archive_file.source[0].output_path : null)
@@ -42,7 +52,7 @@ data "aws_iam_policy_document" "perms" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
-    resources = ["arn:aws:logs:*:*:*"]
+    resources = ["arn:${local.partition}:logs:*:*:*"]
   }
 
 
@@ -108,7 +118,7 @@ resource "aws_iam_role_policy" "provided_perms" {
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   count      = var.role != null ? 1 : 0
   role       = aws_iam_role.lambda_exec[0].name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  policy_arn = "arn:${local.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 

@@ -44,7 +44,7 @@ resource "aws_secretsmanager_secret" "secret" {
         Action = "secretsmanager:*"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:sts::${data.aws_caller_identity.current.account_id}:federated-user/root"
+          AWS = "arn:${local.partition}:sts::${data.aws_caller_identity.current.account_id}:federated-user/root"
         }
         # Gross and misleading I know, but it has to be star
         # As it is attached to a single secret and AWS needs a resource line
