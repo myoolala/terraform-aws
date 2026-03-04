@@ -5,9 +5,9 @@ data "aws_region" "current" {}
 data "aws_partition" "current" {}
 
 locals {
-  region = data.aws_region.current.region
+  region    = data.aws_region.current.region
   partition = data.aws_partition.current.partition
-  acct = data.aws_caller_identity.current.account_id
+  acct      = data.aws_caller_identity.current.account_id
 }
 
 ########################################################################

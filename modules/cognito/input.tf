@@ -37,9 +37,9 @@ variable "client_config" {
 }
 
 variable "domain" {
-  type = string
+  type        = string
   description = "Domain to add to the pool if there is one. If you want a FQDN, leave null and manually create"
-  default = null
+  default     = null
 }
 
 variable "tags" {

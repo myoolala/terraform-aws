@@ -52,7 +52,7 @@ module "image" {
   port_mappings = concat([for i in try(var.lb.port_mappings, []) : {
     containerPort = i.forward_port
     hostPort      = i.forward_port
-  }], [for i in var.target_groups: {
+    }], [for i in var.target_groups : {
     containerPort = i.container_port
     hostPort      = i.container_port
   }])

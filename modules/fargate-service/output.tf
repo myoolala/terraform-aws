@@ -4,6 +4,6 @@ output "cname_target" {
 }
 
 output "sg_id" {
-  value = aws_security_group.service.id
+  value       = aws_security_group.service.id
   description = "ID of the created security group if there is one"
 }

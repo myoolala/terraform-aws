@@ -112,9 +112,24 @@ variable "enable_dns_hostnames" {
 
 variable "gateway_endpoints" {
   type        = list(string)
-  description = "List of gateway endpoints to deploy if any"
+  description = "List of gateway endpoints to deploy if any. Defaults to all since they are free"
   default = [
     "s3",
     "dynamodb"
   ]
+}
+
+variable "flow_logs" {
+  type = object({
+    enabled      = optional(bool, true)
+    traffic_type = optional(string, "ALL")
+    # Default alias for aws cloudwatch kms key
+    kms_key_id = optional(string, null)
+    # flow_log_role = optional(string, null)
+    log_group = optional(string, null)
+  })
+  description = "Enable or disable flow logs with or without encryption"
+  default = {
+    enabled = false
+  }
 }

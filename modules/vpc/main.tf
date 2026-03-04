@@ -245,3 +245,68 @@ resource "aws_vpc_endpoint" "gateway_endpoints" {
   service_name    = "com.amazonaws.${local.aws_region}.${var.gateway_endpoints[count.index]}"
   route_table_ids = concat([aws_default_route_table.primary.id], aws_route_table.internal[*].id)
 }
+
+###############################################################################################
+############ Logging
+###############################################################################################
+
+resource "aws_cloudwatch_log_group" "logging" {
+  count = var.flow_logs.enabled ? 1 : 0
+
+  name       = var.flow_logs.log_group != null ? var.flow_logs.log_group : "${var.name}-flow-logs"
+  kms_key_id = var.flow_logs.kms_key_id
+}
+
+data "aws_iam_policy_document" "assume_role_logging" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "logging" {
+  count = var.flow_logs.enabled ? 1 : 0
+
+  name               = "${var.name}-flow-logger"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_logging.json
+}
+
+# @TODO: limit this to only the appropriate role
+data "aws_iam_policy_document" "logging" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "logging" {
+  count = var.flow_logs.enabled ? 1 : 0
+
+  name   = "${var.name}-logging"
+  role   = aws_iam_role.logging[0].id
+  policy = data.aws_iam_policy_document.logging.json
+}
+
+resource "aws_flow_log" "this" {
+  count = var.flow_logs.enabled ? 1 : 0
+
+  iam_role_arn    = aws_iam_role.logging[0].arn
+  log_destination = aws_cloudwatch_log_group.logging[0].arn
+  traffic_type    = var.flow_logs.traffic_type
+  vpc_id          = aws_vpc.main.id
+}

@@ -112,9 +112,9 @@ variable "lb" {
 
 variable "target_groups" {
   type = list(object({
-    arn = string
+    arn            = string
     container_port = number
   }))
   description = "List of existing target groups to associate with the service"
-  default = []
+  default     = []
 }

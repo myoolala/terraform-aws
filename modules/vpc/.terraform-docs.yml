@@ -14,7 +14,37 @@ content: |-
 
   There are integrations for mapping NAT Gateways to AZ's, conditionally creating Internet Gateways, enabling IPV6 or 4
 
-  [Examples can be found here](../../tests/vpc/)
+
+  ## Example of a minimally set public IPV4 VPC:
+  ```hcl
+  module "example_pipeline" {
+    source = "github.com/myoolala/terraform-aws/modules//vpc"
+
+    name ="my-vpc"
+    public = true
+    ipv4_cidr = "172.31.0.0/16"
+    ingress_subnets = [{
+      ipv4_cidr = "172.31.0.0/27"
+      az = "us-east-1a"
+      nat = true
+    },
+    {
+      ipv4_cidr = "172.31.0.32/27"
+      az = "us-east-1b"
+      nat = true
+    }]
+    compute_subnets = [{
+      ipv4_cidr = "172.31.1.0/25"
+      az = "us-east-1a"
+    },
+    {
+      ipv4_cidr = "172.31.1.128/25"
+      az = "us-east-1b"
+    }]
+    }
+  ```
+
+  [More examples can be found here](../../tests/vpc/)
 
   {{ .Providers }}
 

@@ -5,7 +5,37 @@ Creates a VPC in a variety of configurations. This primarily supports the ingres
 
 There are integrations for mapping NAT Gateways to AZ's, conditionally creating Internet Gateways, enabling IPV6 or 4
 
-[Examples can be found here](../../tests/vpc/)
+
+## Example of a minimally set public IPV4 VPC:
+```hcl
+module "example_pipeline" {
+  source = "github.com/myoolala/terraform-aws/modules//vpc"
+
+  name ="my-vpc"
+  public = true
+  ipv4_cidr = "172.31.0.0/16"
+  ingress_subnets = [{
+    ipv4_cidr = "172.31.0.0/27"
+    az = "us-east-1a"
+    nat = true
+  },
+  {
+    ipv4_cidr = "172.31.0.32/27"
+    az = "us-east-1b"
+    nat = true
+  }]
+  compute_subnets = [{
+    ipv4_cidr = "172.31.1.0/25"
+    az = "us-east-1a"
+  },
+  {
+    ipv4_cidr = "172.31.1.128/25"
+    az = "us-east-1b"
+  }]
+  }
+```
+
+[More examples can be found here](../../tests/vpc/)
 
 ## Providers
 
@@ -26,7 +56,8 @@ No requirements.
 | <a name="input_compute_subnets"></a> [compute\_subnets](#input\_compute\_subnets) | List of compute subnets to create for the vpc | <pre>list(object({<br/>    ipv4_cidr             = optional(string, null)<br/>    a_record_on_launch    = optional(bool, false)<br/>    ipv6_block_size       = optional(number, null)<br/>    ipv6_block            = optional(number, null)<br/>    ipv6_native           = optional(bool, false)<br/>    aaaa_record_on_launch = optional(bool, false)<br/>    enable_dns64          = optional(bool, false)<br/>    az                    = string<br/>  }))</pre> | `[]` | no |
 | <a name="input_enable_dns_hostnames"></a> [enable\_dns\_hostnames](#input\_enable\_dns\_hostnames) | Enabled DNS hostnames in the vpc | `bool` | `true` | no |
 | <a name="input_enable_dns_support"></a> [enable\_dns\_support](#input\_enable\_dns\_support) | Enabled DNS support in the vpc | `bool` | `true` | no |
-| <a name="input_gateway_endpoints"></a> [gateway\_endpoints](#input\_gateway\_endpoints) | List of gateway endpoints to deploy if any | `list(string)` | <pre>[<br/>  "s3",<br/>  "dynamodb"<br/>]</pre> | no |
+| <a name="input_flow_logs"></a> [flow\_logs](#input\_flow\_logs) | Enable or disable flow logs with or without encryption | <pre>object({<br/>    enabled = optional(bool, true)<br/>    traffic_type = optional(string, "ALL")<br/>    # Default alias for aws cloudwatch kms key<br/>    kms_key_id = optional(string, null)<br/>    # flow_log_role = optional(string, null)<br/>    log_group = optional(string, null)<br/>  })</pre> | <pre>{<br/>  "enabled": false<br/>}</pre> | no |
+| <a name="input_gateway_endpoints"></a> [gateway\_endpoints](#input\_gateway\_endpoints) | List of gateway endpoints to deploy if any. Defaults to all since they are free | `list(string)` | <pre>[<br/>  "s3",<br/>  "dynamodb"<br/>]</pre> | no |
 | <a name="input_ingress_subnets"></a> [ingress\_subnets](#input\_ingress\_subnets) | List of ingress subnets to create for the vpc. These CIDRs should be small | <pre>list(object({<br/>    ipv4_cidr             = optional(string, null)<br/>    a_record_on_launch    = optional(bool, false)<br/>    ipv6_block_size       = optional(number, null)<br/>    ipv6_block            = optional(number, null)<br/>    ipv6_native           = optional(bool, false)<br/>    aaaa_record_on_launch = optional(bool, false)<br/>    enable_dns64          = optional(bool, false)<br/>    az                    = string<br/>    nat                   = optional(bool, false)<br/>  }))</pre> | `[]` | no |
 | <a name="input_instance_tenancy"></a> [instance\_tenancy](#input\_instance\_tenancy) | Desired Tenancy for the vpc | `string` | `"default"` | no |
 | <a name="input_ipv6_conf"></a> [ipv6\_conf](#input\_ipv6\_conf) | Netmask length for a public ipv6 config. 44 to 60 in increments of 4 | <pre>object({<br/>    border_group = string<br/>  })</pre> | `null` | no |
