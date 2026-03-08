@@ -71,8 +71,8 @@ resource "aws_security_group_rule" "ingress" {
   count = try(length(var.lb.port_mappings), 0)
 
   type                     = "ingress"
-  from_port                = var.lb.port_mappings[count.index].listen_port
-  to_port                  = var.lb.port_mappings[count.index].listen_port
+  from_port                = var.lb.port_mappings[count.index].forward_port
+  to_port                  = var.lb.port_mappings[count.index].forward_port
   protocol                 = var.lb.port_mappings[count.index].sg_protocol
   source_security_group_id = module.lb[0].sg_id
   security_group_id        = aws_security_group.service.id
