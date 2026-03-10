@@ -72,8 +72,9 @@ resource "aws_lb_target_group" "forwarder" {
   vpc_id      = var.vpc_id
   target_type = var.port_mappings[count.index].target_type
 
+  # Different options only allow us to specify particular fields so we need one for each
   dynamic "health_check" {
-    for_each = var.port_mappings[count.index].target_type != "lambda" ? [1] : []
+    for_each = var.port_mappings[count.index].target_type == "application" ? [1] : []
 
     content {
       enabled             = var.port_mappings[count.index].health_check.enabled
@@ -83,6 +84,18 @@ resource "aws_lb_target_group" "forwarder" {
       unhealthy_threshold = var.port_mappings[count.index].health_check.unhealthy_threshold
       protocol            = var.port_mappings[count.index].health_check.service_protocol
       path                = var.port_mappings[count.index].health_check.path
+    }
+  }
+
+  dynamic "health_check" {
+    for_each = var.port_mappings[count.index].target_type == "network" ? [1] : []
+
+    content {
+      enabled             = var.port_mappings[count.index].health_check.enabled
+      interval            = var.port_mappings[count.index].health_check.interval
+      healthy_threshold   = var.port_mappings[count.index].health_check.healthy_threshold
+      unhealthy_threshold = var.port_mappings[count.index].health_check.unhealthy_threshold
+      protocol            = "TCP"
     }
   }
 }
