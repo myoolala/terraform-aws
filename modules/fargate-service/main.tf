@@ -43,6 +43,7 @@ module "image" {
   source = "../task-definition"
 
   name         = var.service_name
+  command = var.command
   service_name = var.service_name
   image        = var.image_tag == null ? "${var.service_name}:latest" : var.image_tag
   log_group    = aws_cloudwatch_log_group.logs.name

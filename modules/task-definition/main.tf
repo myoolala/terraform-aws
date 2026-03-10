@@ -9,6 +9,7 @@ resource "aws_ecs_task_definition" "service" {
   container_definitions = jsonencode([
     {
       name         = var.name
+      command      = var.command
       image        = var.image
       cpu          = var.cpu
       memory       = var.memory

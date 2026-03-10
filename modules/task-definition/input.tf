@@ -78,3 +78,9 @@ variable "storage" {
   description = "Size of the ephemeral storage volume for the container"
   default     = 21
 }
+
+variable "command" {
+  type = list(string)
+  description = "Command to pass to the container"
+  default = null
+}

@@ -76,6 +76,12 @@ variable "secrets" {
   description = "List of secrets to attach to the service"
 }
 
+variable "command" {
+  type = list(string)
+  description = "Description to pass to the task definition"
+  default = null
+}
+
 variable "lb" {
   type = object({
     vpc_id        = optional(string, null)
