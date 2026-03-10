@@ -47,14 +47,14 @@ resource "aws_security_group_rule" "egresses" {
   security_group_id = aws_security_group.lb[0].id
 }
 
-
+# @TODO wat....
 resource "aws_lb" "ingress" {
   name                       = var.name
   internal                   = var.internal
   load_balancer_type         = var.type
   enable_deletion_protection = var.deletion_protection
   subnets                    = var.subnets
-  security_groups            = var.type != "internal" ? [var.security_group != null ? var.security_group : aws_security_group.lb[0].id] : null
+  security_groups            = var.type != "internal" && var.type != "network" ? [var.security_group != null ? var.security_group : aws_security_group.lb[0].id] : null
 
   tags = merge(var.tags, {})
 

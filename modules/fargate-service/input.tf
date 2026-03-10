@@ -118,3 +118,19 @@ variable "target_groups" {
   description = "List of existing target groups to associate with the service"
   default     = []
 }
+
+variable "default_egress" {
+  type = object({
+    from_port         = number
+    to_port           = number
+    protocol          = string
+    cidr_blocks       = list(string)
+  })
+  description = "Default egress rule for the created security group"
+  default = {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

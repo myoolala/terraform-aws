@@ -68,7 +68,7 @@ resource "aws_security_group" "service" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  count = try(length(var.lb.port_mappings), 0)
+  count = try(var.lb.type, "") != "network" ? try(length(var.lb.port_mappings), 0) : 0
 
   type                     = "ingress"
   from_port                = var.lb.port_mappings[count.index].forward_port
@@ -80,10 +80,10 @@ resource "aws_security_group_rule" "ingress" {
 
 resource "aws_security_group_rule" "egress" {
   type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = var.default_egress.from_port
+  to_port           = var.default_egress.to_port
+  protocol          = var.default_egress.protocol
+  cidr_blocks       = var.default_egress.cidr_blocks
   security_group_id = aws_security_group.service.id
 }
 
