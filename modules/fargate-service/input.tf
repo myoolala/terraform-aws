@@ -140,3 +140,9 @@ variable "default_egress" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+variable "propagate_tags" {
+  type = string
+  description = "Should the tags from the task definition propagate to the instances"
+  default = null
+}

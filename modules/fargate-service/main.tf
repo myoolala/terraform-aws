@@ -94,6 +94,7 @@ resource "aws_ecs_service" "app" {
   task_definition = module.image.task_definition_arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
+  propagate_tags  = var.propagate_tags
 
   network_configuration {
     subnets = var.network.subnets
