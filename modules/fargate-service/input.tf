@@ -77,9 +77,9 @@ variable "secrets" {
 }
 
 variable "command" {
-  type = list(string)
+  type        = list(string)
   description = "Description to pass to the task definition"
-  default = null
+  default     = null
 }
 
 variable "lb" {
@@ -127,22 +127,22 @@ variable "target_groups" {
 
 variable "default_egress" {
   type = object({
-    from_port         = number
-    to_port           = number
-    protocol          = string
-    cidr_blocks       = list(string)
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
   })
   description = "Default egress rule for the created security group"
   default = {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 variable "propagate_tags" {
-  type = string
+  type        = string
   description = "Should the tags from the task definition propagate to the instances"
-  default = null
+  default     = null
 }

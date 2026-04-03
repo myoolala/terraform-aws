@@ -80,7 +80,7 @@ variable "storage" {
 }
 
 variable "command" {
-  type = list(string)
+  type        = list(string)
   description = "Command to pass to the container"
-  default = null
+  default     = null
 }

@@ -241,7 +241,7 @@ resource "aws_route" "private_gateways_ipv6" {
 
   route_table_id              = aws_route_table.internal[count.index].id
   destination_ipv6_cidr_block = "::/0"
-  egress_only_gateway_id              = aws_egress_only_internet_gateway.private_ipv6_egress.id
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.private_ipv6_egress.id
 }
 
 data "aws_region" "current" {}
