@@ -155,8 +155,12 @@ resource "aws_route" "public_routes_ipv6" {
   ]
 }
 
+locals {
+  internal_rt_length = local.create_internal_rt ? max(length(local.nat_subnet_map), 1) : 0
+}
+
 resource "aws_route_table" "internal" {
-  count = local.create_internal_rt ? max(length(local.nat_subnet_map), 1) : 0
+  count = local.internal_rt_length
 
   vpc_id = aws_vpc.main.id
 
@@ -224,25 +228,33 @@ resource "aws_route" "nat_gateways_ipv4" {
   nat_gateway_id         = aws_nat_gateway.private_internet_access[count.index].id
 }
 
-resource "aws_route" "nat_gateways_ipv6" {
-  count = local.create_internal_rt && var.ipv6_conf != null ? length(local.nat_subnet_map) : 0
+resource "aws_egress_only_internet_gateway" "private_ipv6_egress" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.name}-ipv6-private-egress"
+  }
+}
+
+resource "aws_route" "private_gateways_ipv6" {
+  count = local.internal_rt_length
 
   route_table_id              = aws_route_table.internal[count.index].id
   destination_ipv6_cidr_block = "::/0"
-  nat_gateway_id              = aws_nat_gateway.private_internet_access[count.index].id
+  egress_only_gateway_id              = aws_egress_only_internet_gateway.private_ipv6_egress.id
 }
 
 data "aws_region" "current" {}
 
 locals {
-  aws_region = data.aws_region.current.region
+  region = data.aws_region.current.region
 }
 
 resource "aws_vpc_endpoint" "gateway_endpoints" {
   count = length(var.gateway_endpoints)
 
   vpc_id          = aws_vpc.main.id
-  service_name    = "com.amazonaws.${local.aws_region}.${var.gateway_endpoints[count.index]}"
+  service_name    = "com.amazonaws.${local.region}.${var.gateway_endpoints[count.index]}"
   route_table_ids = concat([aws_default_route_table.primary.id], aws_route_table.internal[*].id)
 }
 
