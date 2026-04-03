@@ -3,7 +3,15 @@
 # * support overriding route tables
 # * Add nacl options? decide that
 
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {}
+
 locals {
+  region = data.aws_region.current.region
+  acct = data.aws_caller_identity.current.account_id
+  partition = data.aws_partition.current.partition
+
   other_subnets = flatten([for name, subnet_group in var.other_subnets : [
     for i, subnet in subnet_group :
     merge(subnet, {
@@ -244,12 +252,6 @@ resource "aws_route" "private_gateways_ipv6" {
   egress_only_gateway_id      = aws_egress_only_internet_gateway.private_ipv6_egress.id
 }
 
-data "aws_region" "current" {}
-
-locals {
-  region = data.aws_region.current.region
-}
-
 resource "aws_vpc_endpoint" "gateway_endpoints" {
   count = length(var.gateway_endpoints)
 
@@ -266,7 +268,7 @@ resource "aws_cloudwatch_log_group" "logging" {
   count = var.flow_logs.enabled ? 1 : 0
 
   name       = var.flow_logs.log_group != null ? var.flow_logs.log_group : "${var.name}-flow-logs"
-  kms_key_id = var.flow_logs.kms_key_id
+  kms_key_id = var.flow_logs.kms_key_arn != null ? var.flow_logs.kms_key_arn : var.flow_logs.kms_key_alias
 }
 
 data "aws_iam_policy_document" "assume_role_logging" {
@@ -289,20 +291,35 @@ resource "aws_iam_role" "logging" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_logging.json
 }
 
-# @TODO: limit this to only the appropriate role
 data "aws_iam_policy_document" "logging" {
+  count = var.flow_logs.enabled ? 1 : 0
+
   statement {
     effect = "Allow"
 
     actions = [
-      "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "logs:DescribeLogGroups",
       "logs:DescribeLogStreams",
     ]
 
-    resources = ["*"]
+    resources = [aws_cloudwatch_log_group.logging[0].arn]
+  }
+
+  dynamic "statement" {
+    for_each = var.flow_logs.kms_key_arn != null ? [1] : []
+
+    content {
+    effect = "Allow"
+
+    actions = [
+      "kms:encrypt",
+      "kms:decrypt"
+    ]
+
+    resources = [var.flow_logs.kms_key_arn]
+    }
   }
 }
 
@@ -311,7 +328,7 @@ resource "aws_iam_role_policy" "logging" {
 
   name   = "${var.name}-logging"
   role   = aws_iam_role.logging[0].id
-  policy = data.aws_iam_policy_document.logging.json
+  policy = data.aws_iam_policy_document.logging[0].json
 }
 
 resource "aws_flow_log" "this" {

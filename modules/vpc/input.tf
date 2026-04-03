@@ -124,7 +124,8 @@ variable "flow_logs" {
     enabled      = optional(bool, true)
     traffic_type = optional(string, "ALL")
     # Default alias for aws cloudwatch kms key
-    kms_key_id = optional(string, null)
+    kms_key_arn = optional(string, null)
+    kms_key_alias = optional(string, null)
     # flow_log_role = optional(string, null)
     log_group = optional(string, null)
   })
