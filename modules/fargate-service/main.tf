@@ -46,6 +46,9 @@ module "image" {
   command      = var.command
   service_name = var.service_name
   image        = var.image_tag == null ? "${var.service_name}:latest" : var.image_tag
+  memory       = var.image_configs.memory
+  cpu          = var.image_configs.cpu
+  storage      = var.image_configs.storage
   log_group    = aws_cloudwatch_log_group.logs.name
   env_vars     = var.env_vars
   secrets      = module.secrets.fargate_secrets

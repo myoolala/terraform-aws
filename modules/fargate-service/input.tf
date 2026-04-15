@@ -82,6 +82,16 @@ variable "command" {
   default     = null
 }
 
+variable "image_configs" {
+  type = object({
+    cpu    = optional(number, 256)
+    memory = optional(number, 512)
+    storage = optional(number, 21)
+  })
+  description = "Resource configurations for the service containers"
+  default = {}
+}
+
 variable "lb" {
   type = object({
     vpc_id        = optional(string, null)
