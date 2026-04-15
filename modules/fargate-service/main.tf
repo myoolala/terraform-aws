@@ -98,6 +98,7 @@ resource "aws_ecs_service" "app" {
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
   propagate_tags  = var.propagate_tags
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
 
   network_configuration {
     subnets = var.network.subnets

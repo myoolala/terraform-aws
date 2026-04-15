@@ -156,3 +156,9 @@ variable "propagate_tags" {
   description = "Should the tags from the task definition propagate to the instances"
   default     = null
 }
+
+variable "health_check_grace_period_seconds" {
+  type = number
+  description = "The period of time, in seconds, that allows the ECS service to ignore"
+  default = null
+}
