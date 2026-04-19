@@ -11,7 +11,7 @@ In addition, the tests folders serve the other purpose to provide examples of ho
 * [code-build](./modules/code-build/README.md)
 * [code-pipeline](./modules/code-pipeline/README.md)
 * [cognito](./modules/cognito/README.md)
-* [dyanmo-db](./modules/dyanmo-db/README.md)
+* [dynamo-db](./modules/dynamo-db/README.md)
 * [fargate-service](./modules/fargate-service/README.md)
 * [kms-key](./modules/kms-key/README.md)
 * [lambda](./modules/lambda/README.md)
