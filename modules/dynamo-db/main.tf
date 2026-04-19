@@ -10,8 +10,8 @@ resource "aws_dynamodb_table" "this" {
     for_each = var.attributes
 
     content {
-      name = attribute.name
-      type = attribute.type
+      name = attribute.value.name
+      type = attribute.value.type
     }
   }
 
