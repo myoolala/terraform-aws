@@ -82,6 +82,16 @@ variable "command" {
   default     = null
 }
 
+variable "image_configs" {
+  type = object({
+    cpu    = optional(number, 256)
+    memory = optional(number, 512)
+    storage = optional(number, 21)
+  })
+  description = "Resource configurations for the service containers"
+  default = {}
+}
+
 variable "lb" {
   type = object({
     vpc_id        = optional(string, null)
@@ -145,4 +155,10 @@ variable "propagate_tags" {
   type        = string
   description = "Should the tags from the task definition propagate to the instances"
   default     = null
+}
+
+variable "health_check_grace_period_seconds" {
+  type = number
+  description = "The period of time, in seconds, that allows the ECS service to ignore"
+  default = null
 }

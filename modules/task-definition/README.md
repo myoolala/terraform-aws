@@ -21,6 +21,7 @@ No requirements.
 | <a name="input_log_group"></a> [log\_group](#input\_log\_group) | Name of the cloudwatch group to store logs in | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Name to assign to the new task definition | `string` | n/a | yes |
 | <a name="input_service_name"></a> [service\_name](#input\_service\_name) | Name of the service to associate the definition with | `string` | n/a | yes |
+| <a name="input_command"></a> [command](#input\_command) | Command to pass to the container | `list(string)` | `null` | no |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | CPU value to give to the docker definition | `number` | `256` | no |
 | <a name="input_env_vars"></a> [env\_vars](#input\_env\_vars) | Environment variables to pass to the container in {<key> = <value>, <key> = <value>} form | `map(string)` | `{}` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory amount in MB to give to the docker definition | `number` | `512` | no |

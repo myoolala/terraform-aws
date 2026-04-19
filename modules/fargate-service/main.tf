@@ -46,6 +46,9 @@ module "image" {
   command      = var.command
   service_name = var.service_name
   image        = var.image_tag == null ? "${var.service_name}:latest" : var.image_tag
+  memory       = var.image_configs.memory
+  cpu          = var.image_configs.cpu
+  storage      = var.image_configs.storage
   log_group    = aws_cloudwatch_log_group.logs.name
   env_vars     = var.env_vars
   secrets      = module.secrets.fargate_secrets
@@ -95,6 +98,7 @@ resource "aws_ecs_service" "app" {
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
   propagate_tags  = var.propagate_tags
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
 
   network_configuration {
     subnets = var.network.subnets
