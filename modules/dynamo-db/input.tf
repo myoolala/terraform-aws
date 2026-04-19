@@ -59,7 +59,7 @@ variable "ttl_field" {
 variable "billing_mode" {
   type        = string
   description = "Billing mode to apply to the table"
-  default     = "ON_DEMAND"
+  default     = "PAY_PER_REQUEST"
 }
 
 variable "read_capacity" {
