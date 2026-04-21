@@ -20,6 +20,9 @@ find ../tests/ \
 
         echo "Running terraform plan..."
         terraform plan -input=false
+
+        rm -r ./.terraform
+        rm .terraform.lock.hcl
     )
 
 done

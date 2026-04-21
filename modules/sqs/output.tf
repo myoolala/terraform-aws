@@ -17,3 +17,7 @@ output "kms_key_alias_arn" {
   value       = var.kms.key == "create" ? module.kms_key[0].alias_arn : null
   description = "KMS key Alias ARN that was created"
 }
+
+output "queue_url" {
+  value = aws_sqs_queue.this.id
+}

@@ -48,5 +48,6 @@ No requirements.
 | <a name="output_kms_key"></a> [kms\_key](#output\_kms\_key) | KMS key id that was provided or created |
 | <a name="output_kms_key_alias_arn"></a> [kms\_key\_alias\_arn](#output\_kms\_key\_alias\_arn) | KMS key Alias ARN that was created |
 | <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | KMS key ARN that was created |
+| <a name="output_queue_url"></a> [queue\_url](#output\_queue\_url) | n/a |
 | <a name="output_sqs_arn"></a> [sqs\_arn](#output\_sqs\_arn) | ARN for the SQS Queue |  
 <!-- END_TF_DOCS -->
