@@ -1,0 +1,53 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # RDS
+
+  Creates an RDS database along with all required resources such as a parameter group, subnet group, security group, etc...
+
+  It does auto generate a password that will not update once created, that will be the developer's responsibility
+
+  Things to note:
+
+  - Adds an alarm for 75% usage
+  - Creates a randomized id for the final snapshop to support multiple database replacements
+  - The Parameter groups can be namespaced to support major version upgrades
+
+  Example:
+  ```hcl
+  module "rds_instance" {
+    source = "github.com/myoolala/terraform-aws/modules//rds-instance"
+
+    name = "rds-instance-test"
+    port = 5432
+    vpc_config = {
+      vpc_id = module.vpc.vpc_id
+      subnets = module.vpc.compute_subnet_ids
+    }
+    config = {
+      "default" = {
+        pg_name = "test"
+        engine = "postgres"
+        engine_version = "18.3"
+        pg_family = "postgres18"
+      }
+    }
+  }
+  ```
+
+  [More examples can be found here](../../../tests/rds-instance-db/)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

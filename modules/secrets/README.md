@@ -17,7 +17,6 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_region"></a> [region](#input\_region) | Region for replicating the secret in | `string` | n/a | yes |
 | <a name="input_create_new_key"></a> [create\_new\_key](#input\_create\_new\_key) | Create a new key to encrypt the secrets data with instead of using the provided key | `bool` | `true` | no |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | Name of the kms key to associate with the secrets | `string` | `"alias/aws/secretsmanager"` | no |
 | <a name="input_recovery_window"></a> [recovery\_window](#input\_recovery\_window) | Number of days, 0 to 30, to store a deleted secret in order to recover it | `number` | `7` | no |

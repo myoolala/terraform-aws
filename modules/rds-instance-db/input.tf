@@ -1,3 +1,7 @@
+##################################################################
+#########                     Required                   #########
+##################################################################
+
 variable "name" {
   type        = string
   description = "Name for the db instance"
@@ -15,20 +19,47 @@ variable "vpc_config" {
   })
 }
 
+variable "port" {
+  type        = number
+  description = "Port the db instance is listening on"
+}
+
+variable "configs" {
+  type = map(object({
+    pg_name = string
+    engine = string
+    engine_version = string
+    pg_family = string
+    pg_suffix = optional(string, "")
+    og_name = optional(string, null)
+    parameters = optional(list(object({
+      name         = string
+      value        = string
+      apply_method = optional(string, "pending-reboot")
+    })), [])
+  }))
+  description = "Database configuration. If you notice, this it s map which is meant to allow for simpler upgrades. Upgrading a major version might require a parameter group update which would need a new group with a new name and a straight opentofu update will not suffice. This allows the upgrade to split across 2 applies for a seamless update"
+}
+
+##################################################################
+#########                     Optional                   #########
+##################################################################
+
+variable "create_sg" {
+  type = bool
+  description = "Create a new SG for the RDS database"
+  default = true
+}
+
 variable "network_type" {
   type        = string
   description = "Network Type for the instance, defaults to IPV4 <IPV4|DUAL>"
   default     = "IPV4"
 }
 
-variable "port" {
-  type        = number
-  description = "Port the db instance is listening on"
-}
-
-variable "pg_name" {
+variable "selected_config" {
   type        = string
-  description = "Parameter group name"
+  description = "Which configuration to use from the config variable"
   default     = null
 }
 
@@ -59,7 +90,7 @@ variable "allocated_storage" {
 variable "backup_retention_period" {
   type        = number
   description = "Number of days to store snapshot backups for"
-  default     = 0
+  default     = 7
 }
 
 variable "max_allocated_storage" {
@@ -86,34 +117,6 @@ variable "admin_uname" {
   default     = "main"
 }
 
-variable "admin_default_password" {
-  type        = string
-  description = "Default password that a good developer will definitely change after the instance is deployed"
-  default     = "oh-pl3a$3-change-this"
-}
-
-variable "engine" {
-  type        = string
-  description = "Engine to run the db instance with"
-}
-
-variable "engine_version" {
-  type        = string
-  description = "Specific engine version to use if any"
-  default     = null
-}
-
-variable "param_group_family" {
-  type        = string
-  description = "Specific engine version to use if any"
-}
-
-variable "param_group_suffix" {
-  type        = string
-  description = "Suffix for the param group name to use"
-  default     = ""
-}
-
 variable "db_name" {
   type        = string
   description = "Name of the db to create if applicable"
@@ -124,26 +127,6 @@ variable "storage_encrypted" {
   type        = bool
   description = "Store all database data encrypted at rest"
   default     = true
-}
-
-variable "parameter_group_name" {
-  type        = string
-  description = "Name of the parameter group to use on the instance if any"
-  default     = null
-}
-
-variable "parameters" {
-  type = list(object({
-    name         = string
-    value        = string
-    apply_method = optional(string, "pending-reboot")
-  }))
-}
-
-variable "options_group_name" {
-  type        = string
-  description = "Name of the options group to use on the instance if any"
-  default     = null
 }
 
 variable "final_snapshot_id" {
@@ -176,7 +159,7 @@ variable "free_storage_space_threshold" {
 
 variable "alarm_arns" {
   type        = list(string)
-  description = "List of ARN's for the sns topic to send alerts to"
+  description = "List of ARN's of the sns topics to send alerts to"
   default     = []
 }
 
@@ -193,4 +176,10 @@ variable "ca" {
 variable "storage_type" {
   type    = string
   default = null
+}
+
+variable "skip_final_snapshot" {
+  type = bool
+  description = "Skip the final snapshot on deletion"
+  default = false
 }

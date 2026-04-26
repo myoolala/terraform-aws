@@ -1,0 +1,61 @@
+# .terraform-docs.yml
+
+settings:
+  type: false
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # Aurora Cluster
+
+  Creates an Auora cluster for either serverless or provisioned. Nice replacement for small databases as an alternative for classic RDS
+
+  ## Example of a minimally set pipeline:
+  ```hcl
+  module "aurora" {
+    source = "./modules/aurora"
+
+    cluster_identifier = "app-aurora"
+    engine             = "aurora-mysql"
+    engine_version     = "8.0.mysql_aurora.3.08.0"
+
+    database_name   = "appdb"
+    master_username = "admin"
+    master_password = var.db_password
+
+    db_subnet_group_name   = aws_db_subnet_group.this.name
+    vpc_security_group_ids = [aws_security_group.db.id]
+
+    iam_database_authentication_enabled = true
+
+    instances = {
+      writer = {
+        identifier     = "app-aurora-1"
+        instance_class = "db.r6g.large"
+        promotion_tier = 0
+      }
+
+      reader = {
+        identifier     = "app-aurora-2"
+        instance_class = "db.r6g.large"
+        promotion_tier = 1
+      }
+    }
+
+    tags = {
+      App = "example"
+    }
+  }
+  ```
+  
+  [Click here to view a folder of example tests](../../tests/code-pipeline)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  

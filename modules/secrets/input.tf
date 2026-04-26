@@ -16,11 +16,6 @@ variable "create_new_key" {
   description = "Create a new key to encrypt the secrets data with instead of using the provided key"
 }
 
-variable "region" {
-  type        = string
-  description = "Region for replicating the secret in"
-}
-
 variable "recovery_window" {
   type        = number
   default     = 7

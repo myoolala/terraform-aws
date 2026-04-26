@@ -4,12 +4,12 @@ output "admin_uname" {
 }
 
 output "admin_default_password" {
-  value       = var.admin_default_password
+  value       = random_string.default_pw.result
   description = "The default admin password provided to the database"
 }
 
 output "sg_id" {
-  value       = local.create_new_sg ? module.rds_sg[0].id : null
+  value       = var.create_sg ? module.rds_sg[0].id : null
   description = "The created securitygroup id if there was one"
 }
 
