@@ -88,6 +88,7 @@ module "rds_instance" {
 |------|-------------|
 | <a name="output_admin_default_password"></a> [admin\_default\_password](#output\_admin\_default\_password) | The default admin password provided to the database |
 | <a name="output_admin_uname"></a> [admin\_uname](#output\_admin\_uname) | Admin username for the database |
+| <a name="output_connection_secret"></a> [connection\_secret](#output\_connection\_secret) | Secret information that can be used to connect to the database |
 | <a name="output_connection_url"></a> [connection\_url](#output\_connection\_url) | The connection url for the database |
 | <a name="output_db_name"></a> [db\_name](#output\_db\_name) | The name for the database, this can be null |
 | <a name="output_instance_arn"></a> [instance\_arn](#output\_instance\_arn) | ARN for the database |

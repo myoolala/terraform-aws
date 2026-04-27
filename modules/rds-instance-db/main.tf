@@ -157,12 +157,16 @@ resource "aws_cloudwatch_metric_alarm" "low_storage_space" {
   ]
 }
 
+locals {
+  admin_sm_name = "${var.name}-db-login"
+}
+
 module "admin_connection_info" {
   source = "../secrets"
 
   secrets = [
     {
-      name = "${var.name}-login"
+      name = local.admin_sm_name
       value = jsonencode({
         username = var.admin_uname
         password = random_string.default_pw.result

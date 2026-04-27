@@ -50,3 +50,7 @@ module "rds_instance_db" {
     }
     skip_final_snapshot = true
 }
+
+output "output" {
+  value = module.rds_instance_db
+}

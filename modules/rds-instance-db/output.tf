@@ -42,3 +42,13 @@ output "low_storage_alam_arn" {
   value       = var.free_storage_space_threshold != null ? aws_cloudwatch_metric_alarm.low_storage_space[0].arn : null
   description = "ARN of the low storage alarm"
 }
+
+output "connection_secret" {
+  value = {
+    # There's only one secret so it's fine. Easier that trying t
+    arn = module.admin_connection_info.secret_map[0].arn
+    name = module.admin_connection_info.secret_map[0].name
+    kms_key = module.admin_connection_info.kms_key
+  }
+  description = "Secret information that can be used to connect to the database"
+}
