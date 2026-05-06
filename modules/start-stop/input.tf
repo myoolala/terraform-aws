@@ -64,3 +64,9 @@ variable "permissions" {
   description = "JSON encoded permissions policy to override the default policy with"
   default     = null
 }
+
+variable "tag_to_search" {
+  type = string
+  description = "TAG to query for when running the stop start"
+  default = "ServiceRunSchedule"
+}

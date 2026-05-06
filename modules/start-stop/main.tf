@@ -23,6 +23,7 @@ module "start_stop" {
   environment_vars = {
     LOG_LEVEL = var.log_level
     DRY_RUN   = var.dry_run_mode_enabled
+    TAG_LOOKUP = var.tag_to_search
   }
   log_retention = var.log_retention
   permissions   = var.permissions != null ? var.permissions : local.default_permissions

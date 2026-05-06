@@ -88,6 +88,7 @@ No requirements.
 | <a name="input_schedule"></a> [schedule](#input\_schedule) | Schedule to run the start/stop Lambda on | `string` | `"cron(*/30 * * * ? *)"` | no |
 | <a name="input_sns_alert_topics"></a> [sns\_alert\_topics](#input\_sns\_alert\_topics) | List of SNS topic ARN's to send errors to | `list(string)` | `[]` | no |
 | <a name="input_start_grace_period"></a> [start\_grace\_period](#input\_start\_grace\_period) | Number of hours to allow premature starting of the instance | `number` | `0` | no |
+| <a name="input_tag_to_search"></a> [tag\_to\_search](#input\_tag\_to\_search) | TAG to query for when running the stop start | `string` | `"ServiceRunSchedule"` | no |
 | <a name="input_timeout"></a> [timeout](#input\_timeout) | Timeout for the Lambda function | `number` | `60` | no |
 
 ## Outputs
