@@ -4,7 +4,6 @@ module "secrets" {
   source = "../secrets"
 
   secrets         = var.secrets
-  region          = data.aws_region.current.region
   create_new_key  = length(var.secrets) > 0
   recovery_window = 0
 }
