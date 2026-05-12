@@ -8,6 +8,12 @@ variable "vpc_id" {
   description = "VPC to house the SG"
 }
 
+variable "description" {
+  type = string
+  description = "Description for the new security group"
+  default = ""
+}
+
 variable "ingresses" {
   type = list(object({
     from_port                = number

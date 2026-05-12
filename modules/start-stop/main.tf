@@ -17,6 +17,12 @@ locals {
   })
 }
 
+resource "archive_file" "source" {
+  type        = "zip"
+  source_file = abspath("${path.module}/code/index.js")
+  output_path = abspath("${path.module}/output/lambda.zip")
+}
+
 module "start_stop" {
   source = "../lambda"
 

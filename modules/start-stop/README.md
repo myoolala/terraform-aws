@@ -69,6 +69,7 @@ module "start_stop_lambder" {
 
 | Name | Version |
 |------|---------|
+| <a name="provider_archive"></a> [archive](#provider\_archive) | n/a |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Requirements
