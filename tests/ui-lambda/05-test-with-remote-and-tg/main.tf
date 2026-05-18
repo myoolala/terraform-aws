@@ -14,7 +14,7 @@ resource "random_string" "suffix" {
 }
 
 module "s3_target" {
-  source = "github.com/myoolala/terraform-aws/modules/s3-bucket?ref=next-work"
+  source = "github.com/myoolala/terraform-aws/modules/s3-bucket?ref=main"
 
   name = "test-integration-${random_string.suffix.result}"
 }
@@ -27,7 +27,7 @@ resource "aws_lb_target_group" "forwarder" {
 }
 
 module "lambda-ui" {
-  source = "github.com/myoolala/terraform-aws/modules/lambda-s3-ui?ref=next-work"
+  source = "github.com/myoolala/terraform-aws/modules/lambda-s3-ui?ref=main"
 
   lambda_name = "test-base-lambda"
   alb_tg_arn  = aws_lb_target_group.forwarder.arn

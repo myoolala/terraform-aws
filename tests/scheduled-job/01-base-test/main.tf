@@ -27,7 +27,9 @@ module "test" {
   }
   vpc_id              = module.vpc.vpc_id
   service_subnets     = module.vpc.ingress_subnet_ids
-  schedule_expression = "cron(0 6 * * ? *)"
+  trigger = {
+    schedule_expression = "cron(0 6 * * ? *)"
+  }
 }
 
 provider "aws" {

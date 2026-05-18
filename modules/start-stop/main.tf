@@ -26,6 +26,8 @@ resource "archive_file" "source" {
 module "start_stop" {
   source = "../lambda"
 
+  file_path    = archive_file.source.output_path
+  code_hash256 = archive_file.source.output_base64sha256
   environment_vars = {
     LOG_LEVEL = var.log_level
     DRY_RUN   = var.dry_run_mode_enabled
