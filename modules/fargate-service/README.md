@@ -31,6 +31,7 @@ No requirements.
 | <a name="input_cluster"></a> [cluster](#input\_cluster) | Cluster information for the service | <pre>object({<br/>    create = optional(bool, false)<br/>    name   = optional(string, null)<br/>    arn    = optional(string, null)<br/>  })</pre> | n/a | yes |
 | <a name="input_network"></a> [network](#input\_network) | Network config to attach to the service containers | <pre>object({<br/>    vpc_id  = string<br/>    subnets = optional(list(string), null)<br/>  })</pre> | n/a | yes |
 | <a name="input_service_name"></a> [service\_name](#input\_service\_name) | Name to apply to the Fargate service | `string` | n/a | yes |
+| <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Assign public ip's to the containers | `bool` | `false` | no |
 | <a name="input_command"></a> [command](#input\_command) | Description to pass to the task definition | `list(string)` | `null` | no |
 | <a name="input_default_egress"></a> [default\_egress](#input\_default\_egress) | Default egress rule for the created security group | <pre>object({<br/>    from_port   = number<br/>    to_port     = number<br/>    protocol    = string<br/>    cidr_blocks = list(string)<br/>  })</pre> | <pre>{<br/>  "cidr_blocks": [<br/>    "0.0.0.0/0"<br/>  ],<br/>  "from_port": 0,<br/>  "protocol": "-1",<br/>  "to_port": 0<br/>}</pre> | no |
 | <a name="input_desired_count"></a> [desired\_count](#input\_desired\_count) | Initial desired count of containers for the service | `number` | `2` | no |

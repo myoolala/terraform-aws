@@ -162,3 +162,9 @@ variable "health_check_grace_period_seconds" {
   description = "The period of time, in seconds, that allows the ECS service to ignore"
   default = null
 }
+
+variable "assign_public_ip" {
+  type = bool
+  description = "Assign public ip's to the containers"
+  default = false
+}

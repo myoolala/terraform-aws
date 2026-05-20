@@ -105,7 +105,7 @@ resource "aws_ecs_service" "app" {
       aws_security_group.service.id
     ]
     // Required if deploying to a public subnet
-    assign_public_ip = true
+    assign_public_ip = var.assign_public_ip
   }
 
 
