@@ -20,4 +20,5 @@ output "kms_key_alias_arn" {
 
 output "queue_url" {
   value = aws_sqs_queue.this.id
+  description = "URL/id for the SQS Queue"
 }

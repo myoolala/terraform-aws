@@ -14,6 +14,7 @@ locals {
   runtime_map = {
     "nodejs20.x" = abspath("${path.module}/starter_code/index.mjs")
     "nodejs22.x" = abspath("${path.module}/starter_code/index.mjs")
+    "nodejs24.x" = abspath("${path.module}/starter_code/index.mjs")
   }
 }
 

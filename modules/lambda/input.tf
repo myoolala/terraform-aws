@@ -38,7 +38,7 @@ variable "key" {
 variable "runtime" {
   type        = string
   description = "Runtime to use for the lambda"
-  default     = "nodejs22.x"
+  default     = "nodejs24.x"
 }
 
 # @Link: https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html#configuration-memory-use-cases
