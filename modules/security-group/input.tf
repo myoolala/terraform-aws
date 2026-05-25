@@ -18,6 +18,7 @@ variable "ingresses" {
   type = list(object({
     from_port                = number
     to_port                  = number
+    description              = optional(string, "Managed by terraform")
     protocol                 = string
     source_security_group_id = optional(string, null)
     cidr_blocks              = optional(list(string), null)
@@ -30,6 +31,7 @@ variable "egresses" {
   type = list(object({
     from_port                = number
     to_port                  = number
+    description              = optional(string, "Managed by terraform")
     protocol                 = string
     source_security_group_id = optional(string, null)
     cidr_blocks              = optional(list(string), null)
