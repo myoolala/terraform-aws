@@ -8,6 +8,7 @@ resource "aws_security_group_rule" "ingresses" {
   count = length(var.ingresses)
 
   type                     = "ingress"
+  description              = var.ingresses[count.index].description
   from_port                = var.ingresses[count.index].from_port
   to_port                  = var.ingresses[count.index].to_port
   protocol                 = var.ingresses[count.index].protocol
@@ -20,6 +21,7 @@ resource "aws_security_group_rule" "egresses" {
   count = length(var.egresses)
 
   type                     = "egress"
+  description              = var.egresses[count.index].description
   from_port                = var.egresses[count.index].from_port
   to_port                  = var.egresses[count.index].to_port
   protocol                 = var.egresses[count.index].protocol

@@ -11,13 +11,14 @@ variable "vpc_id" {
 variable "description" {
   type = string
   description = "Description for the new security group"
-  default = ""
+  default = "Managed by OpenTofu"
 }
 
 variable "ingresses" {
   type = list(object({
     from_port                = number
     to_port                  = number
+    description              = optional(string, "Managed by OpenTofu")
     protocol                 = string
     source_security_group_id = optional(string, null)
     cidr_blocks              = optional(list(string), null)
@@ -30,6 +31,7 @@ variable "egresses" {
   type = list(object({
     from_port                = number
     to_port                  = number
+    description              = optional(string, "Managed by OpenTofu")
     protocol                 = string
     source_security_group_id = optional(string, null)
     cidr_blocks              = optional(list(string), null)
