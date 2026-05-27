@@ -169,4 +169,5 @@ module "lb" {
   internal            = var.lb.internal
   deletion_protection = var.lb.deletion_protection
   port_mappings       = var.lb.port_mappings
+  idle_timeout        = var.lb.idle_timeout
 }

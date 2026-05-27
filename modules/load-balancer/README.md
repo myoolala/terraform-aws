@@ -25,6 +25,7 @@ No requirements.
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Is the load balancer protected from deletion? | `bool` | `false` | no |
 | <a name="input_egress_cidrs"></a> [egress\_cidrs](#input\_egress\_cidrs) | List of cidr ingresses to attach to the load balancer | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_egress_groups"></a> [egress\_groups](#input\_egress\_groups) | List of security group ingresses to attach to the load balancer | `list(string)` | `[]` | no |
+| <a name="input_idle_timeout"></a> [idle\_timeout](#input\_idle\_timeout) | Number in seconds the load balancer should wait for a response for | `number` | `60` | no |
 | <a name="input_ingress_cidrs"></a> [ingress\_cidrs](#input\_ingress\_cidrs) | List of cidr ingresses to attach to the load balancer | `list(string)` | `[]` | no |
 | <a name="input_ingress_groups"></a> [ingress\_groups](#input\_ingress\_groups) | List of security group ingresses to attach to the load balancer | `list(string)` | `[]` | no |
 | <a name="input_internal"></a> [internal](#input\_internal) | Is the load balancer internal or external | `bool` | `false` | no |
