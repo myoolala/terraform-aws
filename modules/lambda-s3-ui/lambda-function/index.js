@@ -207,7 +207,7 @@ exports.handler = async event => {
           && (event.headers['accept-encoding'] || '').indexOf('gzip') > -1;
 
     logger.debug('Returining file contents', body.length, body);
-    const toReturn = mapS3Object(Buffer.fromt(returnGzip ? gzipSync(body) : body).toString('base64'), {
+    const toReturn = mapS3Object(Buffer.from(returnGzip ? gzipSync(body) : body).toString('base64'), {
         ...DEFAULT_RESPONSE_HEADERS,
         ...{
             // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
