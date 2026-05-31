@@ -11,17 +11,18 @@ module "vpc" {
 
   name      = "private-vpc-test"
   ipv4_cidr = "172.31.0.0/16"
+  public = true
   ingress_subnets = [{
-    ipv4_cidr = "172.31.0.0/27"
-    az        = "us-east-1a"
+      ipv4_cidr = "172.31.0.0/27"
+      az        = "us-east-1a"
     },
     {
       ipv4_cidr = "172.31.0.32/27"
       az        = "us-east-1b"
   }]
   compute_subnets = [{
-    ipv4_cidr = "172.31.1.0/25"
-    az        = "us-east-1a"
+      ipv4_cidr = "172.31.1.0/25"
+      az        = "us-east-1a"
     },
     {
       ipv4_cidr = "172.31.1.128/25"
@@ -43,21 +44,51 @@ module "s3_target" {
   name = "test-integration-${random_string.suffix.result}"
 }
 
-resource "aws_lb_target_group" "forwarder" {
-  name        = "lambda-ui-integration-test"
-  protocol    = "HTTPS"
-  vpc_id      = module.vpc.vpc_id
-  target_type = "lambda"
+resource "aws_s3_object" "test_file" {
+  bucket = module.s3_target.id
+  key    = "/latest/index.html"
+  source = "${path.module}/index.html"
+  etag   = filemd5("${path.module}/index.html") 
+  content_type = "text/html"
+}
+
+# resource "aws_lb_target_group" "forwarder" {
+#   name        = "lambda-ui-integration-test"
+#   protocol    = "HTTPS"
+#   vpc_id      = module.vpc.vpc_id
+#   target_type = "lambda"
+# }
+
+module "alb" {
+  source = "../../../modules/load-balancer"
+
+  name    = "load-balancer-ipv4-test"
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.ingress_subnet_ids
+  ingress_cidrs = [
+    "0.0.0.0/0"
+  ]
+  # egress_cidrs        = module.vpc.ipv4_cidrs
+  type                = "application"
+  internal            = false
+  deletion_protection = false
+  port_mappings = [{
+    listen_port  = 80
+    lb_protocol = "HTTP"
+    forward_port = null
+    target_type  = "lambda"
+  }]
 }
 
 module "lambda_ui" {
   source = "../../../modules/lambda-s3-ui"
 
   lambda_name = "test-base-lambda"
-  alb_tg_arn  = aws_lb_target_group.forwarder.arn
+  alb_tg_arn  = module.alb.tg_arns[0]
   config = {
     bucket = module.s3_target.id
     prefix = "/latest"
+    log_level = "DEBUG"
   }
   vpc_config = {
     subnets = module.vpc.compute_subnet_ids
@@ -67,6 +98,11 @@ module "lambda_ui" {
     vpc_id = module.vpc.vpc_id
   }
 }
+
+output "alb" {
+  value = module.alb
+}
+
 
 provider "aws" {
   region = "us-east-1"

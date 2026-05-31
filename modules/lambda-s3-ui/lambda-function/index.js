@@ -1,6 +1,7 @@
 'use-strict';
 
-const net = require('net');
+const net = require('net'),
+      { gzipSync } = require("zlib"),
       BUCKET = process.env['BUCKET'],
       PREFIX = process.env['PREFIX'].replace(/\/+$/, '').replace(/^\//, ''),
       LOG_LEVEL = process.env['LOG_LEVEL'],
@@ -10,6 +11,8 @@ const net = require('net');
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
       SPA_ENABLED = process.env['SPA_ENABLED'] === 'enabled',
       DEFAULT_FILE_PATH = process.env['DEFAULT_FILE_PATH'],
+      GZIP_MIN_LENGTH = parseInt(process.env.GZIP_MIN_LENGTH || '1024'),
+      CACHE_GZIP_ENABLED = (process.env.CACHE_GZIP_ENABLED || 'true') === "true",
       DEFAULT_RESPONSE_HEADERS = process.env['DEFAULT_RESPONSE_HEADERS'] ? JSON.parse(process.env['DEFAULT_RESPONSE_HEADERS']) : {},
       metricsConfig = process.env['METRICS_CONFIG'] ? JSON.parse(process.env['METRICS_CONFIG']) : {enabled: false};
 
@@ -140,7 +143,7 @@ const getAndCache = async (Key, override = false) => {
     let file = await s3Get({Bucket: BUCKET, Key});
     logger.debug('Got file object:', file)
     let bodyBuffer = await file.Body.transformToByteArray();
-    let body = Buffer.from(bodyBuffer).toString('base64');
+    let body = Buffer.from(bodyBuffer).toString('utf-8');
     logger.debug('Converted body to base64', body.length);
 
     // Update the cache with the new data
@@ -197,15 +200,20 @@ exports.handler = async event => {
         }
     }
 
+    
     const {file, body} = cacheObject;
+    const returnGzip = CACHE_GZIP_ENABLED
+          && body.length >= GZIP_MIN_LENGTH 
+          && (event.headers['accept-encoding'] || '').indexOf('gzip') > -1;
+
     logger.debug('Returining file contents', body.length, body);
-    const toReturn = mapS3Object(body, {
+    const toReturn = mapS3Object(Buffer.fromt(returnGzip ? gzipSync(body) : body).toString('base64'), {
         ...DEFAULT_RESPONSE_HEADERS,
         ...{
             // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
             'Content-Type': file.ContentType, 
             // This tells the browser to unpack the gzip files
-            'Content-Encoding': Key.endsWith('gz') ? 'gzip' : undefined, 
+            'Content-Encoding': returnGzip ? 'gzip' : undefined, 
             // Set the cache
             'cache-control': getCacheHeader(file.ContentType)
         }

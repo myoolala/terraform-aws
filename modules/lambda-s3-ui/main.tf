@@ -185,6 +185,7 @@ module "lambda" {
     "BUCKET"                   = var.config.bucket,
     "PREFIX"                   = var.config.prefix,
     "LOG_LEVEL"                = var.config.log_level,
+    "CACHE_GZIP_ENABLED"       = var.auto_gzip_compress,
     "GZ_ASSETS"                = var.config.gz_assets ? "true" : "false",
     "CACHE_MAPPING"            = var.config.cache_mapping != null ? jsonencode(var.config.cache_mapping) : null,
     "SERVER_CACHE_MS"          = var.config.server_cache_ms,
