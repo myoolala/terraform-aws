@@ -84,6 +84,12 @@ variable "port_mappings" {
   default     = []
 }
 
+variable "idle_timeout" {
+  type = number
+  description = "Number in seconds the load balancer should wait for a response for"
+  default = 60
+}
+
 variable "tags" {
   type        = map(string)
   description = "Default tags to associate with the resources"

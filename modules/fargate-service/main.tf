@@ -105,7 +105,7 @@ resource "aws_ecs_service" "app" {
       aws_security_group.service.id
     ]
     // Required if deploying to a public subnet
-    assign_public_ip = true
+    assign_public_ip = var.assign_public_ip
   }
 
 
@@ -169,4 +169,5 @@ module "lb" {
   internal            = var.lb.internal
   deletion_protection = var.lb.deletion_protection
   port_mappings       = var.lb.port_mappings
+  idle_timeout        = var.lb.idle_timeout
 }

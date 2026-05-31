@@ -101,6 +101,7 @@ variable "lb" {
     egress_cidrs = optional(list(string), ["0.0.0.0/0"])
     # egress_groups
     type                = optional(string, "application")
+    idle_timeout        = optional(number, 60)
     internal            = optional(bool, false)
     deletion_protection = optional(bool, false)
     port_mappings = list(object({
@@ -161,4 +162,10 @@ variable "health_check_grace_period_seconds" {
   type = number
   description = "The period of time, in seconds, that allows the ECS service to ignore"
   default = null
+}
+
+variable "assign_public_ip" {
+  type = bool
+  description = "Assign public ip's to the containers"
+  default = false
 }
