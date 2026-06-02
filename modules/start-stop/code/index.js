@@ -450,7 +450,7 @@ const handleRdsInstances = async timeStamp => {
 
         const tags = tagData.TagList ?? [];
 
-        const scheduleTag = tags.find(tag => tag.Key === "Schedule");
+        const scheduleTag = tags.find(tag => tag.Key === TAG_LOOKUP);
 
         if (!scheduleTag?.Value) {
             logger.info(`No Schedule tag found for RDS instance ${instanceId}, skipping`);
