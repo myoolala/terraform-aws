@@ -5,7 +5,6 @@ const net = require('net'),
       BUCKET = process.env['BUCKET'],
       PREFIX = process.env['PREFIX'].replace(/\/+$/, '').replace(/^\//, ''),
       LOG_LEVEL = (process.env['LOG_LEVEL'] || 'INFO').toLocaleLowerCase(),
-      GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
       ONE_WEEK = 60 * 60 * 24 * 7,
       FOUR_WEEKS = 60 * 60 * 24 * 7 * 4,
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
@@ -40,6 +39,7 @@ if (CACHE_MAPPING && CACHE_MAPPING.length) {
         CACHE_MAPPING = undefined;
     }
 }
+const isFileRequest = /\/[^\/]+\.[a-zA-Z]$/
  
 // The default cache mapping
 CACHE_MAPPING = CACHE_MAPPING || {
@@ -176,10 +176,6 @@ exports.handler = async event => {
     // If the key is the root, assume it's index.html
     let Key = PREFIX + (event.path.endsWith('/') ? event.path + 'index.html' : event.path);
 
-    // Since browsers love gzip, added support for that especially since the max response payload
-    // size at the of 1MB
-    if (GZ_ASSETS) Key += '.gz';
-
     // Check if the using is busting cache, like by hitting the refresh button
     const bustCache = event.headers['cache-control'] === 'no-cache' || event.headers['max-age'] === '0';
     logger.debug(`Cache will${bustCache ? '' : ' not'} be busted`);
@@ -191,7 +187,7 @@ exports.handler = async event => {
     // @TODO: this needs to look and check if there is a file extension, don't do the index.html for that
     if (err) {
         logger.debug('Failed to find the file:', Key);
-        if (!SPA_ENABLED)
+        if (!SPA_ENABLED || isFileRequest.test(event.path))
             return fourOhFour;
         
         logger.debug('SPA mode enabled, returning default file');
