@@ -22,6 +22,14 @@ const {
     DescribeAutoScalingGroupsCommand,
     UpdateAutoScalingGroupCommand
 } = require('@aws-sdk/client-auto-scaling');
+const {
+    RDSClient,
+    DescribeDBInstancesCommand,
+    ListTagsForResourceCommand,
+    StartDBInstanceCommand,
+    StopDBInstanceCommand,
+} = require("@aws-sdk/client-rds");
+const rdsClient = new RDSClient();
 const ecsClient = new ECSClient();
 const ec2Client = new EC2Client();
 const eventBridgeClient = new EventBridgeClient();
@@ -394,6 +402,107 @@ const handleCrons = async timeStamp => {
     }
 }
 
+/**
+ * @summary Scans RDS DB instances in the current region and starts/stops them based on schedule tags
+ * @returns {Promise<void>}
+ */
+const handleRdsInstances = async timeStamp => {
+    logger.info("Starting process to check RDS DB instances");
+
+    let [err, data] = await wrapper(rdsClient.send(new DescribeDBInstancesCommand({
+        MaxRecords: 100
+    })));
+
+    if (err)
+        return logger.error(err);
+
+    let instances = data.DBInstances ?? [];
+
+    while (data.Marker) {
+        [err, data] = await wrapper(rdsClient.send(new DescribeDBInstancesCommand({
+            MaxRecords: 100,
+            Marker: data.Marker
+        })));
+
+        if (err)
+            return logger.error(err);
+
+        instances.push(...(data.DBInstances ?? []));
+    }
+
+    logger.info("Found these RDS instances to check: ", instances.map(i => i.DBInstanceIdentifier));
+
+    for (const instance of instances) {
+        const instanceId = instance.DBInstanceIdentifier;
+        const instanceArn = instance.DBInstanceArn;
+        const status = instance.DBInstanceStatus;
+
+        logger.info("Checking RDS instance:", instanceId, status);
+
+        const [tagErr, tagData] = await wrapper(rdsClient.send(new ListTagsForResourceCommand({
+            ResourceName: instanceArn
+        })));
+
+        if (tagErr) {
+            logger.error(`Failed to get tags for RDS instance ${instanceId}`, tagErr);
+            continue;
+        }
+
+        const tags = tagData.TagList ?? [];
+
+        const scheduleTag = tags.find(tag => tag.Key === TAG_LOOKUP);
+
+        if (!scheduleTag?.Value) {
+            logger.info(`No Schedule tag found for RDS instance ${instanceId}, skipping`);
+            continue;
+        }
+
+        logger.info("Found schedule for RDS instance:", instanceId, scheduleTag.Value);
+
+        const currentState = status === "available" ? "up" : "down";
+
+        const decision = getDecision(scheduleTag.Value, timeStamp, currentState);
+
+        logger.info("RDS decision is", decision);
+
+        if (decision === "up") {
+            if (status === "available") {
+                logger.info(`RDS instance ${instanceId} is already available`);
+                continue;
+            }
+
+            if (status !== "stopped") {
+                logger.info(`RDS instance ${instanceId} is not stopped, current status is ${status}, skipping start`);
+                continue;
+            }
+
+            await callService(
+                rdsClient.send.bind(rdsClient),
+                new StartDBInstanceCommand({
+                    DBInstanceIdentifier: instanceId
+                })
+            );
+        } else if (decision === "down") {
+            if (status === "stopped") {
+                logger.info(`RDS instance ${instanceId} is already stopped`);
+                continue;
+            }
+
+            if (status !== "available") {
+                logger.info(`RDS instance ${instanceId} is not available, current status is ${status}, skipping stop`);
+                continue;
+            }
+
+            await callService(
+                rdsClient.send.bind(rdsClient),
+                new StopDBInstanceCommand({
+                    DBInstanceIdentifier: instanceId
+                })
+            );
+        }
+    }
+};
+
 exports.handler = async event => {
     logger.debug('Incoming event: ', event);
 
@@ -405,7 +514,8 @@ exports.handler = async event => {
         handleEcs(timeStamp),
         handleEc2(timeStamp),
         handleCrons(timeStamp),
-        handleAsg(timeStamp)
+        handleAsg(timeStamp),
+        handleRdsInstances(timeStamp)
     ]);
     logger.debug(result);
 }

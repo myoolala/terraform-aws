@@ -1,4 +1,12 @@
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {}
+
 locals {
+  region = data.aws_region.current.region
+  acct = data.aws_caller_identity.current.account_id
+  partition = data.aws_partition.current.partition
+
   default_permissions = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -12,6 +20,27 @@ locals {
         ]
         Effect   = "Allow"
         Resource = ["*"]
+      },
+      {
+        Sid = "RdsAccess"
+        "Effect": "Allow",
+        "Action": [
+          "rds:DescribeDBInstances",
+          "rds:ListTagsForResource",
+          "rds:StartDBInstance",
+          "rds:StopDBInstance"
+        ],
+        "Resource": "arn:${local.partition}:rds:${local.region}:${local.acct}:db:*"
+      },
+      {
+        Sid = "AsgAccess"
+        Effect = "Allow"
+        Action = [
+          "autoscaling:DescribeAutoScalingGroups",
+          "ec2:DescribeInstances",
+          "events:ListRules"
+        ]
+        Resource = "*"
       }
     ]
   })
