@@ -4,8 +4,7 @@ const net = require('net'),
       { gzipSync } = require("zlib"),
       BUCKET = process.env['BUCKET'],
       PREFIX = process.env['PREFIX'].replace(/\/+$/, '').replace(/^\//, ''),
-      LOG_LEVEL = process.env['LOG_LEVEL'],
-      GZ_ASSETS = process.env['GZ_ASSETS'] === 'true',
+      LOG_LEVEL = (process.env['LOG_LEVEL'] || 'INFO').toLocaleLowerCase(),
       ONE_WEEK = 60 * 60 * 24 * 7,
       FOUR_WEEKS = 60 * 60 * 24 * 7 * 4,
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
@@ -21,7 +20,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3'),
       w = promise => promise.then(data => [undefined, data]).catch(err => [err]),
       LOG_LEVELS = ['debug', 'info', 'warn'],
       log = (level, logs) => {
-          LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(LOG_LEVEL) && console.log(level, ...logs);
+          LOG_LEVELS.indexOf(level.toLocaleLowerCase()) >= LOG_LEVELS.indexOf(LOG_LEVEL) && console.log(level, ...logs);
       },
       logger = LOG_LEVELS.reduce((agg, level) => {
           return agg[level.toLocaleLowerCase()] = function() {log(level, arguments)}, agg;
@@ -40,6 +39,7 @@ if (CACHE_MAPPING && CACHE_MAPPING.length) {
         CACHE_MAPPING = undefined;
     }
 }
+const isFileRequest = /\/[^\/]+\.[a-zA-Z]+$/;
  
 // The default cache mapping
 CACHE_MAPPING = CACHE_MAPPING || {
@@ -134,7 +134,8 @@ const getAndCache = async (Key, override = false) => {
         logger.debug('Returning cached version');
         return {
             file: cache[Key].file,
-            body: cache[Key].body
+            body64: cache[Key].body64,
+            gzipBody64: cache[Key].gzipBody64
         }
     }
 
@@ -143,17 +144,19 @@ const getAndCache = async (Key, override = false) => {
     let file = await s3Get({Bucket: BUCKET, Key});
     logger.debug('Got file object:', file)
     let bodyBuffer = await file.Body.transformToByteArray();
-    let body = Buffer.from(bodyBuffer).toString('utf-8');
-    logger.debug('Converted body to base64', body.length);
+    let body64 = Buffer.from(bodyBuffer).toString('base64');
+    let gzipBody64 = gzipSync(Buffer.from(bodyBuffer)).toString('base64');
+    logger.debug('Converted body to base64', body64.length);
 
     // Update the cache with the new data
     cache[Key] = {
         file,
-        body,
+        body64,
+        gzipBody64,
         time: new Date().valueOf()
     };
 
-    return {file, body}
+    return {file, body64, gzipBody64}
 }
 
 const fourOhFour = mapS3Object('{"message": "Not Found"}', {'Content-Type': 'application/json'}, 404);
@@ -173,10 +176,6 @@ exports.handler = async event => {
     // If the key is the root, assume it's index.html
     let Key = PREFIX + (event.path.endsWith('/') ? event.path + 'index.html' : event.path);
 
-    // Since browsers love gzip, added support for that especially since the max response payload
-    // size at the of 1MB
-    if (GZ_ASSETS) Key += '.gz';
-
     // Check if the using is busting cache, like by hitting the refresh button
     const bustCache = event.headers['cache-control'] === 'no-cache' || event.headers['max-age'] === '0';
     logger.debug(`Cache will${bustCache ? '' : ' not'} be busted`);
@@ -188,7 +187,7 @@ exports.handler = async event => {
     // @TODO: this needs to look and check if there is a file extension, don't do the index.html for that
     if (err) {
         logger.debug('Failed to find the file:', Key);
-        if (!SPA_ENABLED)
+        if (!SPA_ENABLED || isFileRequest.test(event.path))
             return fourOhFour;
         
         logger.debug('SPA mode enabled, returning default file');
@@ -201,13 +200,13 @@ exports.handler = async event => {
     }
 
     
-    const {file, body} = cacheObject;
+    const {file, body64, gzipBody64} = cacheObject;
     const returnGzip = CACHE_GZIP_ENABLED
-          && body.length >= GZIP_MIN_LENGTH 
+          && body64.length >= GZIP_MIN_LENGTH 
           && (event.headers['accept-encoding'] || '').indexOf('gzip') > -1;
 
-    logger.debug('Returining file contents', body.length, body);
-    const toReturn = mapS3Object(Buffer.from(returnGzip ? gzipSync(body) : body).toString('base64'), {
+    logger.debug('Returining file contents size: ', body64.length);
+    const toReturn = mapS3Object(returnGzip ? gzipBody64 : body64, {
         ...DEFAULT_RESPONSE_HEADERS,
         ...{
             // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
