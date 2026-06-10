@@ -81,7 +81,7 @@ resource "aws_iam_role_policy_attachment" "task_ssm_connect" {
   count = var.enable_ssm_access ? 1 : 0
 
   role       = aws_iam_role.task_role.name
-  policy_arn = aws_iam_policy.app_ssm_permissions.arn
+  policy_arn = aws_iam_policy.app_ssm_permissions[0].arn
 }
 
 locals {
