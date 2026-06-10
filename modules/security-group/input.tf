@@ -9,9 +9,9 @@ variable "vpc_id" {
 }
 
 variable "description" {
-  type = string
+  type        = string
   description = "Description for the new security group"
-  default = "Managed by OpenTofu"
+  default     = "Managed by OpenTofu"
 }
 
 variable "ingresses" {

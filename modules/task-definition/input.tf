@@ -84,3 +84,9 @@ variable "command" {
   description = "Command to pass to the container"
   default     = null
 }
+
+variable "enable_ssm_access" {
+  type        = bool
+  description = "Enable the container to be reached via the ssm service"
+  default     = false
+}

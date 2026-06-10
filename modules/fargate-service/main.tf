@@ -41,17 +41,18 @@ resource "aws_cloudwatch_log_group" "logs" {
 module "image" {
   source = "../task-definition"
 
-  name         = var.service_name
-  command      = var.command
-  service_name = var.service_name
-  image        = var.image_tag == null ? "${var.service_name}:latest" : var.image_tag
-  memory       = var.image_configs.memory
-  cpu          = var.image_configs.cpu
-  storage      = var.image_configs.storage
-  log_group    = aws_cloudwatch_log_group.logs.name
-  env_vars     = var.env_vars
-  secrets      = module.secrets.fargate_secrets
-  secrets_keys = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
+  name              = var.service_name
+  command           = var.command
+  service_name      = var.service_name
+  enable_ssm_access = var.enable_ssm_access
+  image             = var.image_tag == null ? "${var.service_name}:latest" : var.image_tag
+  memory            = var.image_configs.memory
+  cpu               = var.image_configs.cpu
+  storage           = var.image_configs.storage
+  log_group         = aws_cloudwatch_log_group.logs.name
+  env_vars          = var.env_vars
+  secrets           = module.secrets.fargate_secrets
+  secrets_keys      = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
   port_mappings = concat([for i in try(var.lb.port_mappings, []) : {
     containerPort = i.forward_port
     hostPort      = i.forward_port
@@ -91,12 +92,13 @@ resource "aws_security_group_rule" "egress" {
 }
 
 resource "aws_ecs_service" "app" {
-  name            = var.service_name
-  cluster         = var.cluster.create ? aws_ecs_cluster.cluster[0].arn : data.aws_ecs_cluster.cluster.arn
-  task_definition = module.image.task_definition_arn
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
-  propagate_tags  = var.propagate_tags
+  name                              = var.service_name
+  cluster                           = var.cluster.create ? aws_ecs_cluster.cluster[0].arn : data.aws_ecs_cluster.cluster.arn
+  task_definition                   = module.image.task_definition_arn
+  desired_count                     = var.desired_count
+  enable_execute_command            = var.enable_ssm_access
+  launch_type                       = "FARGATE"
+  propagate_tags                    = var.propagate_tags
   health_check_grace_period_seconds = var.health_check_grace_period_seconds
 
   network_configuration {

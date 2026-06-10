@@ -66,7 +66,7 @@ variable "permissions" {
 }
 
 variable "tag_to_search" {
-  type = string
+  type        = string
   description = "TAG to query for when running the stop start"
-  default = "ServiceRunSchedule"
+  default     = "ServiceRunSchedule"
 }

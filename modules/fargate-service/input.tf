@@ -84,12 +84,12 @@ variable "command" {
 
 variable "image_configs" {
   type = object({
-    cpu    = optional(number, 256)
-    memory = optional(number, 512)
+    cpu     = optional(number, 256)
+    memory  = optional(number, 512)
     storage = optional(number, 21)
   })
   description = "Resource configurations for the service containers"
-  default = {}
+  default     = {}
 }
 
 variable "lb" {
@@ -159,13 +159,19 @@ variable "propagate_tags" {
 }
 
 variable "health_check_grace_period_seconds" {
-  type = number
+  type        = number
   description = "The period of time, in seconds, that allows the ECS service to ignore"
-  default = null
+  default     = null
 }
 
 variable "assign_public_ip" {
-  type = bool
+  type        = bool
   description = "Assign public ip's to the containers"
-  default = false
+  default     = false
+}
+
+variable "enable_ssm_access" {
+  type        = bool
+  description = "Enable the container to be reached via the ssm service"
+  default     = false
 }

@@ -87,7 +87,7 @@ variable "metrics_config" {
 }
 
 variable "auto_gzip_compress" {
-  type = bool
+  type        = bool
   description = "Have the lambda return a GZIP'd compressed payload back to the load balancer. This is most ideal for large dependency files that exceed 1MB"
-  default = true
+  default     = true
 }

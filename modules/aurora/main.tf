@@ -52,7 +52,7 @@ resource "aws_rds_cluster" "this" {
   port = var.port
 
   storage_encrypted = var.storage_encrypted
-  kms_key_id         = var.kms_key_id
+  kms_key_id        = var.kms_key_id
 
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
@@ -80,9 +80,9 @@ resource "aws_rds_cluster_instance" "this" {
 
   db_subnet_group_name = var.db_subnet_group_name
 
-  publicly_accessible  = lookup(each.value, "publicly_accessible", false)
-  promotion_tier       = lookup(each.value, "promotion_tier", 1)
-  availability_zone    = lookup(each.value, "availability_zone", null)
+  publicly_accessible = lookup(each.value, "publicly_accessible", false)
+  promotion_tier      = lookup(each.value, "promotion_tier", 1)
+  availability_zone   = lookup(each.value, "availability_zone", null)
 
   apply_immediately = var.apply_immediately
 

@@ -26,12 +26,12 @@ variable "port" {
 
 variable "configs" {
   type = map(object({
-    pg_name = string
-    engine = string
+    pg_name        = string
+    engine         = string
     engine_version = string
-    pg_family = string
-    pg_suffix = optional(string, "")
-    og_name = optional(string, null)
+    pg_family      = string
+    pg_suffix      = optional(string, "")
+    og_name        = optional(string, null)
     parameters = optional(list(object({
       name         = string
       value        = string
@@ -46,9 +46,9 @@ variable "configs" {
 ##################################################################
 
 variable "create_sg" {
-  type = bool
+  type        = bool
   description = "Create a new SG for the RDS database"
-  default = true
+  default     = true
 }
 
 variable "network_type" {
@@ -179,7 +179,7 @@ variable "storage_type" {
 }
 
 variable "skip_final_snapshot" {
-  type = bool
+  type        = bool
   description = "Skip the final snapshot on deletion"
-  default = false
+  default     = false
 }

@@ -85,9 +85,9 @@ variable "port_mappings" {
 }
 
 variable "idle_timeout" {
-  type = number
+  type        = number
   description = "Number in seconds the load balancer should wait for a response for"
-  default = 60
+  default     = 60
 }
 
 variable "tags" {

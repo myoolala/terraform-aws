@@ -3,7 +3,7 @@ output "pool_id" {
 }
 
 output "pool_arn" {
-  value = aws_cognito_user_pool.this.arn
+  value       = aws_cognito_user_pool.this.arn
   description = "ARN of the created user pool"
 }
 

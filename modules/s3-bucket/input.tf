@@ -27,10 +27,10 @@ variable "public_access_block" {
 
 variable "encryption" {
   type = object({
-    key                = optional(string, null)
-    algorithm          = string
+    key                      = optional(string, null)
+    algorithm                = string
     blocked_encryption_types = optional(list(string), ["SSE-C"])
-    bucket_key_enabled = optional(bool, false)
+    bucket_key_enabled       = optional(bool, false)
   })
   description = "Attach an encryption key to the bucket. Specify the key if you already have one, or use a different encryption option"
   default = {

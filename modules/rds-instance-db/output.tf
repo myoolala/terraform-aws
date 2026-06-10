@@ -46,8 +46,8 @@ output "low_storage_alam_arn" {
 output "connection_secret" {
   value = {
     # There's only one secret so it's fine. Easier that trying t
-    arn = module.admin_connection_info.secret_map[0].arn
-    name = module.admin_connection_info.secret_map[0].name
+    arn     = module.admin_connection_info.secret_map[0].arn
+    name    = module.admin_connection_info.secret_map[0].name
     kms_key = module.admin_connection_info.kms_key
   }
   description = "Secret information that can be used to connect to the database"
