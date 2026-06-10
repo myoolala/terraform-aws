@@ -39,7 +39,7 @@ if (CACHE_MAPPING && CACHE_MAPPING.length) {
         CACHE_MAPPING = undefined;
     }
 }
-const isFileRequest = /\/[^\/]+\.[a-zA-Z]$/
+const isFileRequest = /\/[^\/]+\.[a-zA-Z]+$/;
  
 // The default cache mapping
 CACHE_MAPPING = CACHE_MAPPING || {
