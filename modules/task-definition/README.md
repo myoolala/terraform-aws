@@ -23,6 +23,7 @@ No requirements.
 | <a name="input_service_name"></a> [service\_name](#input\_service\_name) | Name of the service to associate the definition with | `string` | n/a | yes |
 | <a name="input_command"></a> [command](#input\_command) | Command to pass to the container | `list(string)` | `null` | no |
 | <a name="input_cpu"></a> [cpu](#input\_cpu) | CPU value to give to the docker definition | `number` | `256` | no |
+| <a name="input_enable_ssm_access"></a> [enable\_ssm\_access](#input\_enable\_ssm\_access) | Enable the container to be reached via the ssm service | `bool` | `false` | no |
 | <a name="input_env_vars"></a> [env\_vars](#input\_env\_vars) | Environment variables to pass to the container in {<key> = <value>, <key> = <value>} form | `map(string)` | `{}` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory amount in MB to give to the docker definition | `number` | `512` | no |
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | Json encoded string of permissions to attach to the container | `string` | `null` | no |

@@ -25,7 +25,7 @@ output "invoke_arn" {
 output "log_group" {
   value = {
     name = aws_cloudwatch_log_group.logs.name
-    arn = aws_cloudwatch_log_group.logs.name
+    arn  = aws_cloudwatch_log_group.logs.name
   }
   description = "The log group configuration created for the lambda function"
 }

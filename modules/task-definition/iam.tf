@@ -55,6 +55,35 @@ resource "aws_iam_role_policy" "task_role" {
   policy = var.permissions
 }
 
+resource "aws_iam_policy" "app_ssm_permissions" {
+  count = var.enable_ssm_access ? 1 : 0
+
+  name        = "${var.service_name}Ssm"
+  description = "Needed permissions for the the app to work with EFS"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "task_ssm_connect" {
+  count = var.enable_ssm_access ? 1 : 0
+
+  role       = aws_iam_role.task_role.name
+  policy_arn = aws_iam_policy.app_ssm_permissions[0].arn
+}
+
 locals {
   task_role_managed_polciies = [
     "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"

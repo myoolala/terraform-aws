@@ -8,8 +8,8 @@ data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 
 locals {
-  region = data.aws_region.current.region
-  acct = data.aws_caller_identity.current.account_id
+  region    = data.aws_region.current.region
+  acct      = data.aws_caller_identity.current.account_id
   partition = data.aws_partition.current.partition
 
   other_subnets = flatten([for name, subnet_group in var.other_subnets : [
@@ -311,14 +311,14 @@ data "aws_iam_policy_document" "logging" {
     for_each = var.flow_logs.kms_key_arn != null ? [1] : []
 
     content {
-    effect = "Allow"
+      effect = "Allow"
 
-    actions = [
-      "kms:encrypt",
-      "kms:decrypt"
-    ]
+      actions = [
+        "kms:encrypt",
+        "kms:decrypt"
+      ]
 
-    resources = [var.flow_logs.kms_key_arn]
+      resources = [var.flow_logs.kms_key_arn]
     }
   }
 }

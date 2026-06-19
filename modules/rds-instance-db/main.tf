@@ -2,7 +2,7 @@ locals {
   final_snapshot_prefix = var.final_snapshot_id != "" ? var.final_snapshot_id : "${var.name}-final-snapshot"
   # Basically, if there is no key provided, assume there is only 1 config and use that
   config_key = var.selected_config != null ? var.selected_config : keys(var.configs)[0]
-  config = var.configs[local.config_key]
+  config     = var.configs[local.config_key]
 }
 
 resource "null_resource" "snapshot_id_trigger" {
@@ -28,8 +28,8 @@ resource "random_uuid" "snapshot" {
 resource "random_string" "default_pw" {
   length  = 16
   special = false # Set to true to include special characters
-  numeric = true # Set to true to include numbers
-  upper   = true # Set to true to include uppercase letters
+  numeric = true  # Set to true to include numbers
+  upper   = true  # Set to true to include uppercase letters
   lower   = true  # Set to true to include lowercase letters
 }
 
@@ -168,17 +168,17 @@ module "admin_connection_info" {
     {
       name = local.admin_sm_name
       value = jsonencode({
-        username = var.admin_uname
-        password = random_string.default_pw.result
-        host = aws_db_instance.db.address
-        port = var.port
-        dbame = var.db_name
-        engine = local.config.engine
+        username            = var.admin_uname
+        password            = random_string.default_pw.result
+        host                = aws_db_instance.db.address
+        port                = var.port
+        dbame               = var.db_name
+        engine              = local.config.engine
         dbClusterIdentifier = null
       })
     }
   ]
   # @TODO: make this a config to pass in
-  create_new_key = false
+  create_new_key  = false
   recovery_window = 0
 }

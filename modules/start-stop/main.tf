@@ -3,8 +3,8 @@ data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 
 locals {
-  region = data.aws_region.current.region
-  acct = data.aws_caller_identity.current.account_id
+  region    = data.aws_region.current.region
+  acct      = data.aws_caller_identity.current.account_id
   partition = data.aws_partition.current.partition
 
   default_permissions = jsonencode({
@@ -23,17 +23,17 @@ locals {
       },
       {
         Sid = "RdsAccess"
-        "Effect": "Allow",
-        "Action": [
+        "Effect" : "Allow",
+        "Action" : [
           "rds:DescribeDBInstances",
           "rds:ListTagsForResource",
           "rds:StartDBInstance",
           "rds:StopDBInstance"
         ],
-        "Resource": "arn:${local.partition}:rds:${local.region}:${local.acct}:db:*"
+        "Resource" : "arn:${local.partition}:rds:${local.region}:${local.acct}:db:*"
       },
       {
-        Sid = "AsgAccess"
+        Sid    = "AsgAccess"
         Effect = "Allow"
         Action = [
           "autoscaling:DescribeAutoScalingGroups",
@@ -58,8 +58,8 @@ module "start_stop" {
   file_path    = archive_file.source.output_path
   code_hash256 = archive_file.source.output_base64sha256
   environment_vars = {
-    LOG_LEVEL = var.log_level
-    DRY_RUN   = var.dry_run_mode_enabled
+    LOG_LEVEL  = var.log_level
+    DRY_RUN    = var.dry_run_mode_enabled
     TAG_LOOKUP = var.tag_to_search
   }
   log_retention = var.log_retention
