@@ -1,7 +1,9 @@
 'use-strict';
 
 const net = require('net'),
-      { gzipSync } = require("zlib"),
+      util = require('node:util'),
+      zlib = require('node:zlib'),
+      gzip = util.promisify(zlib.gzip),
       BUCKET = process.env['BUCKET'],
       PREFIX = process.env['PREFIX'].replace(/\/+$/, '').replace(/^\//, ''),
       LOG_LEVEL = (process.env['LOG_LEVEL'] || 'INFO').toLocaleLowerCase(),
@@ -10,6 +12,8 @@ const net = require('net'),
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
       SPA_ENABLED = process.env['SPA_ENABLED'] === 'enabled',
       DEFAULT_FILE_PATH = process.env['DEFAULT_FILE_PATH'],
+      // 2^20 Bytes is 1MB
+      MAX_PAYLOAD_RESPONSE = Math.pow(2,20),
       GZIP_MIN_LENGTH = parseInt(process.env.GZIP_MIN_LENGTH || '1024'),
       CACHE_GZIP_ENABLED = (process.env.CACHE_GZIP_ENABLED || 'true') === "true",
       DEFAULT_RESPONSE_HEADERS = process.env['DEFAULT_RESPONSE_HEADERS'] ? JSON.parse(process.env['DEFAULT_RESPONSE_HEADERS']) : {},
@@ -135,7 +139,8 @@ const getAndCache = async (Key, override = false) => {
         return {
             file: cache[Key].file,
             body64: cache[Key].body64,
-            gzipBody64: cache[Key].gzipBody64
+            gzipBody64: cache[Key].gzipBody64,
+            gzipReady: cache[Key].gzipReady
         }
     }
 
@@ -145,13 +150,16 @@ const getAndCache = async (Key, override = false) => {
     logger.debug('Got file object:', file)
     let bodyBuffer = await file.Body.transformToByteArray();
     let body64 = Buffer.from(bodyBuffer).toString('base64');
-    let gzipBody64 = gzipSync(Buffer.from(bodyBuffer)).toString('base64');
+    let gzipBody64 = gzip(Buffer.from(bodyBuffer)).then(b => b.toString('base64'));
     logger.debug('Converted body to base64', body64.length);
+    // Mark that this is ready to be served
+    gzipBody64.then(() => {cache[Key].gzipReady = true;})
 
     // Update the cache with the new data
     cache[Key] = {
         file,
         body64,
+        gzipReady: false,
         gzipBody64,
         time: new Date().valueOf()
     };
@@ -187,8 +195,10 @@ exports.handler = async event => {
     // @TODO: this needs to look and check if there is a file extension, don't do the index.html for that
     if (err) {
         logger.debug('Failed to find the file:', Key);
-        if (!SPA_ENABLED || isFileRequest.test(event.path))
+        if (!SPA_ENABLED || isFileRequest.test(event.path)) {
+            logger.debug(err)
             return fourOhFour;
+        }
         
         logger.debug('SPA mode enabled, returning default file');
         [err, cacheObject] = await w(getAndCache(PREFIX + '/' + DEFAULT_FILE_PATH, bustCache));
@@ -200,26 +210,62 @@ exports.handler = async event => {
     }
 
     
-    const {file, body64, gzipBody64} = cacheObject;
-    const returnGzip = CACHE_GZIP_ENABLED
+    const {file, body64, gzipReady, gzipBody64} = cacheObject;
+    const couldSupportGzip = CACHE_GZIP_ENABLED
           && body64.length >= GZIP_MIN_LENGTH 
           && (event.headers['accept-encoding'] || '').indexOf('gzip') > -1;
+    // Basically, if the GZIP for a large file isn't done gzipping, don't wait unless we need
+    // to. The large GZIP's take a while on small lambdas
+    const startWithGzip = couldSupportGzip && gzipReady;
+    logger.debug(
+        'gzip args: ',
+        CACHE_GZIP_ENABLED,
+        body64.length,
+        GZIP_MIN_LENGTH,
+        (event.headers['accept-encoding'] || '').indexOf('gzip') > -1,
+        couldSupportGzip,
+        gzipReady,
+        startWithGzip
+    );
 
+    logger.debug(`Planning to return ${startWithGzip ? 'gzip\'d' : 'raw'} version`);
     logger.debug('Returining file contents size: ', body64.length);
-    const toReturn = mapS3Object(returnGzip ? gzipBody64 : body64, {
+    // Maybe this is a gzip maybe it's not, who cares
+    let toReturn = mapS3Object(startWithGzip ? await gzipBody64 : body64, {
         ...DEFAULT_RESPONSE_HEADERS,
         ...{
             // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
             'Content-Type': file.ContentType, 
             // This tells the browser to unpack the gzip files
-            'Content-Encoding': returnGzip ? 'gzip' : undefined, 
+            'Content-Encoding': startWithGzip ? 'gzip' : undefined, 
             // Set the cache
             'cache-control': getCacheHeader(file.ContentType)
         }
-    }, 200, true)
+    }, 200, true);
 
-    logger.debug('Returning response', toReturn);
-
+    // But if it's not a gzip and was too big and could be a gzip, wait for the gzip and return that
+    if (Buffer.byteLength(JSON.stringify(toReturn)) > MAX_PAYLOAD_RESPONSE && couldSupportGzip && !gzipReady) {
+        logger.debug('Raw version response too large, attempting a gzip response');
+        toReturn = mapS3Object(await gzipBody64, {
+            ...DEFAULT_RESPONSE_HEADERS,
+            ...{
+                // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
+                'Content-Type': file.ContentType, 
+                // This tells the browser to unpack the gzip files
+                'Content-Encoding': 'gzip',
+                // Set the cache
+                'cache-control': getCacheHeader(file.ContentType)
+            }
+        }, 200, true);
+    }
+    
+    // If it's still too big, give up and go play checkers or something idk my bff rose
+    if (Buffer.byteLength(JSON.stringify(toReturn)) > MAX_PAYLOAD_RESPONSE) {
+        logger.error(`Request response ${event.path} exceeds max allowed size`);
+        return mapS3Object('Internal server error', {'Content-Type': 'text/html'}, 500); 
+    }
+    
     // Return the response with the default headers merged and overwritten by the content headers
+    logger.debug('Returning response', toReturn);
     return toReturn
 }

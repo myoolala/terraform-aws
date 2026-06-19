@@ -22,6 +22,10 @@ content: |-
   - All responses are cache via a configuration
   - Cache busting headers will bust the in memory RunTime cache
   - If you are using multiple hosts on the load balancer, you can enable embedded metrics per host to see the count per site
+  - There are options for gzip compression to:
+    - Support larger possible files since the ALB has a 1MB limit
+    - Improve response times for files
+    - Reduce ALB bandwidth costs
 
   ## Examples:
 
@@ -47,6 +51,20 @@ content: |-
   ```
 
   [More examples can be found here](../../tests/ui-lambda)
+
+  ## The GZIP compression
+
+  The lambda will automatically GZIP responses when:
+  - The feature is enabled
+  - The response payload is big enough
+  - The requester states they accept gzip
+
+  Special consideration is that even when the requester accepts a gzip payload, one might not be returned
+  if the data is not ready. This is because in the background of the request is when the gzip occurs and can
+  take a while. I've seen excess of 1 second for large files. So if the file does not NEED to be gzip'd and
+  the gzip is not finished yet, a raw version is returned instead.
+
+  If you still have large wait times as the raw payloads are in excess of 1MB, consider increasing the CPU
 
   {{ .Providers }}
 
