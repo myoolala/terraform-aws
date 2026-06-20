@@ -14,16 +14,17 @@ variable "alb_tg_arn" {
 
 variable "config" {
   type = object({
-    bucket                   = string,
-    prefix                   = string,
-    storage_kms_keys         = optional(list(string), [])
-    log_level                = optional(string, "INFO"),
-    gz_assets                = optional(bool, false)
-    cache_mapping            = optional(map(any), null)
-    server_cache_ms          = optional(number, 5 * 60 * 1000)
-    enable_spa               = optional(bool, false)
-    default_file_path        = optional(string, "index.html")
-    default_response_headers = optional(map(any), null)
+    bucket                                  = string,
+    prefix                                  = string,
+    storage_kms_keys                        = optional(list(string), [])
+    log_level                               = optional(string, "INFO"),
+    gz_assets                               = optional(bool, false)
+    cache_mapping                           = optional(map(any), null)
+    server_cache_ms                         = optional(number, 5 * 60 * 1000)
+    enable_spa                              = optional(bool, false)
+    default_file_path                       = optional(string, "index.html")
+    default_response_headers                = optional(map(any), null)
+    enabled_pre_signed_urls_for_large_files = optional(bool, false)
   })
   description = "Configuration for the lambda function code"
 }

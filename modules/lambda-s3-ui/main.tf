@@ -193,6 +193,7 @@ module "lambda" {
     "DEFAULT_FILE_PATH"        = var.config.default_file_path,
     "DEFAULT_RESPONSE_HEADERS" = var.config.default_response_headers != null ? jsonencode(var.config.default_response_headers) : null,
     "METRICS_CONFIG"           = jsonencode(var.metrics_config)
+    "ENABLE_PRE_SIGNED_URLS"   = var.config.enabled_pre_signed_urls_for_large_files ? "true" : "false"
     } : i => v if v != null
   }
 

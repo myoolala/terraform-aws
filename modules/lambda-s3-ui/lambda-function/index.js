@@ -12,6 +12,7 @@ const net = require('net'),
       SERVER_CACHE_MS = process.env['SERVER_CACHE_MS'] || 1000 * 60 * 5,
       SPA_ENABLED = process.env['SPA_ENABLED'] === 'enabled',
       DEFAULT_FILE_PATH = process.env['DEFAULT_FILE_PATH'],
+      ENABLE_PRE_SIGNED_URLS = process.env['ENABLE_PRE_SIGNED_URLS'] === 'true',
       // 2^20 Bytes is 1MB
       MAX_PAYLOAD_RESPONSE = Math.pow(2,20),
       GZIP_MIN_LENGTH = parseInt(process.env.GZIP_MIN_LENGTH || '1024'),
@@ -101,7 +102,7 @@ const createHostHitMetric = (host) => {
  * @param {Boolean} isBase64Encoded - <Optional> Is the payload base64 encoded
  * @returns {Object} - ALB response object
  */
-const mapS3Object = (body, headers = {}, statusCode = 200, isBase64Encoded = false) => ({
+const mapResponse = (body, headers = {}, statusCode = 200, isBase64Encoded = false) => ({
     statusCode,
     statusDescription: statusCode + ' ' + (statusCode === 200 ? 'ok' : 'not ok'),
     isBase64Encoded,
@@ -152,7 +153,13 @@ const getAndCache = async (Key, override = false) => {
     let body64 = Buffer.from(bodyBuffer).toString('base64');
     let gzipBody64 = gzip(Buffer.from(bodyBuffer)).then(b => b.toString('base64'));
     logger.debug('Converted body to base64', body64.length);
+    
     // Mark that this is ready to be served
+    // Also funny quirk, this feels like you would make a request, cache it, wait 5s
+    // then make it again and get the gzip version but that's not actually the case
+    // This is because any background promise or logic that happens inbetween any invocation
+    // is completely paused along with the event loop so you have to wait for the background
+    // process to finish while the lambda is actively invoked
     gzipBody64.then(() => {cache[Key].gzipReady = true;})
 
     // Update the cache with the new data
@@ -167,7 +174,22 @@ const getAndCache = async (Key, override = false) => {
     return {file, body64, gzipBody64}
 }
 
-const fourOhFour = mapS3Object('{"message": "Not Found"}', {'Content-Type': 'application/json'}, 404);
+const fourOhFour = mapResponse('{"message": "Not Found"}', {'Content-Type': 'application/json'}, 404);
+
+let getSignedUrl = undefined;
+const generateSignedUrl = (Key) => {
+    // Basically, this should be rare so don't load this library unless needed
+    if (!getSignedUrl) {
+        getSignedUrl = require('@aws-sdk/s3-request-presigner').getSignedUrl;
+    }
+
+    const command = new GetObjectCommand({
+        Bucket: BUCKET,
+        Key,
+    });
+    
+    return getSignedUrl(client, command, { expiresIn: 300 });
+}
 
 exports.handler = async event => {
     logger.debug(JSON.stringify(event));
@@ -176,7 +198,7 @@ exports.handler = async event => {
     // Posts allow us to support SAML responses if the app isn't using # based routing
     if (event.httpMethod != 'GET' && event.httpMethod != 'POST') {
         logger.debug(`Invalid method "${event.httpMethod}" was given`)
-        return mapS3Object('STAHP!!', {}, 405);
+        return mapResponse('STAHP!!', {}, 405);
     }
 
     createHostHitMetric(event.headers.host);
@@ -207,6 +229,7 @@ exports.handler = async event => {
             logger.error('Failed to find the default file', err);
             return fourOhFour;
         }
+        Key = PREFIX + '/' + DEFAULT_FILE_PATH;
     }
 
     
@@ -231,7 +254,7 @@ exports.handler = async event => {
     logger.debug(`Planning to return ${startWithGzip ? 'gzip\'d' : 'raw'} version`);
     logger.debug('Returining file contents size: ', body64.length);
     // Maybe this is a gzip maybe it's not, who cares
-    let toReturn = mapS3Object(startWithGzip ? await gzipBody64 : body64, {
+    let toReturn = mapResponse(startWithGzip ? await gzipBody64 : body64, {
         ...DEFAULT_RESPONSE_HEADERS,
         ...{
             // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
@@ -246,7 +269,10 @@ exports.handler = async event => {
     // But if it's not a gzip and was too big and could be a gzip, wait for the gzip and return that
     if (Buffer.byteLength(JSON.stringify(toReturn)) > MAX_PAYLOAD_RESPONSE && couldSupportGzip && !gzipReady) {
         logger.debug('Raw version response too large, attempting a gzip response');
-        toReturn = mapS3Object(await gzipBody64, {
+        // I do wonder if we can skip the gzip wait and just know..... because the gzip can take a while
+        // and waiting for it to compress to just not use it seems wasteful along with a waste of memory....
+        // well crap, didn't think about running out of memory.... especially since we save two files now
+        toReturn = mapResponse(await gzipBody64, {
             ...DEFAULT_RESPONSE_HEADERS,
             ...{
                 // No idea why, but s3 return the content type of the gz but the ui show's it as type gzip
@@ -259,10 +285,16 @@ exports.handler = async event => {
         }, 200, true);
     }
     
-    // If it's still too big, give up and go play checkers or something idk my bff rose
     if (Buffer.byteLength(JSON.stringify(toReturn)) > MAX_PAYLOAD_RESPONSE) {
-        logger.error(`Request response ${event.path} exceeds max allowed size`);
-        return mapS3Object('Internal server error', {'Content-Type': 'text/html'}, 500); 
+        // If it's still too big, give up and go play checkers or something idk my bff rose
+        if (!ENABLE_PRE_SIGNED_URLS) {
+            logger.error(`Request response ${event.path} exceeds max allowed size`);
+            return mapResponse('Internal server error', {'Content-Type': 'text/html'}, 500); 
+        }
+        
+        // Basically a last hale merry. In a perfect world this should never happen and instead
+        // either a s3 url in a public bucket is used or we have switched to a real server
+        toReturn = mapResponse('', {'Location': await generateSignedUrl(Key)}, 302);
     }
     
     // Return the response with the default headers merged and overwritten by the content headers
