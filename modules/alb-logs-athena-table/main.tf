@@ -6,18 +6,18 @@ locals {
   logs_location = "${trim("s3://${var.alb_logs_bucket}/${var.alb_logs_prefix}", "/")}/"
 
   create_results_bucket = var.athena_results_bucket == null
-  acct      = data.aws_caller_identity.current.account_id
+  acct                  = data.aws_caller_identity.current.account_id
 }
 
 module "results_bucket" {
-  count = local.create_results_bucket ? 1 : 0
+  count  = local.create_results_bucket ? 1 : 0
   source = "../s3-bucket"
 
   name = "${var.name}-results-${local.acct}"
 }
 
 locals {
-  results_bucket = local.create_results_bucket ? module.results_bucket[0].id : var.athena_results_bucket
+  results_bucket          = local.create_results_bucket ? module.results_bucket[0].id : var.athena_results_bucket
   athena_results_location = "s3://${local.results_bucket}/athena-results/${var.name}/"
 }
 

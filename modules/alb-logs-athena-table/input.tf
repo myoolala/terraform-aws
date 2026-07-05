@@ -36,5 +36,5 @@ variable "table_name" {
 variable "athena_results_bucket" {
   description = "S3 bucket for Athena query results. Leave null to create a new bucket"
   type        = string
-  default = null
+  default     = null
 }
