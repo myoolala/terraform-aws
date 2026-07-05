@@ -1,3 +1,7 @@
+###########################################################################
+###############                   Required                  ###############
+###########################################################################
+
 variable "vpc_id" {
   type        = string
   description = "ID of the vpc to host the LB in"
@@ -7,6 +11,10 @@ variable "subnets" {
   type        = list(string)
   description = "List of subnets to host the load balancer in. Recommend at least 2"
 }
+
+###########################################################################
+###############                   Optional                  ###############
+###########################################################################
 
 variable "ingress_cidrs" {
   type        = list(string)
@@ -94,4 +102,14 @@ variable "tags" {
   type        = map(string)
   description = "Default tags to associate with the resources"
   default     = {}
+}
+
+variable "application_logs" {
+  type = object({
+    s3_bucket = optional(string, null)
+    prefix    = optional(string, "")
+    enabled   = optional(bool, false)
+  })
+  description = "Application log configuration to pass into the load balancer. Assumes a pre existing bucket is fully configured already"
+  default     = null
 }

@@ -1,4 +1,7 @@
+data "aws_caller_identity" "current" {}
+
 locals {
+  acct = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_security_group" "lb" {
@@ -47,7 +50,40 @@ resource "aws_security_group_rule" "egresses" {
   security_group_id = aws_security_group.lb[0].id
 }
 
+locals {
+  create_app_log_bucket = var.application_logs != null && var.application_logs.s3_bucket == null
+}
+
+module "application_logs_bucket" {
+  source = "../s3-bucket"
+  count  = local.create_app_log_bucket ? 1 : 0
+
+  name = "${var.name}-application-log-${local.acct}"
+}
+
+resource "aws_s3_bucket_policy" "app_log_policy" {
+  count = local.create_app_log_bucket ? 1 : 0
+
+  bucket = module.application_logs_bucket[0].id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "logdelivery.elasticloadbalancing.amazonaws.com"
+        },
+        "Action" : "s3:PutObject",
+        # When replace has a substring wrapped in forward slashes, auto converts the substring to a regex.
+        # So // -> / needs //// -> /
+        "Resource" : replace("${module.application_logs_bucket[0].arn}/${var.application_logs.prefix}/AWSLogs/${local.acct}/*", "////", "/")
+      }
+    ]
+  })
+}
+
 # @TODO wat....
+# @TODO What did this wat mean
 resource "aws_lb" "ingress" {
   name                       = var.name
   internal                   = var.internal
@@ -59,9 +95,15 @@ resource "aws_lb" "ingress" {
 
   tags = merge(var.tags, {})
 
-  # access_logs {
-  #   bucket = "somewhere_over_the_rainbow"
-  # }
+  dynamic "access_logs" {
+    for_each = var.application_logs != null ? [1] : []
+
+    content {
+      bucket  = local.create_app_log_bucket ? module.application_logs_bucket[0].id : var.application_logs.bucket
+      enabled = var.application_logs.enabled
+      prefix  = var.application_logs.prefix
+    }
+  }
 }
 
 resource "aws_lb_target_group" "forwarder" {

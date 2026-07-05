@@ -12,6 +12,8 @@ content: |-
 
   Creates a load balancer with listeners and target group pairs.
 
+  Access logs can be enabled and disabled, have a new bucket bucket or an existing bucket created if there is a preferred name/config to use
+
   [Examples can be found here](../../tests/load-balancer/)
 
   {{ .Providers }}

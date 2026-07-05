@@ -22,3 +22,11 @@ output "listener_arn" {
   value       = aws_lb_listener.this[*].arn
   description = "ARN for the created load balancer listener"
 }
+
+output "logs_bucket_name" {
+  value = local.create_app_log_bucket ? module.application_logs_bucket[0].id : null
+}
+
+output "logs_bucket_arn" {
+  value = local.create_app_log_bucket ? module.application_logs_bucket[0].arn : null
+}
