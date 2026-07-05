@@ -24,7 +24,7 @@ No requirements.
 | <a name="input_name"></a> [name](#input\_name) | Name for the load balancer and associated resources | `string` | n/a | yes |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | List of subnets to host the load balancer in. Recommend at least 2 | `list(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the vpc to host the LB in | `string` | n/a | yes |
-| <a name="input_access_logs"></a> [access\_logs](#input\_access\_logs) | Application log configuration to pass into the load balancer. Assumes a pre existing bucket is fully configured already | <pre>object({<br/>    s3_bucket = optional(string, null)<br/>    prefix    = optional(string, "")<br/>    enabled   = optional(bool, false)<br/>  })</pre> | `null` | no |
+| <a name="input_access_logs"></a> [access\_logs](#input\_access\_logs) | Application log configuration to pass into the load balancer. Assumes a pre existing bucket is fully configured already | <pre>object({<br/>    s3_bucket = optional(string, null)<br/>    prefix    = optional(string, "")<br/>    enabled   = optional(bool, true)<br/>  })</pre> | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Is the load balancer protected from deletion? | `bool` | `false` | no |
 | <a name="input_egress_cidrs"></a> [egress\_cidrs](#input\_egress\_cidrs) | List of cidr ingresses to attach to the load balancer | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_egress_groups"></a> [egress\_groups](#input\_egress\_groups) | List of security group ingresses to attach to the load balancer | `list(string)` | `[]` | no |

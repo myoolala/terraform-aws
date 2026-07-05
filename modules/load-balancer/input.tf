@@ -108,7 +108,7 @@ variable "access_logs" {
   type = object({
     s3_bucket = optional(string, null)
     prefix    = optional(string, "")
-    enabled   = optional(bool, false)
+    enabled   = optional(bool, true)
   })
   description = "Application log configuration to pass into the load balancer. Assumes a pre existing bucket is fully configured already"
   default     = null
