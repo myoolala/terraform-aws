@@ -34,7 +34,7 @@ module "athena_table" {
 
   name                  = "test-alb-log-table"
   alb_logs_bucket       = module.load_balancer.logs_bucket_name
-  alb_logs_prefix       = module.load_balancer.logs_bucket_prefix
+  alb_logs_prefix       = ""
 }
 
 provider "aws" {
