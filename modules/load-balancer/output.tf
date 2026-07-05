@@ -25,8 +25,15 @@ output "listener_arn" {
 
 output "logs_bucket_name" {
   value = local.create_app_log_bucket ? module.application_logs_bucket[0].id : null
+  description = "If an application logs bucket was created, what is the name"
 }
 
 output "logs_bucket_arn" {
   value = local.create_app_log_bucket ? module.application_logs_bucket[0].arn : null
+  description = "If an application logs bucket was created, what is the arn"
+}
+
+output "logs_bucket_prefix" {
+  value = local.create_app_log_bucket ? local.bucket_prefix : null
+  description = "If an application logs bucket was created, what is the prefix for logs"
 }

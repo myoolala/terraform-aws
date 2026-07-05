@@ -44,8 +44,9 @@ No requirements.
 | <a name="output_dns_name"></a> [dns\_name](#output\_dns\_name) | DNS CNAME for the load balancer |
 | <a name="output_lb_arn"></a> [lb\_arn](#output\_lb\_arn) | ARN for the created load balancer |
 | <a name="output_listener_arn"></a> [listener\_arn](#output\_listener\_arn) | ARN for the created load balancer listener |
-| <a name="output_logs_bucket_arn"></a> [logs\_bucket\_arn](#output\_logs\_bucket\_arn) | n/a |
-| <a name="output_logs_bucket_name"></a> [logs\_bucket\_name](#output\_logs\_bucket\_name) | n/a |
+| <a name="output_logs_bucket_arn"></a> [logs\_bucket\_arn](#output\_logs\_bucket\_arn) | If an application logs bucket was created, what is the arn |
+| <a name="output_logs_bucket_name"></a> [logs\_bucket\_name](#output\_logs\_bucket\_name) | If an application logs bucket was created, what is the name |
+| <a name="output_logs_bucket_prefix"></a> [logs\_bucket\_prefix](#output\_logs\_bucket\_prefix) | If an application logs bucket was created, what is the prefix for logs |
 | <a name="output_sg_id"></a> [sg\_id](#output\_sg\_id) | Security Group ID if one was created |
 | <a name="output_tg_arns"></a> [tg\_arns](#output\_tg\_arns) | List of Target Group ARNs for the load balancer |  
 <!-- END_TF_DOCS -->

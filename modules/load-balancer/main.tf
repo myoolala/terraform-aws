@@ -61,6 +61,10 @@ module "application_logs_bucket" {
   name = "${var.name}-application-log-${local.acct}"
 }
 
+locals {
+  bucket_prefix = local.create_app_log_bucket ? replace("/${var.access_logs.prefix}/AWSLogs/${local.acct}/*", "////", "/") : ""
+}
+
 resource "aws_s3_bucket_policy" "app_log_policy" {
   count = local.create_app_log_bucket ? 1 : 0
 
@@ -76,7 +80,7 @@ resource "aws_s3_bucket_policy" "app_log_policy" {
         "Action" : "s3:PutObject",
         # When replace has a substring wrapped in forward slashes, auto converts the substring to a regex.
         # So // -> / needs //// -> /
-        "Resource" : replace("${module.application_logs_bucket[0].arn}/${var.access_logs.prefix}/AWSLogs/${local.acct}/*", "////", "/")
+        "Resource" : "${module.application_logs_bucket[0].arn}${local.bucket_prefix}"
       }
     ]
   })
