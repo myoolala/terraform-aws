@@ -3,6 +3,8 @@
 
 Creates a load balancer with listeners and target group pairs.
 
+Access logs can be enabled and disabled, have a new bucket bucket or an existing bucket created if there is a preferred name/config to use
+
 [Examples can be found here](../../tests/load-balancer/)
 
 ## Providers
@@ -22,6 +24,7 @@ No requirements.
 | <a name="input_name"></a> [name](#input\_name) | Name for the load balancer and associated resources | `string` | n/a | yes |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | List of subnets to host the load balancer in. Recommend at least 2 | `list(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the vpc to host the LB in | `string` | n/a | yes |
+| <a name="input_access_logs"></a> [access\_logs](#input\_access\_logs) | Application log configuration to pass into the load balancer. Assumes a pre existing bucket is fully configured already | <pre>object({<br/>    s3_bucket = optional(string, null)<br/>    prefix    = optional(string, "")<br/>    enabled   = optional(bool, false)<br/>  })</pre> | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Is the load balancer protected from deletion? | `bool` | `false` | no |
 | <a name="input_egress_cidrs"></a> [egress\_cidrs](#input\_egress\_cidrs) | List of cidr ingresses to attach to the load balancer | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_egress_groups"></a> [egress\_groups](#input\_egress\_groups) | List of security group ingresses to attach to the load balancer | `list(string)` | `[]` | no |
@@ -41,6 +44,8 @@ No requirements.
 | <a name="output_dns_name"></a> [dns\_name](#output\_dns\_name) | DNS CNAME for the load balancer |
 | <a name="output_lb_arn"></a> [lb\_arn](#output\_lb\_arn) | ARN for the created load balancer |
 | <a name="output_listener_arn"></a> [listener\_arn](#output\_listener\_arn) | ARN for the created load balancer listener |
+| <a name="output_logs_bucket_arn"></a> [logs\_bucket\_arn](#output\_logs\_bucket\_arn) | n/a |
+| <a name="output_logs_bucket_name"></a> [logs\_bucket\_name](#output\_logs\_bucket\_name) | n/a |
 | <a name="output_sg_id"></a> [sg\_id](#output\_sg\_id) | Security Group ID if one was created |
 | <a name="output_tg_arns"></a> [tg\_arns](#output\_tg\_arns) | List of Target Group ARNs for the load balancer |  
 <!-- END_TF_DOCS -->

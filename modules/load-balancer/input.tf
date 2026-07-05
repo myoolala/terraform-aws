@@ -104,7 +104,7 @@ variable "tags" {
   default     = {}
 }
 
-variable "application_logs" {
+variable "access_logs" {
   type = object({
     s3_bucket = optional(string, null)
     prefix    = optional(string, "")

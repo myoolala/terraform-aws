@@ -25,7 +25,7 @@ module "load_balancer" {
   vpc_id  = module.vpc.vpc_id
   subnets = module.vpc.ingress_subnet_ids
 
-  application_logs = {
+  access_logs = {
   }
 }
 

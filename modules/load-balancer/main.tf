@@ -51,7 +51,7 @@ resource "aws_security_group_rule" "egresses" {
 }
 
 locals {
-  create_app_log_bucket = var.application_logs != null && var.application_logs.s3_bucket == null
+  create_app_log_bucket = var.access_logs != null && var.access_logs.s3_bucket == null
 }
 
 module "application_logs_bucket" {
@@ -76,7 +76,7 @@ resource "aws_s3_bucket_policy" "app_log_policy" {
         "Action" : "s3:PutObject",
         # When replace has a substring wrapped in forward slashes, auto converts the substring to a regex.
         # So // -> / needs //// -> /
-        "Resource" : replace("${module.application_logs_bucket[0].arn}/${var.application_logs.prefix}/AWSLogs/${local.acct}/*", "////", "/")
+        "Resource" : replace("${module.application_logs_bucket[0].arn}/${var.access_logs.prefix}/AWSLogs/${local.acct}/*", "////", "/")
       }
     ]
   })
@@ -96,12 +96,12 @@ resource "aws_lb" "ingress" {
   tags = merge(var.tags, {})
 
   dynamic "access_logs" {
-    for_each = var.application_logs != null ? [1] : []
+    for_each = var.access_logs != null ? [1] : []
 
     content {
-      bucket  = local.create_app_log_bucket ? module.application_logs_bucket[0].id : var.application_logs.bucket
-      enabled = var.application_logs.enabled
-      prefix  = var.application_logs.prefix
+      bucket  = local.create_app_log_bucket ? module.application_logs_bucket[0].id : var.access_logs.bucket
+      enabled = var.access_logs.enabled
+      prefix  = var.access_logs.prefix
     }
   }
 }
