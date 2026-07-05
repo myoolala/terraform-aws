@@ -34,3 +34,7 @@ WHERE account = '<aws-account-id>'
 LIMIT 100;
 EOT
 }
+
+output "athena_results_location" {
+  value = local.athena_results_location
+}

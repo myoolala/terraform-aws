@@ -65,6 +65,7 @@ LIMIT 100;
 
 | Name | Description |
 |------|-------------|
+| <a name="output_athena_results_location"></a> [athena\_results\_location](#output\_athena\_results\_location) | n/a |
 | <a name="output_athena_workgroup_name"></a> [athena\_workgroup\_name](#output\_athena\_workgroup\_name) | n/a |
 | <a name="output_database_name"></a> [database\_name](#output\_database\_name) | n/a |
 | <a name="output_example_query"></a> [example\_query](#output\_example\_query) | n/a |

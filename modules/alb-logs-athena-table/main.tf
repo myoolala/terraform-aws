@@ -263,6 +263,12 @@ resource "aws_glue_catalog_table" "alb_access_logs" {
   }
 }
 
+resource "aws_s3_object" "athena_results_prefix" {
+  bucket  = local.results_bucket
+  key     = "athena-results/${var.name}/"
+  content = ""
+}
+
 resource "aws_athena_workgroup" "this" {
   name = var.name
 
