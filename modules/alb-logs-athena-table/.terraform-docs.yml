@@ -1,0 +1,56 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # ALB Logs Athena Table
+
+  Creates an Athena table to index and make available ALB access logs for query capabilities
+
+  ## Example: 
+
+  ```hcl
+  module "alb_logs_athena" {
+    source = "github.com/myoolala/terraform-aws//modules/alb-logs-athena-table"
+
+    name                  = "app-alb-logs"
+    alb_logs_bucket       = "my-alb-log-bucket"
+    alb_logs_prefix       = "alb"
+  }
+  ```
+
+  [Examples can be found here](../../tests/alb-logs-athena-table/)
+
+  ## Example queries:
+
+  ```sql
+  SELECT
+    time,
+    elb,
+    client_ip,
+    request_verb,
+    request_url,
+    elb_status_code,
+    target_status_code,
+    target_processing_time
+  FROM ${aws_glue_catalog_database.this.name}.${aws_glue_catalog_table.alb_access_logs.name}
+  WHERE account = '<aws-account-id>'
+    AND region = '<aws-region>'
+    AND year = '2026'
+    AND month = '07'
+    AND day = '05'
+  LIMIT 100;
+  ```
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}  
