@@ -10,6 +10,7 @@ module "alb_logs_athena" {
   source = "github.com/myoolala/terraform-aws//modules/alb-logs-athena-table"
 
   name                  = "app-alb-logs"
+  database_name         = "app_ingress_logs"
   alb_logs_bucket       = "my-alb-log-bucket"
   alb_logs_prefix       = "alb"
 }
@@ -29,7 +30,7 @@ SELECT
   elb_status_code,
   target_status_code,
   target_processing_time
-FROM ${aws_glue_catalog_database.this.name}.${aws_glue_catalog_table.alb_access_logs.name}
+FROM app_ingress_logs.alb_access_logs
 WHERE account = '<aws-account-id>'
   AND region = '<aws-region>'
   AND year = '2026'
@@ -65,10 +66,10 @@ LIMIT 100;
 
 | Name | Description |
 |------|-------------|
-| <a name="output_athena_results_location"></a> [athena\_results\_location](#output\_athena\_results\_location) | n/a |
-| <a name="output_athena_workgroup_name"></a> [athena\_workgroup\_name](#output\_athena\_workgroup\_name) | n/a |
-| <a name="output_database_name"></a> [database\_name](#output\_database\_name) | n/a |
-| <a name="output_example_query"></a> [example\_query](#output\_example\_query) | n/a |
-| <a name="output_logs_location"></a> [logs\_location](#output\_logs\_location) | n/a |
-| <a name="output_table_name"></a> [table\_name](#output\_table\_name) | n/a |  
+| <a name="output_athena_results_location"></a> [athena\_results\_location](#output\_athena\_results\_location) | S3 URI of the Athena query results |
+| <a name="output_athena_workgroup_name"></a> [athena\_workgroup\_name](#output\_athena\_workgroup\_name) | Create Athena Workgroup name |
+| <a name="output_database_name"></a> [database\_name](#output\_database\_name) | Name of the glue catalog database |
+| <a name="output_example_query"></a> [example\_query](#output\_example\_query) | Example query to run inside Athena |
+| <a name="output_logs_location"></a> [logs\_location](#output\_logs\_location) | S3 URI of the source logs |
+| <a name="output_table_name"></a> [table\_name](#output\_table\_name) | Name of the glue catalog table |  
 <!-- END_TF_DOCS -->
