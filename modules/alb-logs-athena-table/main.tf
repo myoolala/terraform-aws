@@ -1,12 +1,14 @@
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
 locals {
+  acct          = data.aws_caller_identity.current.account_id
+  region        = data.aws_region.current.region
   database_name = coalesce(var.database_name, replace("${var.name}_alb_logs", "-", "_"))
 
   logs_location = "${trim("s3://${var.alb_logs_bucket}/${var.alb_logs_prefix}", "/")}/"
 
   create_results_bucket = var.athena_results_bucket == null
-  acct                  = data.aws_caller_identity.current.account_id
 }
 
 module "results_bucket" {

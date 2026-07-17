@@ -6,6 +6,7 @@ In addition, the tests folders serve the other purpose to provide examples of ho
 
 ## The modules
 
+* [alb-logs-athena-table](./modules/alb-logs-athena-table/README.md)
 * [asg-service](./modules/asg-service/README.md)
 * [cert](./modules/cert/README.md)
 * [code-build](./modules/code-build/README.md)

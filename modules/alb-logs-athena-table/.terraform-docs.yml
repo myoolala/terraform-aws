@@ -19,6 +19,7 @@ content: |-
     source = "github.com/myoolala/terraform-aws//modules/alb-logs-athena-table"
 
     name                  = "app-alb-logs"
+    database_name         = "app_ingress_logs"
     alb_logs_bucket       = "my-alb-log-bucket"
     alb_logs_prefix       = "alb"
   }
@@ -38,7 +39,7 @@ content: |-
     elb_status_code,
     target_status_code,
     target_processing_time
-  FROM ${aws_glue_catalog_database.this.name}.${aws_glue_catalog_table.alb_access_logs.name}
+  FROM app_ingress_logs.alb_access_logs
   WHERE account = '<aws-account-id>'
     AND region = '<aws-region>'
     AND year = '2026'
