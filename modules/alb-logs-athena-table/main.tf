@@ -51,29 +51,13 @@ resource "aws_glue_catalog_table" "alb_access_logs" {
     "storage.location.template" = "${local.logs_location}AWSLogs/$${account}/elasticloadbalancing/$${region}/$${year}/$${month}/$${day}/"
   }
 
-  partition_keys {
-    name = "account"
-    type = "string"
-  }
+  dynamic "partition_keys" {
+    for_each = var.partition_keys
 
-  partition_keys {
-    name = "region"
-    type = "string"
-  }
-
-  partition_keys {
-    name = "year"
-    type = "string"
-  }
-
-  partition_keys {
-    name = "month"
-    type = "string"
-  }
-
-  partition_keys {
-    name = "day"
-    type = "string"
+    content {
+      name = partition_keys.key
+      type = partition_keys.value.type
+    }
   }
 
   storage_descriptor {
@@ -87,193 +71,26 @@ resource "aws_glue_catalog_table" "alb_access_logs" {
       parameters = {
         "serialization.format" = "1"
 
-        "input.regex" = "([^ ]+) ([^ ]+) ([^ ]+) ([^: ]+):([0-9]+) ([^ ]+)(?::([0-9]+))? ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) \"([^ ]+) ([^\"]*) ([^ ]+)\" \"([^\"]*)\" ([^ ]+) ([^ ]+) ([^ ]+) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" ([^ ]+) ([^ ]+) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" ([^ ]+) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\""
+        "input.regex" = var.ser_de_info_regex
       }
     }
 
-    columns {
-      name = "type"
-      type = "string"
+    dynamic "columns" {
+      for_each = var.columns
+
+      content {
+        name = columns.key
+        type = columns.value.type
+      }
     }
 
-    columns {
-      name = "time"
-      type = "string"
-    }
+    dynamic "columns" {
+      for_each = var.additional_columns
 
-    columns {
-      name = "elb"
-      type = "string"
-    }
-
-    columns {
-      name = "client_ip"
-      type = "string"
-    }
-
-    columns {
-      name = "client_port"
-      type = "int"
-    }
-
-    columns {
-      name = "target_ip"
-      type = "string"
-    }
-
-    columns {
-      name = "target_port"
-      type = "string"
-    }
-
-    columns {
-      name = "request_processing_time"
-      type = "double"
-    }
-
-    columns {
-      name = "target_processing_time"
-      type = "double"
-    }
-
-    columns {
-      name = "response_processing_time"
-      type = "double"
-    }
-
-    columns {
-      name = "elb_status_code"
-      type = "int"
-    }
-
-    columns {
-      name = "target_status_code"
-      type = "string"
-    }
-
-    columns {
-      name = "received_bytes"
-      type = "bigint"
-    }
-
-    columns {
-      name = "sent_bytes"
-      type = "bigint"
-    }
-
-    columns {
-      name = "request_verb"
-      type = "string"
-    }
-
-    columns {
-      name = "request_url"
-      type = "string"
-    }
-
-    columns {
-      name = "request_proto"
-      type = "string"
-    }
-
-    columns {
-      name = "user_agent"
-      type = "string"
-    }
-
-    columns {
-      name = "ssl_cipher"
-      type = "string"
-    }
-
-    columns {
-      name = "ssl_protocol"
-      type = "string"
-    }
-
-    columns {
-      name = "target_group_arn"
-      type = "string"
-    }
-
-    columns {
-      name = "trace_id"
-      type = "string"
-    }
-
-    columns {
-      name = "domain_name"
-      type = "string"
-    }
-
-    columns {
-      name = "chosen_cert_arn"
-      type = "string"
-    }
-
-    columns {
-      name = "matched_rule_priority"
-      type = "string"
-    }
-
-    columns {
-      name = "request_creation_time"
-      type = "string"
-    }
-
-    columns {
-      name = "actions_executed"
-      type = "string"
-    }
-
-    columns {
-      name = "redirect_url"
-      type = "string"
-    }
-
-    columns {
-      name = "lambda_error_reason"
-      type = "string"
-    }
-
-    columns {
-      name = "target_port_list"
-      type = "string"
-    }
-
-    columns {
-      name = "target_status_code_list"
-      type = "string"
-    }
-
-    columns {
-      name = "classification"
-      type = "string"
-    }
-
-    columns {
-      name = "classification_reason"
-      type = "string"
-    }
-
-    columns {
-      name = "conn_trace_id"
-      type = "string"
-    }
-
-    columns {
-      name = "transformed_host"
-      type = "string"
-    }
-
-    columns {
-      name = "transformed_uri"
-      type = "string"
-    }
-
-    columns {
-      name = "request_transform_status"
-      type = "string"
+      content {
+        name = columns.key
+        type = columns.value.type
+      }
     }
   }
 }

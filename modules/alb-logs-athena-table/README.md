@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # ALB Logs Athena Table
 
-Creates an Athena table to index and make available ALB access logs for query capabilities
+Creates an Athena table to index and make available ALB access logs for query capabilities. Also offers the ability to overwrite the columns mainly to easily support WAFs
 
 ## Example: 
 
@@ -57,8 +57,12 @@ LIMIT 100;
 | <a name="input_alb_logs_bucket"></a> [alb\_logs\_bucket](#input\_alb\_logs\_bucket) | S3 bucket containing ALB access logs. | `string` | n/a | yes |
 | <a name="input_alb_logs_prefix"></a> [alb\_logs\_prefix](#input\_alb\_logs\_prefix) | S3 prefix where ALB access logs are stored. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Name prefix for Athena and Glue resources. | `string` | n/a | yes |
+| <a name="input_additional_columns"></a> [additional\_columns](#input\_additional\_columns) | Additional columns in order to match to the regex at the end of the main columns. Intention is to make adding columns easier | <pre>map(object({<br/>    type = optional(string, "string")<br/>  }))</pre> | `{}` | no |
 | <a name="input_athena_results_bucket"></a> [athena\_results\_bucket](#input\_athena\_results\_bucket) | S3 bucket for Athena query results. Leave null to create a new bucket | `string` | `null` | no |
+| <a name="input_columns"></a> [columns](#input\_columns) | Columns in order to match to the regex | <pre>map(object({<br/>    type = optional(string, "string")<br/>  }))</pre> | <pre>{<br/>  "actions_executed": {},<br/>  "chosen_cert_arn": {},<br/>  "classification": {},<br/>  "classification_reason": {},<br/>  "client_ip": {},<br/>  "client_port": {<br/>    "type": "int"<br/>  },<br/>  "conn_trace_id": {},<br/>  "domain_name": {},<br/>  "elb": {},<br/>  "elb_status_code": {<br/>    "type": "int"<br/>  },<br/>  "lambda_error_reason": {},<br/>  "matched_rule_priority": {},<br/>  "received_bytes": {<br/>    "type": "bigint"<br/>  },<br/>  "redirect_url": {},<br/>  "request_creation_time": {},<br/>  "request_processing_time": {<br/>    "type": "double"<br/>  },<br/>  "request_proto": {},<br/>  "request_transform_status": {},<br/>  "request_url": {},<br/>  "request_verb": {},<br/>  "response_processing_time": {<br/>    "type": "double"<br/>  },<br/>  "sent_bytes": {<br/>    "type": "bigint"<br/>  },<br/>  "ssl_cipher": {},<br/>  "ssl_protocol": {},<br/>  "target_group_arn": {},<br/>  "target_ip": {},<br/>  "target_port": {},<br/>  "target_port_list": {},<br/>  "target_processing_time": {<br/>    "type": "double"<br/>  },<br/>  "target_status_code": {},<br/>  "target_status_code_list": {},<br/>  "time": {},<br/>  "trace_id": {},<br/>  "transformed_host": {},<br/>  "transformed_uri": {},<br/>  "type": {},<br/>  "user_agent": {}<br/>}</pre> | no |
 | <a name="input_database_name"></a> [database\_name](#input\_database\_name) | Glue database name. | `string` | `null` | no |
+| <a name="input_partition_keys"></a> [partition\_keys](#input\_partition\_keys) | Parition keys to attach to the table | <pre>map(object({<br/>    type = optional(string, "string")<br/>  }))</pre> | <pre>{<br/>  "account": {},<br/>  "day": {},<br/>  "month": {},<br/>  "region": {},<br/>  "year": {}<br/>}</pre> | no |
+| <a name="input_ser_de_info_regex"></a> [ser\_de\_info\_regex](#input\_ser\_de\_info\_regex) | Primary regex used to parse the logs. This would probably change with a WAF attached to the ALB | `string` | `"([^ ]+) ([^ ]+) ([^ ]+) ([^: ]+):([0-9]+) ([^ ]+)(?::([0-9]+))? ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) \"([^ ]+) ([^\"]*) ([^ ]+)\" \"([^\"]*)\" ([^ ]+) ([^ ]+) ([^ ]+) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" ([^ ]+) ([^ ]+) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" ([^ ]+) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\""` | no |
 | <a name="input_table_name"></a> [table\_name](#input\_table\_name) | Glue table name. | `string` | `"alb_access_logs"` | no |
 
 ## Outputs

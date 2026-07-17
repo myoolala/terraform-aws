@@ -10,7 +10,7 @@ sort:
 content: |-
   # ALB Logs Athena Table
 
-  Creates an Athena table to index and make available ALB access logs for query capabilities
+  Creates an Athena table to index and make available ALB access logs for query capabilities. Also offers the ability to overwrite the columns mainly to easily support WAFs
 
   ## Example: 
 
