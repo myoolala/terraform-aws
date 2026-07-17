@@ -60,7 +60,8 @@ variable "partition_keys" {
 }
 
 variable "columns" {
-  type = map(object({
+  type = list(object({
+    name = string
     type = optional(string, "string")
   }))
   description = "Columns in order to match to the regex"
@@ -111,5 +112,5 @@ variable "additional_columns" {
     type = optional(string, "string")
   }))
   description = "Additional columns in order to match to the regex at the end of the main columns. Intention is to make adding columns easier"
-  default     = {}
+  default     = []
 }

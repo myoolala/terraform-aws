@@ -57,7 +57,7 @@ resource "aws_glue_catalog_table" "alb_access_logs" {
     for_each = var.partition_keys
 
     content {
-      name = partition_keys.key
+      name = partition_keys.value.name
       type = partition_keys.value.type
     }
   }
