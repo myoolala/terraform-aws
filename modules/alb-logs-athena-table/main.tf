@@ -81,7 +81,7 @@ resource "aws_glue_catalog_table" "alb_access_logs" {
       for_each = var.columns
 
       content {
-        name = columns.key
+        name = columns.value.name
         type = columns.value.type
       }
     }
@@ -90,7 +90,7 @@ resource "aws_glue_catalog_table" "alb_access_logs" {
       for_each = var.additional_columns
 
       content {
-        name = columns.key
+        name = columns.value.name
         type = columns.value.type
       }
     }
