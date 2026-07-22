@@ -175,3 +175,9 @@ variable "enable_ssm_access" {
   description = "Enable the container to be reached via the ssm service"
   default     = false
 }
+
+variable "permissions" {
+  type        = string
+  default     = null
+  description = "Json encoded string of permissions to attach to the container"
+}

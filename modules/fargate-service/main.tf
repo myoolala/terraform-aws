@@ -44,6 +44,7 @@ module "image" {
   name              = var.service_name
   command           = var.command
   service_name      = var.service_name
+  permissions       = var.permissions
   enable_ssm_access = var.enable_ssm_access
   image             = var.image_tag == null ? "${var.service_name}:latest" : var.image_tag
   memory            = var.image_configs.memory
