@@ -37,3 +37,8 @@ output "logs_bucket_prefix" {
   value       = local.create_app_log_bucket ? local.bucket_prefix : null
   description = "If an application logs bucket was created, what is the prefix for logs"
 }
+
+output "zone_id" {
+  value = aws_lb.ingress.zone_id
+  description = "Zone ID for the new load balancer"
+}
