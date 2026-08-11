@@ -2,17 +2,18 @@ data "aws_caller_identity" "current" {}
 
 locals {
   acct = data.aws_caller_identity.current.account_id
+  create_sg = var.type != "network" && var.security_group == null
 }
 
 resource "aws_security_group" "lb" {
-  count = var.type != "network" ? 1 : 0
+  count = local.create_sg ? 1 : 0
 
   name   = "${var.name}-lb"
   vpc_id = var.vpc_id
 }
 
 resource "aws_security_group_rule" "cidr_ingresses" {
-  count = var.type != "network" ? length(var.port_mappings) : 0
+  count = local.create_sg ? length(var.port_mappings) : 0
 
   type        = "ingress"
   from_port   = var.port_mappings[count.index].listen_port
@@ -38,7 +39,7 @@ resource "aws_security_group_rule" "cidr_ingresses" {
 # }
 
 resource "aws_security_group_rule" "egresses" {
-  count = var.type != "network" ? length(var.egress_cidrs) : 0
+  count = local.create_sg ? length(var.egress_cidrs) : 0
 
   type        = "egress"
   from_port   = -1
@@ -88,6 +89,7 @@ resource "aws_s3_bucket_policy" "app_log_policy" {
 
 # @TODO wat....
 # @TODO What did this wat mean
+# @TODO I'm still confused. CARRY ME HOOOOOOOOOOOOOooooooooOOooooOOOOME
 resource "aws_lb" "ingress" {
   name                       = var.name
   internal                   = var.internal
