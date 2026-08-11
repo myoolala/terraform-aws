@@ -5,6 +5,30 @@ locals {
   create_sg = var.type != "network" && var.security_group == null
 }
 
+# @TODO:
+/*
+module sg {
+  name = "I'm going to exist please help"
+}
+
+module alb {
+  type = "application"
+  security_group = module.sg.id
+}
+
+leads to the error:
+  │ Error: Invalid count argument
+  │
+  │   on .terraform/modules/alb/modules/load-balancer/main.tf line 9, in resource "aws_security_group" "lb":
+  │    9:   count = local.create_sg ? 1 : 0
+  │
+  │ The "count" value depends on resource attributes that cannot be determined
+  │ until apply, so OpenTofu cannot predict how many instances will be created.
+  │
+  │ To work around this, use the planning option
+  │ -exclude=module.alb.aws_security_group.lb to first apply without this
+  │ object, and then apply normally to converge.
+*/
 resource "aws_security_group" "lb" {
   count = local.create_sg ? 1 : 0
 
