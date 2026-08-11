@@ -7,6 +7,15 @@ output "role" {
   ]
 }
 
+output "role_name" {
+  value       = var.role != null ? null : aws_iam_role.lambda_exec[0].name
+  description = "Name of the role created to add permissions to"
+
+  depends_on = [
+    aws_iam_role.lambda_exec
+  ]
+}
+
 output "function_name" {
   value       = aws_lambda_function.function.function_name
   description = "Name applied to the Lambda function"

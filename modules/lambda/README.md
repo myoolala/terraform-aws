@@ -75,5 +75,6 @@ No requirements.
 | <a name="output_function_name"></a> [function\_name](#output\_function\_name) | Name applied to the Lambda function |
 | <a name="output_invoke_arn"></a> [invoke\_arn](#output\_invoke\_arn) | The invoke ARN of the Lambda function |
 | <a name="output_log_group"></a> [log\_group](#output\_log\_group) | The log group configuration created for the lambda function |
-| <a name="output_role"></a> [role](#output\_role) | ARN of the role created to add permissions to |  
+| <a name="output_role"></a> [role](#output\_role) | ARN of the role created to add permissions to |
+| <a name="output_role_name"></a> [role\_name](#output\_role\_name) | Name of the role created to add permissions to |  
 <!-- END_TF_DOCS -->
