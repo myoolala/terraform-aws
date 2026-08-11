@@ -1,5 +1,5 @@
 output "sg_id" {
-  value       = var.type != "network" ? aws_security_group.lb[0].id : null
+  value       = local.create_sg ? aws_security_group.lb[0].id : null
   description = "Security Group ID if one was created"
 }
 
