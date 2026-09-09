@@ -82,6 +82,7 @@ No requirements.
 | <a name="output_ipv6_assoc_id"></a> [ipv6\_assoc\_id](#output\_ipv6\_assoc\_id) | Assotication ID for the IPV6 block |
 | <a name="output_ipv6_cidr"></a> [ipv6\_cidr](#output\_ipv6\_cidr) | IPV6 cidr range for the VPC |
 | <a name="output_nat_az_map"></a> [nat\_az\_map](#output\_nat\_az\_map) | NAT Gateway to AZ mapping object |
+| <a name="output_nat_ips"></a> [nat\_ips](#output\_nat\_ips) | Elastic public IPs created for the nat gateways in the VPC |
 | <a name="output_nat_subnet_map"></a> [nat\_subnet\_map](#output\_nat\_subnet\_map) | Mapping of subnets to NAT Gateways |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | IP of the VPC |  
 <!-- END_TF_DOCS -->
