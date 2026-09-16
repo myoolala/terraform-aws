@@ -52,8 +52,8 @@ module "image" {
   storage           = var.image_configs.storage
   log_group         = aws_cloudwatch_log_group.logs.name
   env_vars          = var.env_vars
-  secrets           = module.secrets.fargate_secrets
-  secrets_keys      = module.secrets.kms_key != null ? [module.secrets.kms_key] : []
+  secrets           = concat(module.secrets.fargate_secrets, var.existing_secrets.task_def_mapping)
+  secrets_keys      = concat(module.secrets.kms_key != null ? [module.secrets.kms_key] : [], var.existing_secrets.kms_key_arns)
   port_mappings = concat([for i in try(var.lb.port_mappings, []) : {
     containerPort = i.forward_port
     hostPort      = i.forward_port

@@ -70,6 +70,18 @@ variable "env_vars" {
   description = "Environment variables to pass to the container in {<key> = <value>, <key> = <value>} form"
 }
 
+variable "existing_secrets" {
+  type = object({
+    task_def_mapping    = optional(list(object({
+      name: string
+      valueFrom: string
+    })), [])
+    kms_key_arns   = optional(list(string), [])
+  })
+  description = "Specify existing AWS Secrets Manager secrets to attach to the service containers"
+  default      = {}
+}
+
 variable "secrets" {
   type        = list(map(string))
   default     = []
