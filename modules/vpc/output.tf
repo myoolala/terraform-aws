@@ -62,3 +62,8 @@ output "compute_subnet_arns" {
   value       = aws_subnet.compute[*].arn
   description = "ARNs of the compute subnets"
 }
+
+output "nat_ips" {
+  value = aws_eip.nat[*].public_ip
+  description = "Elastic public IPs created for the nat gateways in the VPC"
+}
