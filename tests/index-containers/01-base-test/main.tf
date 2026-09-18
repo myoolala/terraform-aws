@@ -2,6 +2,16 @@ module "index-containers" {
   source = "../../../modules/index-containers"
 
   name = "base-test"
+
+  vpc = {
+    id = "vpc-abcdef12"
+    subnets = ["subnet-12345678", "subnet-87654321"]
+  }
+
+  cluster = {
+    create = true
+    name = "base-test-index"
+  }
 }
 
 provider "aws" {

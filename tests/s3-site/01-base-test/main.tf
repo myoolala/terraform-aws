@@ -3,6 +3,7 @@ module "s3-site" {
 
   cname          = "example.com"
   host_s3_bucket = "test-site-bucket"
+  s3_prefix      = "root"
   // Optional arguments left to defaults
 }
 

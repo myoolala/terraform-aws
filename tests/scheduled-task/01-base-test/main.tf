@@ -1,7 +1,6 @@
 module "scheduled-task" {
   source = "../../../modules/scheduled-task"
 
-  name            = "base-test"
   cluster         = { create = true, name = "base-test-cluster" }
   service_name    = "base-test-service"
   service_subnets = ["subnet-12345678", "subnet-87654321"]
