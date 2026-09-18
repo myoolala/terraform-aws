@@ -78,8 +78,3 @@ variable "secrets" {
   description = "List of secrets to attach to the service"
 }
 
-variable "region" {
-  type        = string
-  description = "Region being deployed in AWS"
-  default     = "us-east-1"
-}

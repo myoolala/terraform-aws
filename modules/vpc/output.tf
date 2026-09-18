@@ -67,3 +67,8 @@ output "nat_ips" {
   value = aws_eip.nat[*].public_ip
   description = "Elastic public IPs created for the nat gateways in the VPC"
 }
+
+output "default_sg" {
+  value = data.aws_security_group.default.id
+  description = "Default security group id for the vpc"
+}

@@ -13,7 +13,7 @@ module "secrets" {
   source = "../secrets"
 
   secrets         = var.secrets.secrets
-  region          = var.secrets.region
+
   create_new_key  = true
   recovery_window = 0
 }

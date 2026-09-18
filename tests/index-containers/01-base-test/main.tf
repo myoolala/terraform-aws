@@ -1,0 +1,24 @@
+module "index-containers" {
+  source = "../../../modules/index-containers"
+
+  name = "base-test"
+}
+
+provider "aws" {
+  region = "us-east-1"
+  default_tags {
+    tags = {
+      Environment = "tf-integration-test"
+      Billing     = "tf-integration-test"
+    }
+  }
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">=6.25.0"
+    }
+  }
+}
