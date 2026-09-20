@@ -85,7 +85,7 @@ variable "secrets" {
 }
 
 variable "permissions" {
-  type        = string
+  type        = any
   description = "Additional permissions the lambda will need json encoded"
   default     = null
 }

@@ -339,3 +339,14 @@ resource "aws_flow_log" "this" {
   traffic_type    = var.flow_logs.traffic_type
   vpc_id          = aws_vpc.main.id
 }
+
+data "aws_security_group" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [aws_vpc.main.id]
+  }
+  filter {
+    name   = "group-name"
+    values = ["default"]
+  }
+}
