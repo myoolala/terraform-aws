@@ -56,7 +56,7 @@ No requirements.
 | <a name="input_key"></a> [key](#input\_key) | S3 Key of the source zip file | `string` | `null` | no |
 | <a name="input_log_retention"></a> [log\_retention](#input\_log\_retention) | Number in days to store logs in cloudwatch | `number` | `7` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory allocation per runtime for the lambda | `number` | `128` | no |
-| <a name="input_permissions"></a> [permissions](#input\_permissions) | Additional permissions the lambda will need json encoded | `string` | `null` | no |
+| <a name="input_permissions"></a> [permissions](#input\_permissions) | Additional permissions the lambda will need json encoded | `any` | `null` | no |
 | <a name="input_role"></a> [role](#input\_role) | Existing role to attach to the lambda if desired | `string` | `null` | no |
 | <a name="input_runtime"></a> [runtime](#input\_runtime) | Runtime to use for the lambda | `string` | `"nodejs24.x"` | no |
 | <a name="input_schedule"></a> [schedule](#input\_schedule) | Cron schedule to invoke the lambda on if there is one | `string` | `null` | no |

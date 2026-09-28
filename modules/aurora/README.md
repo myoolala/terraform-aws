@@ -59,7 +59,26 @@ module "aurora" {
 
 ## Inputs
 
-No inputs.
+| Name | Description | Default | Required |
+|------|-------------|---------|:--------:|
+| <a name="input_apply_immediately"></a> [apply\_immediately](#input\_apply\_immediately) | n/a | `true` | no |
+| <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | n/a | `1` | no |
+| <a name="input_cluster_identifier"></a> [cluster\_identifier](#input\_cluster\_identifier) | n/a | `"aurora-test"` | no |
+| <a name="input_database_name"></a> [database\_name](#input\_database\_name) | n/a | `"testdb"` | no |
+| <a name="input_db_subnet_group_name"></a> [db\_subnet\_group\_name](#input\_db\_subnet\_group\_name) | n/a | `""` | no |
+| <a name="input_engine"></a> [engine](#input\_engine) | n/a | `"aurora-postgresql"` | no |
+| <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | n/a | `"15.2"` | no |
+| <a name="input_final_snapshot_seed"></a> [final\_snapshot\_seed](#input\_final\_snapshot\_seed) | n/a | `""` | no |
+| <a name="input_iam_database_authentication_enabled"></a> [iam\_database\_authentication\_enabled](#input\_iam\_database\_authentication\_enabled) | n/a | `false` | no |
+| <a name="input_instances"></a> [instances](#input\_instances) | n/a | <pre>{<br/>  "test": {<br/>    "availability_zone": "us-east-1a",<br/>    "identifier": "aurora-test-instance",<br/>    "instance_class": "db.t3.micro",<br/>    "promotion_tier": 1,<br/>    "publicly_accessible": false,<br/>    "tags": {}<br/>  }<br/>}</pre> | no |
+| <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | n/a | `""` | no |
+| <a name="input_master_password"></a> [master\_password](#input\_master\_password) | n/a | `"Password123!"` | no |
+| <a name="input_master_username"></a> [master\_username](#input\_master\_username) | n/a | `"admin"` | no |
+| <a name="input_port"></a> [port](#input\_port) | n/a | `5432` | no |
+| <a name="input_preferred_backup_window"></a> [preferred\_backup\_window](#input\_preferred\_backup\_window) | n/a | `"02:00-03:00"` | no |
+| <a name="input_storage_encrypted"></a> [storage\_encrypted](#input\_storage\_encrypted) | n/a | `false` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | n/a | <pre>{<br/>  "Environment": "test"<br/>}</pre> | no |
+| <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | n/a | `[]` | no |
 
 ## Outputs
 

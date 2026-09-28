@@ -76,6 +76,7 @@ No requirements.
 | <a name="output_compute_subnet_route_mapping"></a> [compute\_subnet\_route\_mapping](#output\_compute\_subnet\_route\_mapping) | Compute subnet route mapping object for the Route Tables |
 | <a name="output_default_nacl_id"></a> [default\_nacl\_id](#output\_default\_nacl\_id) | ID of the default NACL |
 | <a name="output_default_route_table_id"></a> [default\_route\_table\_id](#output\_default\_route\_table\_id) | ID of the default Route Table |
+| <a name="output_default_sg"></a> [default\_sg](#output\_default\_sg) | Default security group id for the vpc |
 | <a name="output_ingress_subnet_arns"></a> [ingress\_subnet\_arns](#output\_ingress\_subnet\_arns) | ARNs of the ingress subnets |
 | <a name="output_ingress_subnet_ids"></a> [ingress\_subnet\_ids](#output\_ingress\_subnet\_ids) | IDs of the ingress subnets |
 | <a name="output_ipv4_cidrs"></a> [ipv4\_cidrs](#output\_ipv4\_cidrs) | IPV4 CIDR ranges in the VPC |

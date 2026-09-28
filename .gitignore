@@ -15,3 +15,6 @@ devops/terragrunt/
 output
 
 node_modules
+
+AGENTS.md
+.pi

@@ -30,7 +30,6 @@ No requirements.
 | <a name="input_function_configs"></a> [function\_configs](#input\_function\_configs) | Config for all of the lambdas to produce | <pre>map(object({<br/>    s3Uri  = string<br/>    routes = set(string)<br/>    prefix = string<br/>  }))</pre> | `{}` | no |
 | <a name="input_make_new_lambda_bucket"></a> [make\_new\_lambda\_bucket](#input\_make\_new\_lambda\_bucket) | Check whether to create a new api code bucket or use an existing one | `bool` | `true` | no |
 | <a name="input_protocol"></a> [protocol](#input\_protocol) | Protocol for the lambda api | `string` | `"HTTP"` | no |
-| <a name="input_region"></a> [region](#input\_region) | Region being deployed in AWS | `string` | `"us-east-1"` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | List of secrets to attach to the service | `list(map(string))` | `[]` | no |
 
 ## Outputs

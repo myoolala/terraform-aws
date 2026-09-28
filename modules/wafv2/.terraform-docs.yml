@@ -1,0 +1,23 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # WAFv2 Module
+
+  Deploys an AWS WAFv2 Web ACL with optional managed rule groups and custom IP sets, and associates it with an Application Load Balancer when an ALB ARN is provided.
+
+  [Examples can be found here](../../tests/wafv2)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
