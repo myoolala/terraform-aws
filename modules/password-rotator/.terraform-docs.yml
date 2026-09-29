@@ -1,0 +1,8 @@
+# Terraform Docs Configuration
+# This file is a minimal example, you can extend as needed.
+---
+settings:
+  color: true
+  description: true
+  use-codeblocks: true
+  sort-by: required

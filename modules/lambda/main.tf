@@ -143,6 +143,7 @@ resource "aws_lambda_function" "function" {
   handler     = var.handler
   timeout     = var.timeout
   memory_size = var.memory
+  layers = var.layers
 
   role = var.role != null ? var.role : aws_iam_role.lambda_exec[0].arn
 

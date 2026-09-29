@@ -1,0 +1,16 @@
+{
+  "name": "password-rotator-lambda-func",
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "dependencies": {
+    "lite-utils": "^0.1.1"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-iam": "^3.569.0",
+    "@aws-sdk/client-rds": "^3.569.0",
+    "@aws-sdk/client-secrets-manager": "^3.569.0",
+    "@aws-sdk/client-ssm": "^3.569.0"
+  }
+}
