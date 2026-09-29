@@ -1,16 +1,17 @@
+// Set environment variables for deterministic config
+process.env.passwordType = 'IAM_USER_ACCESS_TOKEN';
+process.env.secretStore = 'secretsmanager';
+process.env.secretStoreLocation = 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret';
+process.env.secretLocation = 'arn:aws:iam::123456789012:user/test-iam-user';
+console.log('env passwordType before import:', process.env.passwordType);
+
 import { handler } from './index.mjs';
 import { IAMClient } from '@aws-sdk/client-iam';
 import { RDSClient } from '@aws-sdk/client-rds';
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { SSMClient } from '@aws-sdk/client-ssm';
 
-// Set environment variables for deterministic config
-process.env.passwordType = 'IAM_USER_ACCESS_TOKEN';
-process.env.secretStore = 'secretsmanager';
-process.env.secretStoreLocation = 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret';
-process.env.secretLocation = 'arn:aws:iam::123456789012:user/test-iam-user';
 
-// Mock responses
 const mockResponses = {
   CreateAccessKeyCommand: { AccessKey: { AccessKeyId: 'AKIA_NEW', SecretAccessKey: 'NEW_SECRET' } },
   ListAccessKeysCommand: { AccessKeyMetadata: [ { AccessKeyId: 'AKIA_OLD1', Status: 'Active' }, { AccessKeyId: 'AKIA_OLD2', Status: 'Active' } ] },

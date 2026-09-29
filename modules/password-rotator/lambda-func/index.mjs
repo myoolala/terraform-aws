@@ -1,7 +1,33 @@
-import { Logger } from 'lite-utils';
-const logger = Logger({ level: 'INFO' });
-
+import liteUtils from 'lite-utils';
+const Logger = liteUtils.Logger;
+const logger = new Logger({ level: 'INFO' });
+import fs from 'fs';
+import path from 'path';
 import { loadConfig } from './config.mjs';
+// Hook integration
+let hooks = {}; // will be populated in handler
+
+async function callHook(name, ...args) {
+  // DEBUG: invoking hook or fallback
+  logger.debug('callHook called', { name, args: args.slice(0,2) });
+  if (hooks && typeof hooks[name] === 'function') {
+    try {
+      const result = await hooks[name](...args);
+      logger.debug('hook result', { name, result });
+      return result;
+    } catch (e) {
+      logger.warn(`Hook ${name} error`, e);
+    }
+  } else if (name === 'generatePassword') {
+    logger.debug('calling default generatePassword');
+    return generatePassword(...args);
+  }
+  logger.debug('no suitable hook or fallback for', { name });
+  return undefined;
+}
+
+// configPromise delayed until handler call to ensure env variables are loaded at runtime
+
 import { IAMClient, CreateAccessKeyCommand, ListAccessKeysCommand, UpdateAccessKeyCommand, DeleteAccessKeyCommand } from '@aws-sdk/client-iam';
 import { RDSClient, ModifyDBInstanceCommand, ModifyDBClusterCommand } from '@aws-sdk/client-rds';
 import { SecretsManagerClient, GetSecretValueCommand, PutSecretValueCommand } from '@aws-sdk/client-secrets-manager';
@@ -23,6 +49,7 @@ const ssmClient = new SSMClient({});
  * @returns {string} Randomly generated password.
  */
 function generatePassword(length = 33, allowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+') {
+  // DEBUG: validate length
   if (typeof length !== 'number' || length <= 0) {
     throw new Error('Length must be a positive integer');
   }
@@ -88,10 +115,12 @@ async function rollbackRdsPassword(cfg, identifier, oldPassword) {
     await rdsClient.send(
       new ModifyDBInstanceCommand({ DBInstanceIdentifier: identifier, MasterUserPassword: oldPassword })
     );
+    await callHook('onRevert', { identifier, oldPassword });
   } else if (isCluster) {
     await rdsClient.send(
       new ModifyDBClusterCommand({ DBClusterIdentifier: identifier, MasterUserPassword: oldPassword })
     );
+    await callHook('onRevert', { identifier, oldPassword });
   }
 }
 
@@ -119,19 +148,27 @@ async function rotateRdsPassword(cfg, newPassword) {
       );
       const parsed = JSON.parse(SecretString || '{}');
       oldPassword = parsed.password;
+      // hook call removed: onGetSecret is now handled in handler
     } catch (e) {
       logger.warn('Could not retrieve current password from Secrets Manager', e);
     }
   }
   // perform rotation
+  if (hooks.updatePassword && typeof hooks.updatePassword === 'function') {
+    await hooks.updatePassword(cfg, identifier, newPassword);
+    await callHook('onPasswordUpdated', { identifier, oldPassword, newPassword });
+    return { identifier, oldPassword };
+  }
   if (isInstance) {
     await rdsClient.send(
       new ModifyDBInstanceCommand({ DBInstanceIdentifier: identifier, MasterUserPassword: newPassword })
     );
+    await callHook('onPasswordUpdated', { identifier, oldPassword, newPassword });
   } else if (isCluster) {
     await rdsClient.send(
       new ModifyDBClusterCommand({ DBClusterIdentifier: identifier, MasterUserPassword: newPassword })
     );
+    await callHook('onPasswordUpdated', { identifier, oldPassword, newPassword });
   } else {
     logger.warn('secretLocation ARN not recognized as RDS instance or cluster');
     throw new Error('Invalid secretLocation');
@@ -150,6 +187,7 @@ async function rotateRdsPassword(cfg, newPassword) {
 async function rollbackIamAccessKey(cfg, userName, newKeyId) {
   try {
     await iamClient.send(new DeleteAccessKeyCommand({ UserName: userName, AccessKeyId: newKeyId }));
+    await callHook('onRevert', { userName, newKeyId });
     logger.info(`Deleted rolled back IAM access key ${newKeyId} for user ${userName}`);
   } catch (e) {
     logger.warn(`Failed to delete IAM access key ${newKeyId} during rollback`, e);
@@ -190,49 +228,86 @@ async function rotateIamAccessKey(cfg) {
  * @returns {void}
  */
 export const handler = async (event) => {
-  logger.info('Password rotator service started');
+  logger.debug('Handler invoked with event and config placeholders', { event });
   const cfg = await loadConfig();
+  logger.debug('Configuration loaded in handler:', cfg);
+
+  // Load hooks based on config after configuration is available
+  const hookFilePath = cfg.hookFilePath || '/opt/hooks.mjs';
+  logger.debug('Hook file path resolved:', hookFilePath);
+  try {
+  logger.debug('Checking if hook file exists at:', hookFilePath);
+    if (fs.existsSync(hookFilePath)) {
+      logger.debug('Hook file found, loading...');
+      // Use dynamic import for ESM compatibility
+      hooks = (await import('file://' + hookFilePath)).default || {};
+      logger.debug('Hooks loaded:', typeof hooks, hooks);
+    }
+  } catch (hookErr) {
+    logger.warn('Failed to load hooks', hookErr);
+  }
+  await callHook('onStart');
   const secretType = cfg.passwordType || event?.secret_type || 'unknown';
   logger.info('Secret type to rotate:', secretType);
-  const newPassword = generatePassword();
-  logger.info(`Rotating ${secretType} secret, new password length ${newPassword.length}`);
-
+  const newPassword = await callHook('generatePassword');
+  await callHook('onGeneratePassword', newPassword);
   let rotationInfo = null;
-  if (secretType === 'RDS') {
-    rotationInfo = await rotateRdsPassword(cfg, newPassword);
-  } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
-    rotationInfo = await rotateIamAccessKey(cfg);
-  }
 
-  if (rotationInfo) {
-    try {
-      if (cfg.secretStore === 'secretsmanager') {
+// Rotate credential using hook or fallback
+    if (secretType === 'RDS' || secretType === 'IAM_USER_ACCESS_TOKEN') {
+      rotationInfo = await callHook('rotateCredential', cfg, newPassword, secretType);
+      if (!rotationInfo) {
+        // Fallback to original
         if (secretType === 'RDS') {
-          await storeSecretsManager(cfg.secretStoreLocation, newPassword);
-        } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
-          await storeSecretsManager(cfg.secretStoreLocation, JSON.stringify({ accessKeyId: rotationInfo.newKey.AccessKeyId, secretAccessKey: rotationInfo.newKey.SecretAccessKey }));
-        }
-      } else if (cfg.secretStore === 'ssm') {
-        if (secretType === 'RDS') {
-          await storeSSMParam(cfg.secretStoreLocation, newPassword);
-        } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
-          await storeSSMParam(cfg.secretStoreLocation, JSON.stringify({ accessKeyId: rotationInfo.newKey.AccessKeyId, secretAccessKey: rotationInfo.newKey.SecretAccessKey }));
+          rotationInfo = await rotateRdsPassword(cfg, newPassword);
+        } else {
+          rotationInfo = await rotateIamAccessKey(cfg);
         }
       }
-      // Delete old IAM keys after successful store
-      if (secretType === 'IAM_USER_ACCESS_TOKEN' && Array.isArray(rotationInfo.oldKeys)) {
-        for (const oldKeyId of rotationInfo.oldKeys) {
-          await iamClient.send(new DeleteAccessKeyCommand({ UserName: cfg.secretLocation, AccessKeyId: oldKeyId }));
+    }
+
+// Storage and cleanup using hook or fallback
+    if (rotationInfo) {
+      try {
+        if (hooks.saveCredential && typeof hooks.saveCredential === 'function') {
+          await hooks.saveCredential(cfg, secretType, cfg.secretStore, cfg.secretStoreLocation, newPassword, rotationInfo);
+        } else if (cfg.secretStore === 'secretsmanager') {
+          if (secretType === 'RDS') {
+            await storeSecretsManager(cfg.secretStoreLocation, newPassword);
+          } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
+            await storeSecretsManager(cfg.secretStoreLocation, JSON.stringify({ accessKeyId: rotationInfo.newKey.AccessKeyId, secretAccessKey: rotationInfo.newKey.SecretAccessKey }));
+          }
+        } else if (cfg.secretStore === 'ssm') {
+          if (secretType === 'RDS') {
+            await storeSSMParam(cfg.secretStoreLocation, newPassword);
+          } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
+            await storeSSMParam(cfg.secretStoreLocation, JSON.stringify({ accessKeyId: rotationInfo.newKey.AccessKeyId, secretAccessKey: rotationInfo.newKey.SecretAccessKey }));
+          }
         }
+        // Delete old IAM keys after successful store for IAM
+        if (secretType === 'IAM_USER_ACCESS_TOKEN' && Array.isArray(rotationInfo.oldKeys)) {
+          for (const oldKeyId of rotationInfo.oldKeys) {
+            if (hooks.deleteIamAccessKey && typeof hooks.deleteIamAccessKey === 'function') {
+              await hooks.deleteIamAccessKey(cfg, cfg.secretLocation, oldKeyId);
+            } else {
+              await iamClient.send(new DeleteAccessKeyCommand({ UserName: cfg.secretLocation, AccessKeyId: oldKeyId }));
+            }
+          }
+        }
+      } catch (storeErr) {
+        logger.error('Failed to store new credentials, attempting revert', storeErr);
+        if (hooks.rollBackCredential && typeof hooks.rollBackCredential === 'function') {
+          await hooks.rollBackCredential(cfg, secretType, cfg.secretStore, cfg.secretStoreLocation, rotationInfo, storeErr);
+        } else {
+          if (secretType === 'RDS' && rotationInfo.oldPassword) {
+            await rollbackRdsPassword(cfg, rotationInfo.identifier, rotationInfo.oldPassword);
+          } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
+            await rollbackIamAccessKey(cfg, cfg.secretLocation, rotationInfo.newKey.AccessKeyId);
+          }
+        }
+        throw storeErr;
       }
-    } catch (storeErr) {
-      logger.error('Failed to store new credentials, attempting revert', storeErr);
-      if (secretType === 'RDS' && rotationInfo.oldPassword) {
-        await rollbackRdsPassword(cfg, rotationInfo.identifier, rotationInfo.oldPassword);
-      } else if (secretType === 'IAM_USER_ACCESS_TOKEN') {
-        await rollbackIamAccessKey(cfg, cfg.secretLocation, rotationInfo.newKey.AccessKeyId);
-      }
-      throw storeErr;
+      await callHook('onComplete');
     }
   }
 };

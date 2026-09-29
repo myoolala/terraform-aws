@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 const defaultConfig = {
-  secretStore: 'secretsmanager',
+  hookFilePath: '/opt/hooks.mjs',
   passwordType: 'RDS',
   secretStoreLocation: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
   secretLocation: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret:1',
@@ -17,6 +17,7 @@ function loadFileConfig(filePath) {
 }
 
 function loadEnvConfig() {
+  // console.log('loadEnv config env:', { ...process.env });
   const cfg = {};
   Object.keys(process.env).forEach((k) => {
     const v = process.env[k];
