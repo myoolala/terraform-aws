@@ -24,29 +24,10 @@ module "vpc" {
   compute_subnets = []
 }
 
-# ALB module
-module "load_balancer" {
-  source   = "../../../modules/load-balancer"
-  name     = "test-alb"
-  vpc_id   = module.vpc.vpc_id
-  subnets  = module.vpc.ingress_subnet_ids
-  type     = "application"
-  internal = false
-  port_mappings = [
-    {
-      listen_port  = 80
-      lb_protocol  = "HTTP"
-      forward_port = 80
-      tg_protocol  = "HTTP"
-    }
-  ]
-}
-
 # WAF module
 module "waf" {
   source         = "../../../modules/wafv2"
   name           = "example-waf"
-  alb_arn        = module.load_balancer.lb_arn
   default_action = "ALLOW"
 
   managed_rule_groups = [

@@ -56,3 +56,14 @@ variable "ip_sets" {
   default = []
 }
 
+variable "cloudwatch_metrics_enabled" {
+  description = "Should Cloudwatch metrics be enabled"
+  type        = bool
+  default     = true
+}
+
+variable "sampled_requests_enabled" {
+  description = "Should sampled_requests_enabled be enableds"
+  type        = bool
+  default     = true
+}

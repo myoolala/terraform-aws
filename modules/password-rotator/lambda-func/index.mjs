@@ -307,7 +307,7 @@ export const handler = async (event) => {
         }
         throw storeErr;
       }
+      
       await callHook('onComplete');
     }
-  }
 };
