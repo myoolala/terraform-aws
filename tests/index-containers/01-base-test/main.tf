@@ -4,13 +4,13 @@ module "index-containers" {
   name = "base-test"
 
   vpc = {
-    id = "vpc-abcdef12"
+    id      = "vpc-abcdef12"
     subnets = ["subnet-12345678", "subnet-87654321"]
   }
 
   cluster = {
     create = true
-    name = "base-test-index"
+    name   = "base-test-index"
   }
 }
 

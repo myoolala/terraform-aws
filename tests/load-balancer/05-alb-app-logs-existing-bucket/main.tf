@@ -33,15 +33,15 @@ module "application_logs_bucket" {
 resource "aws_s3_bucket_policy" "app_log_policy" {
   bucket = module.application_logs_bucket.id
   policy = jsonencode({
-    "Version":"2012-10-17",
-    "Statement": [
+    "Version" : "2012-10-17",
+    "Statement" : [
       {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "logdelivery.elasticloadbalancing.amazonaws.com"
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "logdelivery.elasticloadbalancing.amazonaws.com"
         },
-        "Action": "s3:PutObject",
-        "Resource": "${module.application_logs_bucket.arn}/AWSLogs/${local.acct}/*"
+        "Action" : "s3:PutObject",
+        "Resource" : "${module.application_logs_bucket.arn}/AWSLogs/${local.acct}/*"
       }
     ]
   })

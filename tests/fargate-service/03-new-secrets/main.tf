@@ -42,8 +42,8 @@ module "fargate_service" {
 
   }
   secrets = [{
-    name = "testSecretInternalTrafficCert"
-    value = "ImSoCerty"
+    name     = "testSecretInternalTrafficCert"
+    value    = "ImSoCerty"
     env_name = "SSL_CERT"
   }]
 

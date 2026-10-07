@@ -1,7 +1,7 @@
 module "security-group" {
   source = "../../../modules/security-group"
 
-  name = "base-test-sg"
+  name   = "base-test-sg"
   vpc_id = "vpc-abcdef12"
 
   # Optional inputs omitted, defaults applied

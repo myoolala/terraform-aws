@@ -1,11 +1,11 @@
 module "lambda-with-api" {
   source = "../../../modules/lambda-with-api"
 
-  bucket_key   = "s3://test-bucket/lambda.zip"
-  bucket_name  = "test-bucket"
-  endpoints    = ["/test"]
-  lambda_name  = "test-lambda"
-  path_prefix  = "/"
+  bucket_key  = "s3://test-bucket/lambda.zip"
+  bucket_name = "test-bucket"
+  endpoints   = ["/test"]
+  lambda_name = "test-lambda"
+  path_prefix = "/"
   // Optional arguments left to defaults
 }
 

@@ -32,6 +32,7 @@ module "index_ecr_containers" {
 
 | Name | Version |
 |------|---------|
+| <a name="provider_archive"></a> [archive](#provider\_archive) | n/a |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
@@ -52,5 +53,8 @@ No requirements.
 
 ## Outputs
 
-No outputs.  
+| Name | Description |
+|------|-------------|
+| <a name="output_lambda_arn"></a> [lambda\_arn](#output\_lambda\_arn) | ARN of the ECR indexing Lambda |
+| <a name="output_lambda_name"></a> [lambda\_name](#output\_lambda\_name) | Name of the ECR indexing Lambda |  
 <!-- END_TF_DOCS -->

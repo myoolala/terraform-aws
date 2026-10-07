@@ -12,7 +12,7 @@ module "secrets" {
   count  = var.secrets != null ? 1 : 0
   source = "../secrets"
 
-  secrets         = var.secrets.secrets
+  secrets = var.secrets.secrets
 
   create_new_key  = true
   recovery_window = 0

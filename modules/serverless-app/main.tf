@@ -1,7 +1,7 @@
 module "secrets" {
   source = "../secrets"
 
-  secrets         = var.secrets
+  secrets = var.secrets
 
   create_new_key  = true
   recovery_window = 0

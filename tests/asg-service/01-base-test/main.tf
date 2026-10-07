@@ -1,9 +1,9 @@
 module "vpc" {
-  source      = "../../../modules/vpc"
+  source = "../../../modules/vpc"
 
-  name        = "asg-test-vpc"
-  public      = true
-  ipv4_cidr   = "10.0.0.0/16"
+  name      = "asg-test-vpc"
+  public    = true
+  ipv4_cidr = "10.0.0.0/16"
   ingress_subnets = [
     {
       ipv4_cidr = "10.0.0.0/24"
@@ -20,16 +20,16 @@ module "vpc" {
 }
 
 module "asg-service" {
-  source  = "../../../modules/asg-service"
-  name    = "base-test"
-  ami     = "ami-0123456789abcdef0"
+  source        = "../../../modules/asg-service"
+  name          = "base-test"
+  ami           = "ami-0123456789abcdef0"
   instance_type = "t3.micro"
 
   network = {
     vpc            = module.vpc.vpc_id
     subnets        = module.vpc.ingress_subnet_ids
     additional_sgs = []
-    ingresses     = []
+    ingresses      = []
   }
 
   secrets = null

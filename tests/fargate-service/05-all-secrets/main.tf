@@ -24,8 +24,8 @@ module "vpc" {
 module "secrets" {
   source = "../../../modules/secrets"
 
-  secrets         = [{
-    name = "testSecretInternalTrafficCert"
+  secrets = [{
+    name  = "testSecretInternalTrafficCert"
     value = "ImSoCerty"
   }]
   create_new_key  = true
@@ -54,13 +54,13 @@ module "fargate_service" {
 
   }
   secrets = [{
-    name = "testOtherNewBetterSecretOmg123"
-    value = "TheKeyToLife"
+    name     = "testOtherNewBetterSecretOmg123"
+    value    = "TheKeyToLife"
     env_name = "SSL_KEY"
   }]
   existing_secrets = {
     task_def_mapping = [{
-      name = "SSL_CERT"
+      name      = "SSL_CERT"
       valueFrom = module.secrets.arn_map["testSecretInternalTrafficCert"]
     }]
     kms_key_arns = [module.secrets.kms_key]

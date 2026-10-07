@@ -3,10 +3,10 @@
 # Data sources for AWS managed rule groups
 
 data "aws_wafv2_rule_group" "mg" {
-  for_each  = var.managed_rule_groups
-  name      = each.value.name
+  for_each    = var.managed_rule_groups
+  name        = each.value.name
   vendor_name = each.value.vendor
-  scope     = var.scope
+  scope       = var.scope
 }
 
 # IP Set resources
@@ -22,8 +22,8 @@ resource "aws_wafv2_ip_set" "ip" {
 # Web ACL
 
 resource "aws_wafv2_web_acl" "this" {
-  name        = var.name
-  scope       = var.scope
+  name           = var.name
+  scope          = var.scope
   default_action = var.default_action == "ALLOW" ? { allow = {} } : { block = {} }
 
   visibility_config {
@@ -42,7 +42,7 @@ resource "aws_wafv2_web_acl" "this" {
         dynamic "rule_group_reference_statement" {
           for_each = rule.value.type == "managed" ? [1] : []
           content {
-            arn           = data.aws_wafv2_rule_group.mg[rule.value.index].arn
+            arn            = data.aws_wafv2_rule_group.mg[rule.value.index].arn
             excluded_rules = rule.value.excluded_rules
           }
         }
@@ -70,10 +70,10 @@ resource "aws_wafv2_web_acl_association" "this" {
 locals {
   rule_definitions = concat(
     [for idx, mg in var.managed_rule_groups : {
-      type     = "managed"
-      index    = idx
-      priority = idx + 1
-      name     = mg.name
+      type           = "managed"
+      index          = idx
+      priority       = idx + 1
+      name           = mg.name
       excluded_rules = mg.excluded_rules
     }],
     [for idx, ip in var.ip_sets : {

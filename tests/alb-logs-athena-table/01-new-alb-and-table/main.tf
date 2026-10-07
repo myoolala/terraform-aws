@@ -32,9 +32,9 @@ module "load_balancer" {
 module "athena_table" {
   source = "../../../modules/alb-logs-athena-table"
 
-  name                  = "test-alb-log-table"
-  alb_logs_bucket       = module.load_balancer.logs_bucket_name
-  alb_logs_prefix       = ""
+  name            = "test-alb-log-table"
+  alb_logs_bucket = module.load_balancer.logs_bucket_name
+  alb_logs_prefix = ""
 }
 
 provider "aws" {

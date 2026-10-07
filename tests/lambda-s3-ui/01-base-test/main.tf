@@ -1,7 +1,7 @@
 module "lambda-s3-ui" {
   source = "../../../modules/lambda-s3-ui"
 
-  alb_tg_arn = "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/example/abcd"
+  alb_tg_arn  = "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/example/abcd"
   lambda_name = "test-ui-lambda"
   config = {
     bucket = "test-bucket"

@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-  acct = data.aws_caller_identity.current.account_id
+  acct      = data.aws_caller_identity.current.account_id
   create_sg = var.type != "network" && var.security_group == null
 }
 

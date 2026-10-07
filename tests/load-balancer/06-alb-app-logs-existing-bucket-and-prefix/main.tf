@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-  acct = data.aws_caller_identity.current.account_id
+  acct   = data.aws_caller_identity.current.account_id
   prefix = "dev"
 }
 
@@ -34,15 +34,15 @@ module "application_logs_bucket" {
 resource "aws_s3_bucket_policy" "app_log_policy" {
   bucket = module.application_logs_bucket.id
   policy = jsonencode({
-    "Version":"2012-10-17",
-    "Statement": [
+    "Version" : "2012-10-17",
+    "Statement" : [
       {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "logdelivery.elasticloadbalancing.amazonaws.com"
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "logdelivery.elasticloadbalancing.amazonaws.com"
         },
-        "Action": "s3:PutObject",
-        "Resource": "${module.application_logs_bucket.arn}/${local.prefix}/AWSLogs/${local.acct}/*"
+        "Action" : "s3:PutObject",
+        "Resource" : "${module.application_logs_bucket.arn}/${local.prefix}/AWSLogs/${local.acct}/*"
       }
     ]
   })

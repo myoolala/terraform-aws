@@ -24,7 +24,7 @@ module "cognito" {
 
 output "cognito" {
   sensitive = true
-  value = module.cognito
+  value     = module.cognito
 }
 
 provider "aws" {

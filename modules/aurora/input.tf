@@ -1,75 +1,75 @@
 variable "cluster_identifier" {
-  type = string
+  type    = string
   default = "aurora-test"
 }
 
 variable "engine" {
-  type = string
+  type    = string
   default = "aurora-postgresql"
 }
 
 variable "engine_version" {
-  type = string
+  type    = string
   default = "15.2"
 }
 
 variable "database_name" {
-  type = string
+  type    = string
   default = "testdb"
 }
 
 variable "master_username" {
-  type = string
+  type    = string
   default = "admin"
 }
 
 variable "master_password" {
-  type = string
+  type    = string
   default = "Password123!"
 }
 
 variable "db_subnet_group_name" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "vpc_security_group_ids" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "port" {
-  type = number
+  type    = number
   default = 5432
 }
 
 variable "storage_encrypted" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "kms_key_id" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "backup_retention_period" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "preferred_backup_window" {
-  type = string
+  type    = string
   default = "02:00-03:00"
 }
 
 variable "iam_database_authentication_enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "apply_immediately" {
-  type = bool
+  type    = bool
   default = true
 }
 
@@ -82,26 +82,26 @@ variable "tags" {
 
 variable "instances" {
   type = map(object({
-    identifier = string
-    instance_class = string
+    identifier          = string
+    instance_class      = string
     publicly_accessible = bool
-    promotion_tier = number
-    availability_zone = string
-    tags = map(string)
+    promotion_tier      = number
+    availability_zone   = string
+    tags                = map(string)
   }))
   default = {
     test = {
-      identifier  = "aurora-test-instance"
-      instance_class = "db.t3.micro"
+      identifier          = "aurora-test-instance"
+      instance_class      = "db.t3.micro"
       publicly_accessible = false
-      promotion_tier = 1
-      availability_zone = "us-east-1a"
-      tags = {}
+      promotion_tier      = 1
+      availability_zone   = "us-east-1a"
+      tags                = {}
     }
   }
 }
 
 variable "final_snapshot_seed" {
-  type = string
+  type    = string
   default = ""
 }

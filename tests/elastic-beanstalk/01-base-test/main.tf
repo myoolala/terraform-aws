@@ -25,7 +25,7 @@ resource "random_id" "suffix" {
 }
 
 resource "aws_s3_bucket" "test_bucket" {
-  bucket       = "eb-test-${random_id.suffix.hex}"
+  bucket        = "eb-test-${random_id.suffix.hex}"
   force_destroy = true
 }
 
@@ -36,9 +36,9 @@ resource "archive_file" "bundle" {
 }
 
 resource "aws_s3_object" "bundle_obj" {
-  bucket  = aws_s3_bucket.test_bucket.bucket
-  key     = "app.zip"
-  source  = archive_file.bundle.output_path
+  bucket = aws_s3_bucket.test_bucket.bucket
+  key    = "app.zip"
+  source = archive_file.bundle.output_path
 }
 
 module "elastic_beanstalk" {

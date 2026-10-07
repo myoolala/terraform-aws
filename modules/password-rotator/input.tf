@@ -44,7 +44,7 @@ variable "service_rotation" {
     condition     = can(regex("^(fargate|asg|lambda)$", var.service_rotation)) || var.service_rotation == null
     error_message = "service_rotation must be one of fargate, asg, or lambda."
   }
-  default     = null
+  default = null
 }
 
 variable "force_rotate_env_var" {
