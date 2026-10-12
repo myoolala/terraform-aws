@@ -38,7 +38,6 @@ module "lambda" {
     var.service_rotation != null ? { SERVICE_ROTATION = var.service_rotation } : {},
     var.force_rotate_env_var != null ? { FORCE_ROTATE = var.force_rotate_env_var } : {}
   )
-  memory   = var.memory
-  timeout  = var.lambda_timeout
-  schedule = var.schedule
+  secrets     = var.secrets
+  permissions = var.permissions
 }
