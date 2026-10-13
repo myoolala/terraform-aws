@@ -7,7 +7,7 @@ Creates an S3 based site sitting behind CloudFront
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
 
 ## Requirements
 

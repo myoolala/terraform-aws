@@ -1,10 +1,10 @@
 module "task-definition" {
   source = "../../../modules/task-definition"
 
-  name          = "base-test"
-  service_name  = "base-test-service"
-  image         = "nginx:latest"
-  log_group     = "base-test-log"
+  name         = "base-test"
+  service_name = "base-test-service"
+  image        = "nginx:latest"
+  log_group    = "base-test-log"
   // Optional values left to defaults
 }
 

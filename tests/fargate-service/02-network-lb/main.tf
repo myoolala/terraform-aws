@@ -38,19 +38,19 @@ module "fargate_service" {
   }
   image_tag     = "latest"
   log_retention = 7
-#   secrets       = null
+  #   secrets       = null
   env_vars = {
 
   }
   lb = {
-    subnets = module.vpc.ingress_subnet_ids
-    type = "network"
+    subnets  = module.vpc.ingress_subnet_ids
+    type     = "network"
     internal = true
     port_mappings = [{
       listen_port  = 443
       forward_port = 3000
-      lb_protocol = "TCP"
-      tg_protocol = "TCP"
+      lb_protocol  = "TCP"
+      tg_protocol  = "TCP"
       # health_check = {
 
       # }

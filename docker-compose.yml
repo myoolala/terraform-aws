@@ -11,6 +11,8 @@ services:
       # enable aws access
       - ~/.aws:/root/.aws
       - tenv:/root/.tenv
+      - nvm:/root/.nvm
 volumes:
   devops_history:
   tenv:
+  nvm:

@@ -41,6 +41,12 @@ variable "runtime" {
   default     = "nodejs24.x"
 }
 
+variable "layers" {
+  type        = list(string)
+  description = "Optional list of Lambda Layer ARNs to attach."
+  default     = []
+}
+
 # @Link: https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html#configuration-memory-use-cases
 variable "memory" {
   type        = number

@@ -61,12 +61,16 @@ If you still have large wait times as the raw payloads are in excess of 1MB, con
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | n/a |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.8.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_archive"></a> [archive](#requirement\_archive) | >=2.7.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=6.38.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >=3.7.2 |
 
 ## Inputs
 

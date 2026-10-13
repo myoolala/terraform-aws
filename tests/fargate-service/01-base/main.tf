@@ -38,7 +38,7 @@ module "fargate_service" {
   }
   image_tag     = "latest"
   log_retention = 7
-#   secrets       = null
+  #   secrets       = null
   env_vars = {
 
   }

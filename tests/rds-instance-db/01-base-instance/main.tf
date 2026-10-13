@@ -32,23 +32,23 @@ module "vpc" {
 }
 
 module "rds_instance_db" {
-    source = "../../../modules/rds-instance-db"
+  source = "../../../modules/rds-instance-db"
 
-    name = "rds-instance-test"
-    port = 5432
-    vpc_config = {
-      vpc_id = module.vpc.vpc_id
-      subnets = module.vpc.compute_subnet_ids
+  name = "rds-instance-test"
+  port = 5432
+  vpc_config = {
+    vpc_id  = module.vpc.vpc_id
+    subnets = module.vpc.compute_subnet_ids
+  }
+  configs = {
+    "default" = {
+      pg_name        = "test"
+      engine         = "postgres"
+      engine_version = "18.3"
+      pg_family      = "postgres18"
     }
-    configs = {
-      "default" = {
-        pg_name = "test"
-        engine = "postgres"
-        engine_version = "18.3"
-        pg_family = "postgres18"
-      }
-    }
-    skip_final_snapshot = true
+  }
+  skip_final_snapshot = true
 }
 
 output "output" {

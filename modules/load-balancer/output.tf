@@ -39,6 +39,6 @@ output "logs_bucket_prefix" {
 }
 
 output "zone_id" {
-  value = aws_lb.ingress.zone_id
+  value       = aws_lb.ingress.zone_id
   description = "Zone ID for the new load balancer"
 }

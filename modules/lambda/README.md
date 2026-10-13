@@ -36,12 +36,15 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | n/a |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.8.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_archive"></a> [archive](#requirement\_archive) | >= 2.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 
 ## Inputs
 
@@ -54,6 +57,7 @@ No requirements.
 | <a name="input_file_path"></a> [file\_path](#input\_file\_path) | Path to the zip file to deploy if one is available | `string` | `null` | no |
 | <a name="input_handler"></a> [handler](#input\_handler) | Handler function | `string` | `"index.handler"` | no |
 | <a name="input_key"></a> [key](#input\_key) | S3 Key of the source zip file | `string` | `null` | no |
+| <a name="input_layers"></a> [layers](#input\_layers) | Optional list of Lambda Layer ARNs to attach. | `list(string)` | `[]` | no |
 | <a name="input_log_retention"></a> [log\_retention](#input\_log\_retention) | Number in days to store logs in cloudwatch | `number` | `7` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory allocation per runtime for the lambda | `number` | `128` | no |
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | Additional permissions the lambda will need json encoded | `any` | `null` | no |

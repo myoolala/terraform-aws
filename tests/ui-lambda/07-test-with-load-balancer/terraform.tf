@@ -11,18 +11,18 @@ module "vpc" {
 
   name      = "private-vpc-test"
   ipv4_cidr = "172.31.0.0/16"
-  public = true
+  public    = true
   ingress_subnets = [{
-      ipv4_cidr = "172.31.0.0/27"
-      az        = "us-east-1a"
+    ipv4_cidr = "172.31.0.0/27"
+    az        = "us-east-1a"
     },
     {
       ipv4_cidr = "172.31.0.32/27"
       az        = "us-east-1b"
   }]
   compute_subnets = [{
-      ipv4_cidr = "172.31.1.0/25"
-      az        = "us-east-1a"
+    ipv4_cidr = "172.31.1.0/25"
+    az        = "us-east-1a"
     },
     {
       ipv4_cidr = "172.31.1.128/25"
@@ -45,10 +45,10 @@ module "s3_target" {
 }
 
 resource "aws_s3_object" "test_file" {
-  bucket = module.s3_target.id
-  key    = "/latest/index.html"
-  source = "${path.module}/index.html"
-  etag   = filemd5("${path.module}/index.html") 
+  bucket       = module.s3_target.id
+  key          = "/latest/index.html"
+  source       = "${path.module}/index.html"
+  etag         = filemd5("${path.module}/index.html")
   content_type = "text/html"
 }
 
@@ -74,7 +74,7 @@ module "alb" {
   deletion_protection = false
   port_mappings = [{
     listen_port  = 80
-    lb_protocol = "HTTP"
+    lb_protocol  = "HTTP"
     forward_port = null
     target_type  = "lambda"
   }]
@@ -86,8 +86,8 @@ module "lambda_ui" {
   lambda_name = "test-base-lambda"
   alb_tg_arn  = module.alb.tg_arns[0]
   config = {
-    bucket = module.s3_target.id
-    prefix = "/latest"
+    bucket    = module.s3_target.id
+    prefix    = "/latest"
     log_level = "DEBUG"
   }
   vpc_config = {
