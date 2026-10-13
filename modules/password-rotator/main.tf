@@ -33,11 +33,7 @@ module "lambda" {
     security_group_ids = var.vpc_security_group_ids
   } : null
   layers = var.lambda_layer_arn != null ? [var.lambda_layer_arn] : []
-  environment_vars = merge(
-    var.default_password_config != null ? { DEFAULT_PASSWORD_CONFIG = var.default_password_config } : {},
-    var.service_rotation != null ? { SERVICE_ROTATION = var.service_rotation } : {},
-    var.force_rotate_env_var != null ? { FORCE_ROTATE = var.force_rotate_env_var } : {}
-  )
+
   secrets     = var.secrets
   permissions = var.permissions
 }

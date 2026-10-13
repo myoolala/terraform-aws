@@ -1,3 +1,125 @@
-# Placeholder Terraform Docs configuration for modules
-# The presence of this file prevents documentation generation errors.
-# No specific configuration is required for basic operation.
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |
+  # Password Rotator Lambda Service
+
+  This module packages a Node.js Lambda that rotates credentials stored in AWS Secrets Manager. The Lambda automatically fetches the current secret, generates new credentials, updates the secret, and optionally stores the new credentials via user‑defined hooks. It can be configured to run on a schedule or invoked manually.
+
+  ## Hook System
+
+  Hooks are an optional JavaScript module exported as a default object located by default at `/opt/hooks.mjs` inside the Lambda runtime.
+  Each hook is an async function that may be called by the Lambda during its execution flow. The supported hooks are:
+
+  * `onStart()` – called before any work begins.
+  * `getCurrentCredentials()` – should return the current secret value.
+  * `generateCredentials()` – should return a new credential object.
+  * `updateCredentials(newCreds)` – used by the Lambda to update the secret; the function is called with the new credentials.
+  * `storeCredentials()` – called after a successful update; may persist the new credentials to an external system. Return true to indicate success.
+  * `revertCredentials()` – called if `storeCredentials()` fails; used to roll back changes.
+  * `onComplete()` – called after a successful run.
+  * `onFail(err)` – called if any step throws.
+
+  If a hook is omitted it is treated as a no‑op; the Lambda will continue with default behaviour. Hooks are useful when you need to keep an external system in sync, perform additional validation, or trigger notifications.
+
+  ### Sample Hook File
+
+  ```js
+  // /opt/hooks.mjs
+  export default {
+    // Called before the Lambda starts the rotation process.
+    onStart: async () => {
+      console.log('Rotation starting');
+    },
+
+    // Retrieve the existing secret – could query an alternative store.
+    getCurrentCredentials: async () => {
+      // Return the current value; may be an object.
+      return {};
+    },
+
+    // Generate a new password.
+    generateCredentials: async () => {
+      const password = Math.random().toString(36).slice(-12);
+      return { password };
+    },
+
+    // Persist the updated secret – optional if the Lambda writes directly.
+    updateCredentials: async (newCreds) => {
+      // Perform any extra validation before the Lambda updates its own copy.
+    },
+
+    // After the secret has been updated, push the new credentials elsewhere.
+    storeCredentials: async () => {
+      // Return false to trigger a revert.
+      return true;
+    },
+
+    // Called if storeCredentials fails.
+    revertCredentials: async () => {
+      console.log('Reverting secrets to previous state');
+    },
+
+    // After a successful run.
+    onComplete: async () => {
+      console.log('Rotation completed');
+    },
+
+    // Called if any hook throws an error.
+    onFail: async (err) => {
+      console.error('Rotation failed', err);
+    },
+  };
+  ```
+
+  ## Example Usage
+
+  ```hcl
+  module "password_rotator" {
+    source  = "github.com/myorg/terraform-aws//modules/password-rotator"
+    lambda_function_name = "rotate-credentials"
+    schedule              = "rate(90 days)"          # Optional
+    memory                = 256
+    vpc_subnet_ids        = [aws_subnet.private.id]
+    vpc_security_group_ids = [aws_security_group.lambda.id]
+    lambda_layer_arn       = aws_lambda_layer_version.my_layer.arn
+    permissions           = <<EOF
+  [
+    {
+      "Sid": "SecretsManagerExample",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:UpdateSecret",
+        "secretsmanager:PutSecretValue"
+      ],
+      "Resource": "*"
+    }
+  ]
+  EOF
+    secrets = {
+      arns     = [aws_secretsmanager_secret.my_secret.arn]
+      kms_keys = []
+    }
+  }
+  ```
+
+  The module builds the Lambda zip, copies the `index.mjs` and `config.mjs` into the deployment archive, and attaches the optional layer, VPC settings, and IAM permissions.
+
+  ## Parameters
+
+  {{ .Inputs }}
+
+  ## Outputs
+
+  {{ .Outputs }}
+
+  ## Example Tests
+
+  See the test harness in `tests/password-rotator/` for comprehensive examples.

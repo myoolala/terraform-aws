@@ -1,3 +1,23 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">=6.25.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+  default_tags {
+    tags = {
+      Environment = "tf-integration-test"
+      Billing     = "tf-integration-test"
+    }
+  }
+}
+
+# Zip the custom hooks module
 resource "archive_file" "hooks_zip" {
   type        = "zip"
   output_path = "${path.root}/hooks.zip"
@@ -11,65 +31,13 @@ resource "aws_lambda_layer_version" "hooks_layer" {
   filename            = archive_file.hooks_zip.output_path
 }
 
-module "secrets" {
-  source = "../../../modules/secrets"
-  secrets = [
-    {
-      name  = "access_token_secret"
-      value = "dummy"
-    }
-  ]
-  recovery_window = 0
-}
-
-resource "aws_iam_user" "rotator_user" {
-  name = "rotator-user-test"
-}
-
-resource "aws_iam_access_key" "rotator_key" {
-  user = aws_iam_user.rotator_user.name
-}
-
-locals {
-  secret_arns = [module.secrets.arn_map["access_token_secret"]]
-}
-
-resource "aws_secretsmanager_secret_version" "access_token_value" {
-  secret_id = module.secrets.arn_map["access_token_secret"]
-  secret_string = jsonencode({
-    accessKeyId     = aws_iam_access_key.rotator_key.id
-    secretAccessKey = aws_iam_access_key.rotator_key.secret
-  })
-}
-
 module "password_rotator" {
   source               = "../../../modules/password-rotator"
   lambda_function_name = "test-password-rotator"
   lambda_layer_arn     = aws_lambda_layer_version.hooks_layer.arn
-  secrets = {
-    arns     = local.secret_arns
-    kms_keys = []
-  }
-  default_password_config = jsonencode({
-    passwordType        = "IAM_USER_ACCESS_TOKEN"
-    secretStore         = "secretsmanager"
-    secretStoreLocation = module.secrets.arn_map["access_token_secret"]
-    secretLocation      = aws_iam_user.rotator_user.name
-  })
 }
 
 resource "aws_lambda_invocation" "test" {
   function_name = module.password_rotator.lambda_function_name
   input         = jsonencode({ test = "ok" })
-  depends_on    = [module.password_rotator, aws_secretsmanager_secret_version.access_token_value]
-}
-
-provider "aws" {
-  region = "us-east-1"
-  default_tags {
-    tags = {
-      Environment = "tf-integration-test"
-      Billing     = "tf-integration-test"
-    }
-  }
 }

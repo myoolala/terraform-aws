@@ -37,27 +37,6 @@ variable "permissions" {
   default     = null
 }
 
-variable "default_password_config" {
-  description = "JSON string providing default configuration for password rotation."
-  type        = string
-  default     = null
-}
-
-variable "service_rotation" {
-  description = "Optionally force service rotation. Allowed values: fargate, asg, lambda."
-  type        = string
-  validation {
-    condition     = can(regex("^(fargate|asg|lambda)$", var.service_rotation)) || var.service_rotation == null
-    error_message = "service_rotation must be one of fargate, asg, or lambda."
-  }
-  default = null
-}
-
-variable "force_rotate_env_var" {
-  description = "Time in milliseconds to force rotate the Lambda environment."
-  type        = string
-  default     = null
-}
 
 variable "schedule" {
   description = "Optional cron or rate expression to schedule automatic invocation of the lambda function."
