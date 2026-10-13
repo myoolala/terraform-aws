@@ -74,11 +74,11 @@ output "default_sg" {
 }
 
 output "other_subnet_ids" {
-  value       = {for k, v in local.other_subnets: v.name => aws_subnet.other_subnets[k].id}
+  value       = { for k, v in local.other_subnets : v.name => aws_subnet.other_subnets[k].id }
   description = "IDs of the other subnets"
 }
 
 output "other_subnet_arns" {
-  value       = {for k, v in local.other_subnets: v.name => aws_subnet.other_subnets[k].arn}
+  value       = { for k, v in local.other_subnets : v.name => aws_subnet.other_subnets[k].arn }
   description = "IDs of the other subnets"
 }

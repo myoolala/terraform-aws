@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Password Rotator Lambda Service
+# Credential Rotator Lambda Service
 
 This module packages a Node.js Lambda that rotates credentials stored in AWS Secrets Manager. The Lambda automatically fetches the current secret, generates new credentials, updates the secret, and optionally stores the new credentials via user‑defined hooks. It can be configured to run on a schedule or invoked manually.
 

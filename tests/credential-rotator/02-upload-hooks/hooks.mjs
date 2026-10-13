@@ -1,4 +1,4 @@
-// Custom hooks for password-rotator module
+// Custom hooks for credential-rotator module
 
 export default {
   onComplete: async () => {

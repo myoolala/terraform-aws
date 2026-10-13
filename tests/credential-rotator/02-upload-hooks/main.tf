@@ -25,15 +25,15 @@ resource "archive_file" "hooks_zip" {
 }
 
 resource "aws_lambda_layer_version" "hooks_layer" {
-  layer_name          = "password-rotator-hooks"
+  layer_name          = "credential-rotator-hooks"
   compatible_runtimes = ["nodejs20.x", "nodejs24.x"]
-  description         = "Layer containing custom hooks for password-rotator"
+  description         = "Layer containing custom hooks for credential-rotator"
   filename            = archive_file.hooks_zip.output_path
 }
 
 module "password_rotator" {
-  source               = "../../../modules/password-rotator"
-  lambda_function_name = "test-password-rotator"
+  source               = "../../../modules/credential-rotator"
+  lambda_function_name = "test-credential-rotator"
   lambda_layer_arn     = aws_lambda_layer_version.hooks_layer.arn
 }
 

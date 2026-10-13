@@ -1,4 +1,4 @@
-// Test harness for password-rotator Lambda hooks
+// Test harness for credential-rotator Lambda hooks
 
 import fs from 'fs';
 import { handler } from './index.mjs';

@@ -18,6 +18,6 @@ provider "aws" {
 }
 
 module "password_rotator" {
-  source               = "../../../modules/password-rotator"
-  lambda_function_name = "test-password-rotator"
+  source               = "../../../modules/credential-rotator"
+  lambda_function_name = "test-credential-rotator"
 }
