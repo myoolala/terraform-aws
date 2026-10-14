@@ -1,0 +1,40 @@
+# .terraform-docs.yml
+
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |
+  # KMS Key Replica
+
+  Creates a replica of an existing KMS key in another AWS account using `aws_kms_replica_key`.
+
+  Optionally assigns an alias to the replica and merges any supplied policy statements.
+
+  ## Example of creating a replica with an alias:
+  ```hcl
+  module "source" {
+    source = "../../../modules/kms-key"
+    name   = "tf-test-key"
+  }
+
+  module "replica" {
+    source          = "../../../modules/kms-key-replica"
+    source_key_arn  = module.source.arn
+    replica_alias   = "alias/tf-test-key-replica"
+    tags            = { "env" = "test" }
+  }
+  ```
+
+  [More examples can be found here](../../tests/kms-key-replica/)
+
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
