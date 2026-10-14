@@ -11,7 +11,7 @@ Access logs can be enabled and disabled, have a new bucket bucket or an existing
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Requirements
 

@@ -9,7 +9,7 @@ Creates an S3 bucket with some automated behavior like setting encryption and ve
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.25.0 |
 
 ## Requirements
 
@@ -22,6 +22,7 @@ Creates an S3 bucket with some automated behavior like setting encryption and ve
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input\_name) | Name for the bucket | `string` | n/a | yes |
+| <a name="input_default_intelligent_tiering"></a> [default\_intelligent\_tiering](#input\_default\_intelligent\_tiering) | Should the bucket default to intelligent storage for all objects by default | `bool` | `true` | no |
 | <a name="input_encryption"></a> [encryption](#input\_encryption) | Attach an encryption key to the bucket. Specify the key if you already have one, or use a different encryption option | <pre>object({<br/>    key                      = optional(string, null)<br/>    algorithm                = string<br/>    blocked_encryption_types = optional(list(string), ["SSE-C"])<br/>    bucket_key_enabled       = optional(bool, false)<br/>  })</pre> | <pre>{<br/>  "algorithm": "AES256",<br/>  "bucket_key_enabled": true,<br/>  "key": null<br/>}</pre> | no |
 | <a name="input_public_access_block"></a> [public\_access\_block](#input\_public\_access\_block) | Public access block config for the bucket | <pre>object({<br/>    block_public_acls       = optional(bool, true)<br/>    block_public_policy     = optional(bool, true)<br/>    ignore_public_acls      = optional(bool, true)<br/>    restrict_public_buckets = optional(bool, true)<br/>  })</pre> | `{}` | no |
 | <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | Is versioning enabled for the bucket | `bool` | `false` | no |

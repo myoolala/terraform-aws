@@ -47,3 +47,26 @@ resource "aws_s3_bucket_versioning" "main" {
     status = var.versioning_enabled ? "Enabled" : "Disabled"
   }
 }
+
+###########################################################################
+##########                     Versioning                        ##########
+###########################################################################
+
+resource "aws_s3_bucket_lifecycle_configuration" "default_bucket_lifecycle" {
+  count = var.default_intelligent_tiering ? 1 : 0
+
+  bucket = aws_s3_bucket.main.id
+
+  rule {
+    id     = "default-to-intelligent-tiering"
+    status = "Enabled"
+
+    # Leave filter empty to apply to all objects in the bucket
+    filter {}
+
+    transition {
+      days          = 0
+      storage_class = "INTELLIGENT_TIERING"
+    }
+  }
+}

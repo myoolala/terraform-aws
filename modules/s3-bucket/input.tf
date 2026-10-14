@@ -39,3 +39,9 @@ variable "encryption" {
     bucket_key_enabled = true
   }
 }
+
+variable "default_intelligent_tiering" {
+  type = bool
+  description = "Should the bucket default to intelligent storage for all objects by default"
+  default = true
+}
