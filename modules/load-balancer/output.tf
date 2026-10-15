@@ -10,12 +10,12 @@ output "tg_arns" {
 
 output "dns_name" {
   value       = aws_lb.ingress.dns_name
-  description = "DNS CNAME for the load balancer"
+  description = "DEPRECATED: DNS CNAME for the load balancer"
 }
 
 output "lb_arn" {
   value       = aws_lb.ingress.arn
-  description = "ARN for the created load balancer"
+  description = "DEPRECATED: ARN for the created load balancer"
 }
 
 output "listener_arn" {
@@ -40,5 +40,10 @@ output "logs_bucket_prefix" {
 
 output "zone_id" {
   value       = aws_lb.ingress.zone_id
-  description = "Zone ID for the new load balancer"
+  description = "DEPRECATED: Zone ID for the new load balancer"
+}
+
+output "lb" {
+  value = aws_lb.ingress
+  description = "All load balancer outputs"
 }
