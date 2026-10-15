@@ -7,14 +7,15 @@ variable "vpc_id" {
   description = "ID of the vpc to host the LB in"
 }
 
-variable "subnets" {
-  type        = list(string)
-  description = "List of subnets to host the load balancer in. Recommend at least 2"
-}
-
 ###########################################################################
 ###############                   Optional                  ###############
 ###########################################################################
+
+variable "subnets" {
+  type        = list(string)
+  description = "List of subnets to host the load balancer in. Recommend at least 2"
+  default = null
+}
 
 variable "ingress_cidrs" {
   type        = list(string)

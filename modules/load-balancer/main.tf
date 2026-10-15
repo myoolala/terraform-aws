@@ -136,7 +136,7 @@ resource "aws_lb" "ingress" {
   }
 
   dynamic "subnet_mapping" {
-    for_each = var.subnet_mapping
+    for_each = var.subnet_mappings
 
     content {
       subnet_id = subnet_mapping.value.subnet_id
