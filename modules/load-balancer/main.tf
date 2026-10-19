@@ -139,9 +139,9 @@ resource "aws_lb" "ingress" {
     for_each = var.subnet_mappings
 
     content {
-      subnet_id = subnet_mapping.value.subnet_id
-      allocation_id = subnet_mapping.value.allocation_id
-      ipv6_address = subnet_mapping.value.ipv6_address
+      subnet_id            = subnet_mapping.value.subnet_id
+      allocation_id        = subnet_mapping.value.allocation_id
+      ipv6_address         = subnet_mapping.value.ipv6_address
       private_ipv4_address = subnet_mapping.value.private_ipv4_address
     }
   }

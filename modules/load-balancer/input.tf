@@ -14,7 +14,7 @@ variable "vpc_id" {
 variable "subnets" {
   type        = list(string)
   description = "List of subnets to host the load balancer in. Recommend at least 2"
-  default = null
+  default     = null
 }
 
 variable "ingress_cidrs" {
@@ -72,13 +72,13 @@ variable "deletion_protection" {
 
 variable "subnet_mappings" {
   type = list(object({
-    subnet_id = string
-    allocation_id = optional(string, null)
-    ipv6_address = optional(string, null)
+    subnet_id            = string
+    allocation_id        = optional(string, null)
+    ipv6_address         = optional(string, null)
     private_ipv4_address = optional(string, null)
   }))
   description = "Subnet mappings to apply to the load balancer. This must be empty if subnets is set"
-  default = []
+  default     = []
 }
 
 variable "port_mappings" {

@@ -41,7 +41,7 @@ variable "encryption" {
 }
 
 variable "default_intelligent_tiering" {
-  type = bool
+  type        = bool
   description = "Should the bucket default to intelligent storage for all objects by default"
-  default = true
+  default     = true
 }

@@ -44,6 +44,6 @@ output "zone_id" {
 }
 
 output "lb" {
-  value = aws_lb.ingress
+  value       = aws_lb.ingress
   description = "All load balancer outputs"
 }

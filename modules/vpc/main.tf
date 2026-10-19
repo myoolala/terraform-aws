@@ -267,8 +267,9 @@ resource "aws_vpc_endpoint" "gateway_endpoints" {
 resource "aws_cloudwatch_log_group" "logging" {
   count = var.flow_logs.enabled ? 1 : 0
 
-  name       = var.flow_logs.log_group != null ? var.flow_logs.log_group : "${var.name}-flow-logs"
-  kms_key_id = var.flow_logs.kms_key_arn != null ? var.flow_logs.kms_key_arn : var.flow_logs.kms_key_alias
+  name              = var.flow_logs.log_group != null ? var.flow_logs.log_group : "${var.name}-flow-logs"
+  kms_key_id        = var.flow_logs.kms_key_arn != null ? var.flow_logs.kms_key_arn : var.flow_logs.kms_key_alias
+  retention_in_days = var.flow_logs.retention_in_days
 }
 
 data "aws_iam_policy_document" "assume_role_logging" {
@@ -298,13 +299,31 @@ data "aws_iam_policy_document" "logging" {
     effect = "Allow"
 
     actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
       "logs:DescribeLogGroups",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
       "logs:DescribeLogStreams",
     ]
 
-    resources = [aws_cloudwatch_log_group.logging[0].arn]
+    resources = ["${aws_cloudwatch_log_group.logging[0].arn}:*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = ["${aws_cloudwatch_log_group.logging[0].arn}:log-stream:*"]
   }
 
   dynamic "statement" {
@@ -338,6 +357,10 @@ resource "aws_flow_log" "this" {
   log_destination = aws_cloudwatch_log_group.logging[0].arn
   traffic_type    = var.flow_logs.traffic_type
   vpc_id          = aws_vpc.main.id
+
+  tags = {
+    Name = var.name
+  }
 }
 
 data "aws_security_group" "default" {

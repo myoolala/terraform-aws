@@ -127,7 +127,8 @@ variable "flow_logs" {
     kms_key_arn   = optional(string, null)
     kms_key_alias = optional(string, null)
     # flow_log_role = optional(string, null)
-    log_group = optional(string, null)
+    log_group         = optional(string, null)
+    retention_in_days = optional(number, 90)
   })
   description = "Enable or disable flow logs with or without encryption"
   default = {
