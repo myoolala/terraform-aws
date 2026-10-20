@@ -53,6 +53,12 @@ variable "key_usage" {
   default     = "ENCRYPT_DECRYPT"
 }
 
+variabe "multi_region" {
+  type = bool
+  description = "Is the key a multi region key? Default: False"
+  default = false
+}
+
 variable "tags" {
   type        = map(string)
   description = "Default tags to apply to the resources"
