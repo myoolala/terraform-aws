@@ -56,14 +56,14 @@ module "replication" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws.backup"></a> [aws.backup](#provider\_aws.backup) | >= 6.25.0 |
-| <a name="provider_aws.primary"></a> [aws.primary](#provider\_aws.primary) | >= 6.25.0 |
+| <a name="provider_aws.backup"></a> [aws.backup](#provider\_aws.backup) | >= 6.66.0 |
+| <a name="provider_aws.primary"></a> [aws.primary](#provider\_aws.primary) | >= 6.66.0 |
 
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.25.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.66.0 |
 
 ## Inputs
 
