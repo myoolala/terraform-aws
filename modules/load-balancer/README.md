@@ -22,7 +22,6 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input\_name) | Name for the load balancer and associated resources | `string` | n/a | yes |
-| <a name="input_subnets"></a> [subnets](#input\_subnets) | List of subnets to host the load balancer in. Recommend at least 2 | `list(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the vpc to host the LB in | `string` | n/a | yes |
 | <a name="input_access_logs"></a> [access\_logs](#input\_access\_logs) | Application log configuration to pass into the load balancer. Assumes a pre existing bucket is fully configured already | <pre>object({<br/>    s3_bucket = optional(string, null)<br/>    prefix    = optional(string, "")<br/>    enabled   = optional(bool, true)<br/>  })</pre> | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Is the load balancer protected from deletion? | `bool` | `false` | no |
@@ -34,6 +33,8 @@ No requirements.
 | <a name="input_internal"></a> [internal](#input\_internal) | Is the load balancer internal or external | `bool` | `false` | no |
 | <a name="input_port_mappings"></a> [port\_mappings](#input\_port\_mappings) | Port listener mappings with associated the load balancer | <pre>list(object({<br/>    listen_port  = number<br/>    sg_protocol  = optional(string, "tcp")<br/>    lb_protocol  = optional(string, "HTTPS")<br/>    forward_port = number<br/>    tg_protocol  = optional(string, "HTTPS")<br/>    cert         = optional(string, null)<br/>    target_type  = optional(string, "ip")<br/>    health_check = optional(object({<br/>      enabled             = optional(bool, true)<br/>      matcher             = optional(string, "200-499")<br/>      interval            = optional(number, 30)<br/>      healthy_threshold   = optional(number, 2)<br/>      unhealthy_threshold = optional(number, 4)<br/>      service_protocol    = optional(string, "HTTPS")<br/>      path                = optional(string, "/")<br/>    }), {})<br/>  }))</pre> | `[]` | no |
 | <a name="input_security_group"></a> [security\_group](#input\_security\_group) | Existing security group to use instead of creating one | `string` | `null` | no |
+| <a name="input_subnet_mappings"></a> [subnet\_mappings](#input\_subnet\_mappings) | Subnet mappings to apply to the load balancer. This must be empty if subnets is set | <pre>list(object({<br/>    subnet_id            = string<br/>    allocation_id        = optional(string, null)<br/>    ipv6_address         = optional(string, null)<br/>    private_ipv4_address = optional(string, null)<br/>  }))</pre> | `[]` | no |
+| <a name="input_subnets"></a> [subnets](#input\_subnets) | List of subnets to host the load balancer in. Recommend at least 2 | `list(string)` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Default tags to associate with the resources | `map(string)` | `{}` | no |
 | <a name="input_type"></a> [type](#input\_type) | Load balancer type to stand up | `string` | `"application"` | no |
 

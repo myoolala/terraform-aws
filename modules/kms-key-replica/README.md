@@ -30,11 +30,13 @@ module "replica" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 
 ## Inputs
 
