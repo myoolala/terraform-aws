@@ -25,6 +25,7 @@ No requirements.
 | <a name="input_enable_whole_account_access"></a> [enable\_whole\_account\_access](#input\_enable\_whole\_account\_access) | Enable the whole account to be allowed to be given permissions to the key. Disable if absolutely necessary | `bool` | `true` | no |
 | <a name="input_is_enabled"></a> [is\_enabled](#input\_is\_enabled) | Is the key currently enabled | `bool` | `true` | no |
 | <a name="input_key_usage"></a> [key\_usage](#input\_key\_usage) | Key Usage field to set on the key. Defaults to ENCRYPT\_DECRYPT | `string` | `"ENCRYPT_DECRYPT"` | no |
+| <a name="input_multi_region"></a> [multi\_region](#input\_multi\_region) | Is the key a multi region key? Default: False | `bool` | `false` | no |
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | JSON policy to incorporate and possible override the 'Default' Sid policy statement with | `string` | `null` | no |
 | <a name="input_rotation_period"></a> [rotation\_period](#input\_rotation\_period) | Rotation period to set on the key if there is one | `number` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Default tags to apply to the resources | `map(string)` | `{}` | no |

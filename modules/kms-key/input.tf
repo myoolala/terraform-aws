@@ -53,7 +53,7 @@ variable "key_usage" {
   default     = "ENCRYPT_DECRYPT"
 }
 
-variabe "multi_region" {
+variable "multi_region" {
   type = bool
   description = "Is the key a multi region key? Default: False"
   default = false
