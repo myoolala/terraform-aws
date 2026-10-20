@@ -1,8 +1,4 @@
 provider "aws" {
-  alias = "primary"
-}
-
-provider "aws" {
   alias = "backup"
 }
 
