@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "add_lifecycle_permissions" {
   }
 
   dynamic "statement" {
-    for_each = var.ssm_parameter != null > 0 ? [1] : []
+    for_each = var.ssm_parameter != null ? [1] : []
     content {
       sid       = "AllowSSMPut"
       effect    = "Allow"
