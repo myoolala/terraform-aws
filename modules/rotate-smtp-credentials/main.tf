@@ -69,9 +69,12 @@ data "aws_iam_policy_document" "add_lifecycle_permissions" {
   dynamic "statement" {
     for_each = var.secretsmanager_secret != null ? [1] : []
     content {
-      sid       = "AllowSecretPut"
+      sid       = "AllowSecretsAccess"
       effect    = "Allow"
-      actions   = ["secretsmanager:PutSecretValue"]
+      actions   = [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:PutSecretValue"
+      ]
       resources = [var.secretsmanager_secret]
     }
   }
@@ -79,7 +82,11 @@ data "aws_iam_policy_document" "add_lifecycle_permissions" {
   statement {
     sid       = "AllowIAMWrite"
     effect    = "Allow"
-    actions   = ["iam:DeleteLoginProfile", "iam:CreateLoginProfile"]
+    actions   = [
+      "iam:ListAccessKeys",
+      "iam:CreateAccessKey",
+      "iam:DeleteAccessKey",
+    ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.iam_user}"]
   }
 }

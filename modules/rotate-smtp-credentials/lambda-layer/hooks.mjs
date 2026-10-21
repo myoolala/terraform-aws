@@ -46,7 +46,7 @@ export default {
       return null;
     } catch (e) {
       if (e.name === "NoSuchEntity") {
-        return null;
+        console.error('Could not find the IAM User');
       }
       // Non-entity errors propagate
       throw e;
