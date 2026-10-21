@@ -1,5 +1,5 @@
 output "function_arn" {
-  value       = data.aws_lambda_function.this.arn
+  value       = module.credential_rotator.lambda_function_arn
   description = "ARN of the Lambda function created"
 }
 
