@@ -67,3 +67,15 @@ variable "additonal_environment_vars" {
   default     = {}
   description = "Environment variables to pass or override into the lambda"
 }
+
+variable "memory" {
+  description = "Memory allocation per runtime for the lambda function."
+  type        = number
+  default     = 512
+}
+
+variable "timeout" {
+  description = "Max allowed run time for the lambda"
+  type        = number
+  default     = 60
+}

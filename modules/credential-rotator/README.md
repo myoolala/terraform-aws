@@ -116,6 +116,7 @@ The module builds the Lambda zip, copies the `index.mjs` and `config.mjs` into t
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | Additional IAM policy permissions for the lambda role. Must be JSON encoded array of policy statements. | `any` | `null` | no |
 | <a name="input_schedule"></a> [schedule](#input\_schedule) | Optional cron or rate expression to schedule automatic invocation of the lambda function. | `string` | `"rate(90 days)"` | no |
 | <a name="input_secrets"></a> [secrets](#input\_secrets) | Secrets ARNs and associated KMS key ARNs the lambda will need access to | <pre>object({<br/>    arns     = list(string)<br/>    kms_keys = list(string)<br/>  })</pre> | <pre>{<br/>  "arns": [],<br/>  "kms_keys": []<br/>}</pre> | no |
+| <a name="input_timeout"></a> [timeout](#input\_timeout) | Max allowed run time for the lambda | `number` | `60` | no |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | Optional list of security group IDs for VPC configuration. | `list(string)` | `[]` | no |
 | <a name="input_vpc_subnet_ids"></a> [vpc\_subnet\_ids](#input\_vpc\_subnet\_ids) | Optional list of subnet IDs for VPC configuration. | `list(string)` | `[]` | no |
 

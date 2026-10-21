@@ -48,6 +48,12 @@ variable "memory" {
   default     = 128
 }
 
+variable "timeout" {
+  description = "Max allowed run time for the lambda"
+  type        = number
+  default     = 60
+}
+
 variable "secrets" {
   type = object({
     arns     = list(string)

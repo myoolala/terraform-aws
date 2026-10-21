@@ -23,14 +23,15 @@ resource "aws_lambda_layer_version" "hooks_layer" {
 
 module "credential_rotator" {
   source                 = "../credential-rotator"
-  
+
   lambda_function_name   = var.name
   lambda_layer_arn       = local.lambda_layer_arn
   vpc_subnet_ids         = var.vpc_config != null ? var.vpc_config.subnets : []
   vpc_security_group_ids = var.vpc_config != null && var.vpc_config.security_groups != null ? var.vpc_config.security_groups : []
   permissions            = var.permissions
   schedule               = var.schedule
-  memory                 = 256
+  memory                 = var.memory
+  timeout                = var.timeout
   environment_vars = merge({
       IAM_USER               = var.iam_user
       SSM_PARAMETER          = var.ssm_parameter != null ? var.ssm_parameter : ""

@@ -28,6 +28,8 @@ module "lambda" {
   file_path     = "${path.module}/lambda-func/lambda.zip"
   runtime       = "nodejs24.x"
   handler       = "index.handler"
+  memory        = var.memory
+  timeout       = var.timeout
   vpc_config = length(var.vpc_subnet_ids) > 0 && length(var.vpc_security_group_ids) > 0 ? {
     subnet_ids         = var.vpc_subnet_ids
     security_group_ids = var.vpc_security_group_ids
