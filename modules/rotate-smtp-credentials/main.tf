@@ -30,12 +30,14 @@ module "credential_rotator" {
   permissions            = var.permissions
   schedule               = var.schedule
   memory                 = 256
-  environment_vars = {
-    IAM_USER               = var.iam_user
-    SSM_PARAMETER          = var.ssm_parameter != null && length(var.ssm_parameter) > 0 ? var.ssm_parameter[0] : ""
-    SECRETS_MANAGER_SECRET = var.secretsmanager_secret != null && length(var.secretsmanager_secret) > 0 ? var.secretsmanager_secret[0] : ""
-    SNS_TOPIC              = var.sns_topic != null && length(var.sns_topic) > 0 ? var.sns_topic[0] : ""
-  }
+  environment_vars = merge({
+      IAM_USER               = var.iam_user
+      SSM_PARAMETER          = var.ssm_parameter != null ? var.ssm_parameter : ""
+      SECRETS_MANAGER_SECRET = var.secretsmanager_secret != null  ? var.secretsmanager_secret : ""
+      SNS_TOPIC              = var.sns_topic != null ? var.sns_topic : ""
+    },
+    var.additonal_environment_vars
+  )
 }
 
 # IAM policy to give Lambda access to SNS, SSM, Secrets Manager and IAM write for login profile
@@ -43,32 +45,32 @@ module "credential_rotator" {
 
 data "aws_iam_policy_document" "add_lifecycle_permissions" {
   dynamic "statement" {
-    for_each = var.sns_topic != null && length(var.sns_topic) > 0 ? [1] : []
+    for_each = var.sns_topic != null ? [1] : []
     content {
       sid       = "AllowSNSPublish"
       effect    = "Allow"
       actions   = ["sns:Publish"]
-      resources = var.sns_topic
+      resources = [var.sns_topic]
     }
   }
 
   dynamic "statement" {
-    for_each = var.ssm_parameter != null && length(var.ssm_parameter) > 0 ? [1] : []
+    for_each = var.ssm_parameter != null > 0 ? [1] : []
     content {
       sid       = "AllowSSMPut"
       effect    = "Allow"
       actions   = ["ssm:PutParameter"]
-      resources = [for p in var.ssm_parameter : "arn:aws:ssm:${data.aws_region.current.region}:*:parameter${p}"]
+      resources = ["arn:aws:ssm:${data.aws_region.current.region}:*:parameter${var.ssm_parameter}"]
     }
   }
 
   dynamic "statement" {
-    for_each = var.secretsmanager_secret != null && length(var.secretsmanager_secret) > 0 ? [1] : []
+    for_each = var.secretsmanager_secret != null ? [1] : []
     content {
       sid       = "AllowSecretPut"
       effect    = "Allow"
       actions   = ["secretsmanager:PutSecretValue"]
-      resources = var.secretsmanager_secret
+      resources = [var.secretsmanager_secret]
     }
   }
 

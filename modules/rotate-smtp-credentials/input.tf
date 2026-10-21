@@ -17,21 +17,21 @@ variable "iam_user" {
 ################################################################################
 
 variable "ssm_parameter" {
-  type        = list(string)
+  type        = string
   default     = null
-  description = "SSM Parameter Store paths to store the credentials. Optional; multiple ARNs supported."
+  description = "SSM Parameter Store paths to store the credentials. Optional"
 }
 
 variable "secretsmanager_secret" {
-  type        = list(string)
+  type        = string
   default     = null
-  description = "Secrets Manager secret ARNs to store the credentials. Optional; multiple ARNs supported."
+  description = "Secrets Manager secret ARN to store the credentials. Optional"
 }
 
 variable "sns_topic" {
-  type        = list(string)
+  type        = string
   default     = null
-  description = "SNS topic ARNs to publish error messages. Optional; multiple ARNs supported."
+  description = "SNS topic ARN to publish error messages. Optional"
 }
 
 variable "existing_code" {
@@ -60,4 +60,10 @@ variable "schedule" {
   type        = string
   default     = null
   description = "Cron or rate expression to schedule automatic invocation of the Lambda."
+}
+
+variable "additonal_environment_vars" {
+  type        = map(string)
+  default     = {}
+  description = "Environment variables to pass or override into the lambda"
 }
