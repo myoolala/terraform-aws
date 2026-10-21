@@ -23,6 +23,7 @@ resource "aws_lambda_layer_version" "hooks_layer" {
 
 module "credential_rotator" {
   source                 = "../credential-rotator"
+  
   lambda_function_name   = var.name
   lambda_layer_arn       = local.lambda_layer_arn
   vpc_subnet_ids         = var.vpc_config != null ? var.vpc_config.subnets : []
@@ -83,6 +84,6 @@ data "aws_iam_policy_document" "add_lifecycle_permissions" {
 }
 
 resource "aws_iam_role_policy" "lifecycle_permissions" {
-  role   = module.credential_rotator.lambda_role_arn
+  role   = module.credential_rotator.lambda_role_name
   policy = data.aws_iam_policy_document.add_lifecycle_permissions.json
 }

@@ -8,8 +8,13 @@ output "function_name" {
   description = "Name of the Lambda function created"
 }
 
-output "role" {
+output "role_arn" {
   value       = module.credential_rotator.lambda_role_arn
+  description = "Role assigned to the Lambda function to add permissions to"
+}
+
+output "role_name" {
+  value       = module.credential_rotator.lambda_role_name
   description = "Role assigned to the Lambda function to add permissions to"
 }
 
