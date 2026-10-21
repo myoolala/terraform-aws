@@ -7,14 +7,15 @@ variable "vpc_id" {
   description = "ID of the vpc to host the LB in"
 }
 
-variable "subnets" {
-  type        = list(string)
-  description = "List of subnets to host the load balancer in. Recommend at least 2"
-}
-
 ###########################################################################
 ###############                   Optional                  ###############
 ###########################################################################
+
+variable "subnets" {
+  type        = list(string)
+  description = "List of subnets to host the load balancer in. Recommend at least 2"
+  default     = null
+}
 
 variable "ingress_cidrs" {
   type        = list(string)
@@ -67,6 +68,17 @@ variable "deletion_protection" {
   type        = bool
   description = "Is the load balancer protected from deletion?"
   default     = false
+}
+
+variable "subnet_mappings" {
+  type = list(object({
+    subnet_id            = string
+    allocation_id        = optional(string, null)
+    ipv6_address         = optional(string, null)
+    private_ipv4_address = optional(string, null)
+  }))
+  description = "Subnet mappings to apply to the load balancer. This must be empty if subnets is set"
+  default     = []
 }
 
 variable "port_mappings" {

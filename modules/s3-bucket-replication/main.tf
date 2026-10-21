@@ -1,11 +1,3 @@
-provider "aws" {
-  alias = "primary"
-}
-
-provider "aws" {
-  alias = "backup"
-}
-
 # Create the backup bucket in the backup provider
 resource "aws_s3_bucket" "backup" {
   provider = aws.backup
