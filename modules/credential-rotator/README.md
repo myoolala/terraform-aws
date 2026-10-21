@@ -110,6 +110,7 @@ The module builds the Lambda zip, copies the `index.mjs` and `config.mjs` into t
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_lambda_function_name"></a> [lambda\_function\_name](#input\_lambda\_function\_name) | The name of the Lambda function to create. | `string` | n/a | yes |
+| <a name="input_environment_vars"></a> [environment\_vars](#input\_environment\_vars) | Environment variables to pass into the lambda | `map(string)` | `null` | no |
 | <a name="input_lambda_layer_arn"></a> [lambda\_layer\_arn](#input\_lambda\_layer\_arn) | Optional ARN of a Lambda layer to attach. | `string` | `null` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory allocation per runtime for the lambda function. | `number` | `128` | no |
 | <a name="input_permissions"></a> [permissions](#input\_permissions) | Additional IAM policy permissions for the lambda role. Must be JSON encoded array of policy statements. | `any` | `null` | no |

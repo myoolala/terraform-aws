@@ -59,3 +59,9 @@ variable "secrets" {
     kms_keys = []
   }
 }
+
+variable "environment_vars" {
+  type        = map(string)
+  default     = null
+  description = "Environment variables to pass into the lambda"
+}

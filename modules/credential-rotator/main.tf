@@ -33,6 +33,7 @@ module "lambda" {
     security_group_ids = var.vpc_security_group_ids
   } : null
   layers = var.lambda_layer_arn != null ? [var.lambda_layer_arn] : []
+  environment_vars = var.environment_vars
 
   secrets     = var.secrets
   permissions = var.permissions
