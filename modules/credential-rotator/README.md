@@ -125,6 +125,7 @@ The module builds the Lambda zip, copies the `index.mjs` and `config.mjs` into t
 
 | Name | Description |
 |------|-------------|
+| <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | ARN of the created Lambda function. |
 | <a name="output_lambda_function_invoke_arn"></a> [lambda\_function\_invoke\_arn](#output\_lambda\_function\_invoke\_arn) | Invoke ARN of the created Lambda function. |
 | <a name="output_lambda_function_name"></a> [lambda\_function\_name](#output\_lambda\_function\_name) | Name of the created Lambda function. |
 | <a name="output_lambda_log_group"></a> [lambda\_log\_group](#output\_lambda\_log\_group) | Log group configuration created for the Lambda function. |

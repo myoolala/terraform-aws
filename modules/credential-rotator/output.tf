@@ -3,6 +3,11 @@ output "lambda_function_name" {
   value       = module.lambda.function_name
 }
 
+output "lambda_function_arn" {
+  description = "ARN of the created Lambda function."
+  value       = module.lambda.function_arn
+}
+
 output "lambda_function_invoke_arn" {
   description = "Invoke ARN of the created Lambda function."
   value       = module.lambda.invoke_arn

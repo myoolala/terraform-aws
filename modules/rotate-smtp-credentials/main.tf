@@ -86,9 +86,3 @@ resource "aws_iam_role_policy" "lifecycle_permissions" {
   role   = module.credential_rotator.lambda_role_arn
   policy = data.aws_iam_policy_document.add_lifecycle_permissions.json
 }
-
-# Data source to fetch Lambda details for function_arn
-
-data "aws_lambda_function" "this" {
-  function_name = module.credential_rotator.lambda_function_name
-}
