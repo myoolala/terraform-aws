@@ -1,0 +1,92 @@
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+locals {
+  lambda_layer_arn = var.existing_code != null ? var.existing_code : aws_lambda_layer_version.hooks_layer[0].arn
+}
+
+# Create a Lambda layer containing custom hooks if not supplied
+resource "archive_file" "hooks_zip" {
+  type        = "zip"
+  output_path = "${path.module}/hooks.zip"
+  source_file = "${path.module}/lambda-layer/hooks.mjs"
+}
+
+resource "aws_lambda_layer_version" "hooks_layer" {
+  count               = var.existing_code == null ? 1 : 0
+  layer_name          = "${var.name}-hooks"
+  compatible_runtimes = ["nodejs24.x", "nodejs20.x"]
+  description         = "Custom hooks for rotate-smtp-credentials"
+  filename            = archive_file.hooks_zip.output_path
+}
+
+module "credential_rotator" {
+  source                 = "../credential-rotator"
+  lambda_function_name   = var.name
+  lambda_layer_arn       = local.lambda_layer_arn
+  vpc_subnet_ids         = var.vpc_config != null ? var.vpc_config.subnets : []
+  vpc_security_group_ids = var.vpc_config != null && var.vpc_config.security_groups != null ? var.vpc_config.security_groups : []
+  permissions            = var.permissions
+  schedule               = var.schedule
+  memory                 = 256
+  environment_vars = {
+    IAM_USER               = var.iam_user
+    SSM_PARAMETER          = var.ssm_parameter != null && length(var.ssm_parameter) > 0 ? var.ssm_parameter[0] : ""
+    SECRETS_MANAGER_SECRET = var.secretsmanager_secret != null && length(var.secretsmanager_secret) > 0 ? var.secretsmanager_secret[0] : ""
+    SNS_TOPIC              = var.sns_topic != null && length(var.sns_topic) > 0 ? var.sns_topic[0] : ""
+  }
+}
+
+# IAM policy to give Lambda access to SNS, SSM, Secrets Manager and IAM write for login profile
+# This is a data source so Terraform can serialize the policy for attachment
+
+data "aws_iam_policy_document" "add_lifecycle_permissions" {
+  dynamic "statement" {
+    for_each = var.sns_topic != null && length(var.sns_topic) > 0 ? [1] : []
+    content {
+      sid       = "AllowSNSPublish"
+      effect    = "Allow"
+      actions   = ["sns:Publish"]
+      resources = var.sns_topic
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.ssm_parameter != null && length(var.ssm_parameter) > 0 ? [1] : []
+    content {
+      sid       = "AllowSSMPut"
+      effect    = "Allow"
+      actions   = ["ssm:PutParameter"]
+      resources = [for p in var.ssm_parameter : "arn:aws:ssm:${data.aws_region.current.region}:*:parameter${p}"]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.secretsmanager_secret != null && length(var.secretsmanager_secret) > 0 ? [1] : []
+    content {
+      sid       = "AllowSecretPut"
+      effect    = "Allow"
+      actions   = ["secretsmanager:PutSecretValue"]
+      resources = var.secretsmanager_secret
+    }
+  }
+
+  statement {
+    sid       = "AllowIAMWrite"
+    effect    = "Allow"
+    actions   = ["iam:DeleteLoginProfile", "iam:CreateLoginProfile"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.iam_user}"]
+  }
+}
+
+resource "aws_iam_role_policy" "lifecycle_permissions" {
+  role   = module.credential_rotator.lambda_role_arn
+  policy = data.aws_iam_policy_document.add_lifecycle_permissions.json
+}
+
+# Data source to fetch Lambda details for function_arn
+
+data "aws_lambda_function" "this" {
+  function_name = module.credential_rotator.lambda_function_name
+}
