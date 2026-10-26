@@ -95,6 +95,7 @@ No modules.
 | <a name="input_solution_stack_name"></a> [solution\_stack\_name](#input\_solution\_stack\_name) | The name of the solution stack for the environment. | `string` | n/a | yes |
 | <a name="input_source_code_path"></a> [source\_code\_path](#input\_source\_code\_path) | Local directory path to source code for creating a bundle. Not required when using pre-uploaded S3 objects. | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags to apply to resources. | `map(string)` | `{}` | no |
+| <a name="input_wait_for_ready_timeout"></a> [wait\_for\_ready\_timeout](#input\_wait\_for\_ready\_timeout) | the wait for ready state timeout for the environment. Default: 20m | `string` | `"20m"` | no |
 
 ## Outputs
 

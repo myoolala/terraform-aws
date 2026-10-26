@@ -89,9 +89,5 @@ resource "aws_elastic_beanstalk_environment" "this" {
     }
   }
 
-  timeouts {
-    create = "60m"
-    update = "60m"
-    delete = "60m"
-  }
+  wait_for_ready_timeout = var.wait_for_ready_timeout
 }

@@ -79,3 +79,9 @@ variable "settings" {
     error_message = "Configure InstanceTypes through instance_types."
   }
 }
+
+variable "wait_for_ready_timeout" {
+  type = string
+  description = "the wait for ready state timeout for the environment. Default: 20m"
+  default = "20m"
+}
