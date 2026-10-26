@@ -88,8 +88,10 @@ No modules.
 | <a name="input_application_version_label"></a> [application\_version\_label](#input\_application\_version\_label) | Label of the application version. If omitted, a timestamped value will be used. | `string` | `null` | no |
 | <a name="input_create_bucket"></a> [create\_bucket](#input\_create\_bucket) | Whether to create a new S3 bucket for the bundle when source\_code\_path is provided. | `bool` | `true` | no |
 | <a name="input_environment_name"></a> [environment\_name](#input\_environment\_name) | Name of the Elastic Beanstalk environment. Defaults to application\_name. | `string` | `null` | no |
+| <a name="input_instance_types"></a> [instance\_types](#input\_instance\_types) | Allowed EC2 instance types, in priority order. | `list(string)` | n/a | yes |
 | <a name="input_s3_bucket"></a> [s3\_bucket](#input\_s3\_bucket) | S3 bucket where the application bundle is stored. Required if source\_code\_path is not provided. | `string` | `null` | no |
 | <a name="input_s3_key"></a> [s3\_key](#input\_s3\_key) | S3 key for the application bundle. Required if source\_code\_path is not provided. | `string` | `null` | no |
+| <a name="input_settings"></a> [settings](#input\_settings) | Additional Beanstalk settings, grouped by namespace. | `map(map(string))` | `{}` | no |
 | <a name="input_solution_stack_name"></a> [solution\_stack\_name](#input\_solution\_stack\_name) | The name of the solution stack for the environment. | `string` | n/a | yes |
 | <a name="input_source_code_path"></a> [source\_code\_path](#input\_source\_code\_path) | Local directory path to source code for creating a bundle. Not required when using pre-uploaded S3 objects. | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags to apply to resources. | `map(string)` | `{}` | no |

@@ -1,6 +1,19 @@
+locals {
+  environment_settings = flatten([
+    for namespace, options in var.settings : [
+      for name, value in options : {
+        namespace = namespace
+        name      = name
+        value     = value
+      }
+    ]
+  ])
+}
+
 // provider block removed; provider configuration moved to required_providers.tf# S3 bucket for the bundle if uploading locally
 resource "aws_s3_bucket" "bundle_bucket" {
   count         = var.create_bucket && var.source_code_path != null ? 1 : 0
+
   bucket        = "eb-${var.application_name}-${random_id.bucket_suffix.hex}"
   force_destroy = true
 }
@@ -12,6 +25,7 @@ resource "random_id" "bucket_suffix" {
 # Archive local source code if provided
 resource "archive_file" "bundle" {
   count       = var.source_code_path != null ? 1 : 0
+
   type        = "zip"
   source_dir  = var.source_code_path
   output_path = "${path.module}/bundle.zip"
@@ -20,6 +34,7 @@ resource "archive_file" "bundle" {
 # Upload bundle to S3 if local source provided
 resource "aws_s3_object" "bundle_obj" {
   count  = var.source_code_path != null ? 1 : 0
+
   bucket = aws_s3_bucket.bundle_bucket[0].bucket
   key    = "bundle.zip"
   source = archive_file.bundle[0].output_path
@@ -54,4 +69,23 @@ resource "aws_elastic_beanstalk_environment" "this" {
   solution_stack_name = var.solution_stack_name
   version_label       = aws_elastic_beanstalk_application_version.this.name
   tags                = var.tags
+
+  setting {
+    namespace = "aws:ec2:instances"
+    name      = "InstanceTypes"
+    value     = join(",", var.instance_types)
+  }
+
+  dynamic "setting" {
+    for_each = {
+      for option in local.environment_settings :
+      "${option.namespace}/${option.name}" => option
+    }
+
+    content {
+      namespace = setting.value.namespace
+      name      = setting.value.name
+      value     = setting.value.value
+    }
+  }
 }

@@ -11,6 +11,16 @@ variable "solution_stack_name" {
   type        = string
 }
 
+variable "instance_types" {
+  description = "Allowed EC2 instance types, in priority order."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.instance_types) > 0
+    error_message = "Provide at least one EC2 instance type."
+  }
+}
+
 ################################################################################
 # Optional Variables
 ################################################################################
@@ -54,4 +64,18 @@ variable "tags" {
   description = "Additional tags to apply to resources."
   type        = map(string)
   default     = {}
+}
+
+variable "settings" {
+  description = "Additional Beanstalk settings, grouped by namespace."
+  type        = map(map(string))
+  default     = {}
+
+  validation {
+    condition = !contains(
+      keys(lookup(var.settings, "aws:ec2:instances", {})),
+      "InstanceTypes"
+    )
+    error_message = "Configure InstanceTypes through instance_types."
+  }
 }
