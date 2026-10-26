@@ -88,4 +88,10 @@ resource "aws_elastic_beanstalk_environment" "this" {
       value     = setting.value.value
     }
   }
+
+  timeouts {
+    create = "60m"
+    update = "60m"
+    delete = "60m"
+  }
 }
