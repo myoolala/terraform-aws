@@ -4,8 +4,9 @@ output "admin_uname" {
 }
 
 output "admin_default_password" {
-  value       = random_string.default_pw.result
-  description = "The default admin password provided to the database"
+  value       = local.admin_password
+  description = "Unmanaged administrator password; null for managed credentials or a snapshot restore without a supplied password."
+  sensitive   = true
 }
 
 output "sg_id" {
@@ -44,11 +45,29 @@ output "low_storage_alam_arn" {
 }
 
 output "connection_secret" {
-  value = {
-    # There's only one secret so it's fine. Easier that trying t
-    arn     = module.admin_connection_info.secret_map[0].arn
-    name    = module.admin_connection_info.secret_map[0].name
-    kms_key = module.admin_connection_info.kms_key
-  }
-  description = "Secret information that can be used to connect to the database"
+  description = "Credential secret metadata. RDS-managed secrets contain credentials, not host/database connection metadata. Null for unmanaged snapshot restores without a supplied password."
+  value = var.manage_master_user_password ? {
+    arn     = try(aws_db_instance.db.master_user_secret[0].secret_arn, null)
+    name    = null
+    kms_key = try(aws_db_instance.db.master_user_secret[0].kms_key_id, null)
+    } : (local.create_connection_secret ? {
+      arn     = module.admin_connection_info[0].secret_map[0].arn
+      name    = module.admin_connection_info[0].secret_map[0].name
+      kms_key = module.admin_connection_info[0].kms_key
+  } : null)
+}
+
+output "master_user_secret_arn" {
+  description = "ARN of the RDS-managed credential secret, or null."
+  value       = try(aws_db_instance.db.master_user_secret[0].secret_arn, null)
+}
+
+output "parameter_group_names" {
+  description = "All pre-created parameter groups, keyed by configuration."
+  value       = { for key, group in aws_db_parameter_group.params : key => group.name }
+}
+
+output "active_parameter_group_name" {
+  description = "Parameter group selected for the instance."
+  value       = aws_db_parameter_group.params[local.config_key].name
 }

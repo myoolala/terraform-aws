@@ -1,53 +1,108 @@
-# .terraform-docs.yml
+formatter: markdown table
 
-settings:
-  type: true
+version: ">= 0.20.0"
+
+recursive:
+  enabled: false
+
+sections:
+  show:
+    - requirements
+    - providers
+    - modules
+    - resources
+    - inputs
+    - outputs
+
+output:
+  file: README.md
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
 
 sort:
   enabled: true
   by: required
 
+settings:
+  anchor: true
+  default: true
+  description: true
+  escape: true
+  hide-empty: true
+  html: true
+  required: true
+  sensitive: true
+  type: true
+
 content: |-
-  # RDS
+  # RDS DB Instance
 
-  Creates an RDS database along with all required resources such as a parameter group, subnet group, security group, etc...
+  Creates an RDS instance, subnet group, and parameter groups. Security groups,
+  a storage alarm, and unmanaged credential storage are optional.
 
-  It does auto generate a password that will not update once created, that will be the developer's responsibility
+  - `configs` defines engine versions and parameter groups; `selected_config`
+    selects the active configuration. All configured parameter groups are created.
+  - Use `manage_master_user_password = true` for RDS-managed credentials.
+  - SQL Server Express supports single-AZ only. Create application databases
+    after provisioning.
+  - Supply security parameters, audit options, encryption keys, and monitoring
+    settings through the caller.
 
-  Things to note:
+  ## Example
 
-  - Adds an alarm for 75% usage
-  - Creates a randomized id for the final snapshop to support multiple database replacements
-  - The Parameter groups can be namespaced to support major version upgrades
-
-  Example:
   ```hcl
-  module "rds_instance" {
-    source = "github.com/myoolala/terraform-aws/modules//rds-instance"
+  module "db" {
+    source = "github.com/myoolala/terraform-aws/modules//rds-instance-db?ref=main"
 
-    name = "rds-instance-test"
-    port = 5432
+    name                        = "app-dev-db"
+    port                        = 5432
+    multi_az                    = false
+    instance_class              = "db.t3.medium"
+    allocated_storage           = 20
+    storage_type                = "gp3"
+    storage_encrypted           = true
+    kms_key_id                  = var.database_kms_key_arn
+    manage_master_user_password  = true
+    master_user_secret_kms_key_id = var.secrets_kms_key_arn
+    selected_config             = "postgres-16"
+
     vpc_config = {
-      vpc_id = module.vpc.vpc_id
-      subnets = module.vpc.compute_subnet_ids
+      vpc_id  = var.vpc_id
+      subnets = var.private_database_subnet_ids
+      sg_ids  = [var.database_security_group_id]
     }
-    config = {
-      "default" = {
-        pg_name = "test"
-        engine = "postgres"
-        engine_version = "18.3"
-        pg_family = "postgres18"
+    create_sg = false
+
+    configs = {
+      postgres-16 = {
+        engine                 = "postgres"
+        engine_version         = var.postgres_engine_version
+        parameter_group_name   = "app-dev-db-postgres-16-v1"
+        parameter_group_family = "postgres16"
+        parameters = [
+          { name = "rds.force_ssl", value = "1" }
+        ]
       }
     }
   }
   ```
 
-  [More examples can be found here](../../../tests/rds-instance-db/)
+  Use an exact PostgreSQL 16 engine version available in your region.
+  Pin the module source to a reviewed commit containing these changes.
 
-  {{ .Providers }}
+  [Module tests](./tests/) · [Integration examples](../../tests/rds-instance-db/)
 
   {{ .Requirements }}
 
+  {{ .Providers }}
+
+  {{ .Modules }}
+
+  {{ .Resources }}
+
   {{ .Inputs }}
 
-  {{ .Outputs }}  
+  {{ .Outputs }}

@@ -26,19 +26,23 @@ variable "port" {
 
 variable "configs" {
   type = map(object({
-    pg_name        = string
-    engine         = string
-    engine_version = string
-    pg_family      = string
-    pg_suffix      = optional(string, "")
-    og_name        = optional(string, null)
+    parameter_group_name   = optional(string, null)
+    engine                 = string
+    engine_version         = string
+    parameter_group_family = string
+    parameter_group_suffix = optional(string, "")
+    option_group_name      = optional(string, null)
     parameters = optional(list(object({
       name         = string
       value        = string
       apply_method = optional(string, "pending-reboot")
     })), [])
   }))
-  description = "Database configuration. If you notice, this it s map which is meant to allow for simpler upgrades. Upgrading a major version might require a parameter group update which would need a new group with a new name and a straight opentofu update will not suffice. This allows the upgrade to split across 2 applies for a seamless update"
+  description = "Engine configurations. All parameter groups are created; selected_config chooses the active engine and group. Keep names unique across configurations."
+  validation {
+    condition     = length(var.configs) > 0
+    error_message = "configs must contain at least one entry."
+  }
 }
 
 ##################################################################
@@ -183,3 +187,104 @@ variable "skip_final_snapshot" {
   description = "Skip the final snapshot on deletion"
   default     = false
 }
+
+variable "kms_key_id" {
+  type        = string
+  default     = null
+  description = "KMS key ARN for encrypted database storage; snapshot restores inherit their source key."
+}
+
+
+variable "license_model" {
+  type        = string
+  default     = null
+  description = "License model. Use license-included for RDS SQL Server."
+}
+
+
+variable "deletion_protection" {
+  type        = bool
+  default     = true
+  description = "Protect the instance from deletion until explicitly disabled."
+}
+
+
+variable "copy_tags_to_snapshot" {
+  type        = bool
+  default     = true
+  description = "Copy database instance tags to snapshots."
+}
+
+
+variable "delete_automated_backups" {
+  type        = bool
+  default     = false
+  description = "Whether automated backups are deleted with the instance."
+}
+
+
+variable "apply_immediately" {
+  type        = bool
+  default     = false
+  description = "Apply changes immediately instead of during the maintenance window."
+}
+
+
+variable "enabled_cloudwatch_logs_exports" {
+  type        = set(string)
+  default     = []
+  description = "Engine-supported log types to export. SQL Server supports error and agent."
+}
+
+
+variable "monitoring_interval" {
+  type        = number
+  default     = 0
+  description = "Enhanced Monitoring interval in seconds; zero disables it."
+}
+
+
+variable "monitoring_role_arn" {
+  type        = string
+  default     = null
+  description = "IAM role ARN for Enhanced Monitoring."
+}
+
+
+variable "manage_master_user_password" {
+  type        = bool
+  default     = false
+  description = "Use RDS-managed Secrets Manager credentials. Explicitly enable for the secure caller configuration."
+}
+
+
+variable "master_user_secret_kms_key_id" {
+  type        = string
+  default     = null
+  description = "KMS key ARN for the RDS-managed master secret."
+}
+
+
+variable "password" {
+  type        = string
+  default     = null
+  description = "Optional administrator password for unmanaged credentials. Stored in Terraform state."
+  sensitive   = true
+}
+
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags applied to directly managed resources."
+}
+
+
+variable "secret_recovery_window_in_days" {
+  type        = number
+  default     = 30
+  description = "Recovery window for the legacy unmanaged connection secret."
+}
+
+# selected_config is mandatory when more than one configuration is present.
+# Cross-input checks are enforced by the database lifecycle preconditions.
