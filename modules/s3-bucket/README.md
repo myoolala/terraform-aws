@@ -9,7 +9,7 @@ Creates an S3 bucket with some automated behavior like setting encryption and ve
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.25.0 |
 
 ## Requirements
 

@@ -43,7 +43,7 @@ LIMIT 100;
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.53.0 |
 
 ## Requirements
 

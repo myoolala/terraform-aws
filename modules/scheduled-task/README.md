@@ -13,7 +13,7 @@ This also automates creating everything needed to run the job, much like the far
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Requirements
 

@@ -30,7 +30,7 @@ module "replica" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.68.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 
 ## Requirements
 
@@ -52,7 +52,7 @@ module "replica" {
 
 | Name | Description |
 |------|-------------|
-| <a name="output_replica_alias_arn"></a> [replica\_alias\_arn](#output\_replica\_alias\_arn) | ARN of the alias for the replica key if created |
-| <a name="output_replica_key_arn"></a> [replica\_key\_arn](#output\_replica\_key\_arn) | ARN of the replica KMS key |
-| <a name="output_replica_key_id"></a> [replica\_key\_id](#output\_replica\_key\_id) | ID of the replica KMS key |
+| <a name="output_alias_arn"></a> [alias\_arn](#output\_alias\_arn) | ARN of the alias for the replica key if created |
+| <a name="output_key_arn"></a> [key\_arn](#output\_key\_arn) | ARN of the replica KMS key |
+| <a name="output_key_id"></a> [key\_id](#output\_key\_id) | ID of the replica KMS key |
 <!-- END_TF_DOCS -->
