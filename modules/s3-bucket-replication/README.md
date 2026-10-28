@@ -56,8 +56,8 @@ module "replication" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws.backup"></a> [aws.backup](#provider\_aws.backup) | >= 6.66.0 |
-| <a name="provider_aws.primary"></a> [aws.primary](#provider\_aws.primary) | >= 6.66.0 |
+| <a name="provider_aws.backup"></a> [aws.backup](#provider\_aws.backup) | 6.68.0 |
+| <a name="provider_aws.primary"></a> [aws.primary](#provider\_aws.primary) | 6.68.0 |
 
 ## Requirements
 

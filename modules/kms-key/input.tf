@@ -54,9 +54,9 @@ variable "key_usage" {
 }
 
 variable "multi_region" {
-  type = bool
+  type        = bool
   description = "Is the key a multi region key? Default: False"
-  default = false
+  default     = false
 }
 
 variable "tags" {

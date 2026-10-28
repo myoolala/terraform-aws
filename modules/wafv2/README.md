@@ -9,7 +9,7 @@ Deploys an AWS WAFv2 Web ACL with optional managed rule groups and custom IP set
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.25.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
 
 ## Requirements
 

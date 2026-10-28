@@ -1,0 +1,32 @@
+settings:
+  type: true
+
+sort:
+  enabled: true
+  by: required
+
+content: |-
+  # rotate-smtp-credentials
+
+  This module rotates IAM user credentials used for SMTP access and stores the new credentials in either AWS SSM Parameter Store or AWS Secrets Manager. It uses the generic `credential-rotator` module for Lambda packaging and deployment.
+
+  ## Example
+
+  ```hcl
+  module "rotate_smtp" {
+    source          = "github.com/myoolala/terraform-aws//modules/rotate-smtp-credentials"
+    name            = "tf-smtp-rotator"
+    iam_user        = "example-user"
+    ssm_parameter   = "/smtp/credentials"
+  }
+  ```
+
+  [More examples can be found here](../../tests/rotate-smtp-credentials/)
+  
+  {{ .Providers }}
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}

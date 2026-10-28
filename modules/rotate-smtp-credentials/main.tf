@@ -22,7 +22,7 @@ resource "aws_lambda_layer_version" "hooks_layer" {
 }
 
 module "credential_rotator" {
-  source                 = "../credential-rotator"
+  source = "../credential-rotator"
 
   lambda_function_name   = var.name
   lambda_layer_arn       = local.lambda_layer_arn
@@ -33,10 +33,10 @@ module "credential_rotator" {
   memory                 = var.memory
   timeout                = var.timeout
   environment_vars = merge({
-      IAM_USER               = var.iam_user
-      SSM_PARAMETER          = var.ssm_parameter != null ? var.ssm_parameter : ""
-      SECRETS_MANAGER_SECRET = var.secretsmanager_secret != null  ? var.secretsmanager_secret : ""
-      SNS_TOPIC              = var.sns_topic != null ? var.sns_topic : ""
+    IAM_USER               = var.iam_user
+    SSM_PARAMETER          = var.ssm_parameter != null ? var.ssm_parameter : ""
+    SECRETS_MANAGER_SECRET = var.secretsmanager_secret != null ? var.secretsmanager_secret : ""
+    SNS_TOPIC              = var.sns_topic != null ? var.sns_topic : ""
     },
     var.additonal_environment_vars
   )
@@ -69,9 +69,9 @@ data "aws_iam_policy_document" "add_lifecycle_permissions" {
   dynamic "statement" {
     for_each = var.secretsmanager_secret != null ? [1] : []
     content {
-      sid       = "AllowSecretsAccess"
-      effect    = "Allow"
-      actions   = [
+      sid    = "AllowSecretsAccess"
+      effect = "Allow"
+      actions = [
         "secretsmanager:GetSecretValue",
         "secretsmanager:PutSecretValue"
       ]
@@ -80,9 +80,9 @@ data "aws_iam_policy_document" "add_lifecycle_permissions" {
   }
 
   statement {
-    sid       = "AllowIAMWrite"
-    effect    = "Allow"
-    actions   = [
+    sid    = "AllowIAMWrite"
+    effect = "Allow"
+    actions = [
       "iam:ListAccessKeys",
       "iam:CreateAccessKey",
       "iam:DeleteAccessKey",

@@ -7,7 +7,7 @@ Creates a Task Definition for an ECS service/task. Automates the IAM provisionin
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.67.0 |
 
 ## Requirements
 
