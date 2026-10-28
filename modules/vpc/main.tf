@@ -33,6 +33,9 @@ locals {
   compute_subnet_route_mapping = length(local.nat_subnet_map) < 1 ? [for i, v in var.compute_subnets : 0] : [for i, v in var.compute_subnets :
     index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
   ]
+  other_subnet_route_mapping = length(local.nat_subnet_map) < 1 ? [for i, v in local.other_subnets : 0] : [for i, v in local.other_subnets :
+    index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
+  ]
   # @TODO integrate this
   # other_subnet_route_mapping = [for i, v in local.other_subnets :
   #   index(local.nat_subnet_map, lookup(local.nat_az_map, v.az, local.nat_subnet_map[i % length(local.nat_subnet_map)]))
@@ -225,7 +228,7 @@ resource "aws_route_table_association" "other" {
 
   # @TODO this does not normalize to az matches to minimize latency and cost
   subnet_id      = aws_subnet.other_subnets[count.index].id
-  route_table_id = local.create_internal_rt ? aws_route_table.internal[0].id : aws_default_route_table.primary.id
+  route_table_id = local.create_internal_rt ? aws_route_table.internal[local.other_subnet_route_mapping[count.index]].id : aws_default_route_table.primary.id
 }
 
 resource "aws_route" "nat_gateways_ipv4" {

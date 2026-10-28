@@ -33,6 +33,11 @@ output "compute_subnet_route_mapping" {
   description = "Compute subnet route mapping object for the Route Tables"
 }
 
+output "other_subnet_route_mapping" {
+  value       = local.other_subnet_route_mapping
+  description = "Other subnet route mapping object for the Route Tables"
+}
+
 output "nat_subnet_map" {
   value       = local.nat_subnet_map
   description = "Mapping of subnets to NAT Gateways"

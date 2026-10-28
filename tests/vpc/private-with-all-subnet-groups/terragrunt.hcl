@@ -10,6 +10,7 @@ locals {
 # Indicate the input values to use for the variables of the module.
 inputs = {
   name ="private-vpc-test"
+  public = true
   ipv4_cidr = "172.31.0.0/16"
   ingress_subnets = [{
     ipv4_cidr = "172.31.0.0/27"

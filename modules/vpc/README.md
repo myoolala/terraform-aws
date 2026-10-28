@@ -87,5 +87,6 @@ No requirements.
 | <a name="output_nat_subnet_map"></a> [nat\_subnet\_map](#output\_nat\_subnet\_map) | Mapping of subnets to NAT Gateways |
 | <a name="output_other_subnet_arns"></a> [other\_subnet\_arns](#output\_other\_subnet\_arns) | IDs of the other subnets |
 | <a name="output_other_subnet_ids"></a> [other\_subnet\_ids](#output\_other\_subnet\_ids) | IDs of the other subnets |
+| <a name="output_other_subnet_route_mapping"></a> [other\_subnet\_route\_mapping](#output\_other\_subnet\_route\_mapping) | Other subnet route mapping object for the Route Tables |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | IP of the VPC |  
 <!-- END_TF_DOCS -->
