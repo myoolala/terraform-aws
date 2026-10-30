@@ -71,7 +71,6 @@ module "replication" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_source_bucket_name"></a> [source\_bucket\_name](#input\_source\_bucket\_name) | Name of the existing source bucket to replicate from | `string` | n/a | yes |
 | <a name="input_backup_bucket_name"></a> [backup\_bucket\_name](#input\_backup\_bucket\_name) | Name of the backup bucket to create. Defaults to <source>-backup if omitted. | `string` | `""` | no |
-| <a name="input_enable_versioning"></a> [enable\_versioning](#input\_enable\_versioning) | Enable versioning on the backup bucket | `bool` | `true` | no |
 | <a name="input_public_access_block"></a> [public\_access\_block](#input\_public\_access\_block) | Public access block config for the backup bucket | <pre>object({<br/>    block_public_acls       = optional(bool, true)<br/>    block_public_policy     = optional(bool, true)<br/>    ignore_public_acls      = optional(bool, true)<br/>    restrict_public_buckets = optional(bool, true)<br/>  })</pre> | `{}` | no |
 | <a name="input_replication_mode"></a> [replication\_mode](#input\_replication\_mode) | Replication direction: 'one-way' or 'two-way' | `string` | `"one-way"` | no |
 

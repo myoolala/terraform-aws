@@ -19,12 +19,6 @@ variable "replication_mode" {
   }
 }
 
-variable "enable_versioning" {
-  type        = bool
-  description = "Enable versioning on the backup bucket"
-  default     = true
-}
-
 variable "public_access_block" {
   type = object({
     block_public_acls       = optional(bool, true)

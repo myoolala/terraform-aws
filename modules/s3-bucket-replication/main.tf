@@ -21,7 +21,7 @@ resource "aws_s3_bucket_versioning" "backup" {
   bucket   = aws_s3_bucket.backup.id
 
   versioning_configuration {
-    status = var.enable_versioning ? "Enabled" : "Disabled"
+    status = "Enabled"
   }
 }
 
@@ -79,6 +79,10 @@ resource "aws_s3_bucket_replication_configuration" "primary_to_backup" {
       bucket = aws_s3_bucket.backup.arn
     }
   }
+  
+  depends_on = [
+    aws_s3_bucket_versioning.backup    
+  ]
 }
 
 # Optionally add reverse replication if two-way
@@ -97,4 +101,8 @@ resource "aws_s3_bucket_replication_configuration" "backup_to_primary" {
       bucket = data.aws_s3_bucket.source.arn
     }
   }
+  
+  depends_on = [
+    aws_s3_bucket_versioning.backup    
+  ]
 }
