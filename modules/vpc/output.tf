@@ -38,6 +38,11 @@ output "other_subnet_route_mapping" {
   description = "Other subnet route mapping object for the Route Tables"
 }
 
+output "internal_route_tables" {
+  value = aws_route_table.internal[*].id
+  description = "List of internal route table ids that were generated"
+}
+
 output "nat_subnet_map" {
   value       = local.nat_subnet_map
   description = "Mapping of subnets to NAT Gateways"

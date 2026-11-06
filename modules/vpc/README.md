@@ -79,6 +79,7 @@ No requirements.
 | <a name="output_default_sg"></a> [default\_sg](#output\_default\_sg) | Default security group id for the vpc |
 | <a name="output_ingress_subnet_arns"></a> [ingress\_subnet\_arns](#output\_ingress\_subnet\_arns) | ARNs of the ingress subnets |
 | <a name="output_ingress_subnet_ids"></a> [ingress\_subnet\_ids](#output\_ingress\_subnet\_ids) | IDs of the ingress subnets |
+| <a name="output_internal_route_tables"></a> [internal\_route\_tables](#output\_internal\_route\_tables) | List of internal route table ids that were generated |
 | <a name="output_ipv4_cidrs"></a> [ipv4\_cidrs](#output\_ipv4\_cidrs) | IPV4 CIDR ranges in the VPC |
 | <a name="output_ipv6_assoc_id"></a> [ipv6\_assoc\_id](#output\_ipv6\_assoc\_id) | Assotication ID for the IPV6 block |
 | <a name="output_ipv6_cidr"></a> [ipv6\_cidr](#output\_ipv6\_cidr) | IPV6 cidr range for the VPC |
