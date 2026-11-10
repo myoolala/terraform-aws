@@ -92,3 +92,8 @@ output "other_subnet_arns" {
   value       = { for k, v in local.other_subnets : v.name => aws_subnet.other_subnets[k].arn }
   description = "IDs of the other subnets"
 }
+
+output "nat_gateway_ids" {
+  value = aws_nat_gateway.private_internet_access[*].id
+  description = "List of the NAT gateways that were created"
+}
