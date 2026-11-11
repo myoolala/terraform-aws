@@ -83,6 +83,7 @@ No requirements.
 | <a name="output_ipv4_cidrs"></a> [ipv4\_cidrs](#output\_ipv4\_cidrs) | IPV4 CIDR ranges in the VPC |
 | <a name="output_ipv6_assoc_id"></a> [ipv6\_assoc\_id](#output\_ipv6\_assoc\_id) | Assotication ID for the IPV6 block |
 | <a name="output_ipv6_cidr"></a> [ipv6\_cidr](#output\_ipv6\_cidr) | IPV6 cidr range for the VPC |
+| <a name="output_log_group"></a> [log\_group](#output\_log\_group) | Log group configuration if there was one |
 | <a name="output_nat_az_map"></a> [nat\_az\_map](#output\_nat\_az\_map) | NAT Gateway to AZ mapping object |
 | <a name="output_nat_gateway_ids"></a> [nat\_gateway\_ids](#output\_nat\_gateway\_ids) | List of the NAT gateways that were created |
 | <a name="output_nat_ips"></a> [nat\_ips](#output\_nat\_ips) | Elastic public IPs created for the nat gateways in the VPC |

@@ -97,3 +97,11 @@ output "nat_gateway_ids" {
   value = aws_nat_gateway.private_internet_access[*].id
   description = "List of the NAT gateways that were created"
 }
+
+output "log_group" {
+  value = {
+    arn = var.flow_logs.enabled ? aws_cloudwatch_log_group.logging[0].arn : 0
+    kms_key = var.flow_logs.kms_key_arn
+  }
+  description = "Log group configuration if there was one"
+}
