@@ -100,7 +100,8 @@ output "nat_gateway_ids" {
 
 output "log_group" {
   value = {
-    arn = var.flow_logs.enabled ? aws_cloudwatch_log_group.logging[0].arn : 0
+    arn = var.flow_logs.enabled ? aws_cloudwatch_log_group.logging[0].arn : null
+    name = var.flow_logs.enabled ? aws_cloudwatch_log_group.logging[0].name : null
     kms_key = var.flow_logs.kms_key_arn
   }
   description = "Log group configuration if there was one"
